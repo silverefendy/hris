@@ -1,4 +1,3 @@
-HRIS CML
 HRIS Core
 HRIS Attendance
 HRIS Employee Data
