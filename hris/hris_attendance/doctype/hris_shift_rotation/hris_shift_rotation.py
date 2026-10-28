@@ -8,6 +8,7 @@ class HRISShiftRotation(Document):
 		self.rotation_name = (self.rotation_name or "").strip()
 		self.validate_pattern()
 		self.validate_not_locked()
+		self.validate_deactivation()
 
 	def validate_pattern(self):
 		# validate jalan SEBELUM cek field wajib, jadi kosong dilewati dulu
@@ -49,5 +50,24 @@ class HRISShiftRotation(Document):
 			frappe.throw(
 				_("Rotasi ini sudah dipakai grup: {0}. Pola dan Company tidak boleh diubah. Buat Rotation baru, lalu pindahkan grupnya.").format(
 					", ".join(used_by)
+				)
+			)
+
+	def validate_deactivation(self):
+		# Rotasi tidak boleh dinonaktifkan selama masih dipakai grup aktif (K-34).
+		if self.is_active or self.is_new():
+			return
+		before = self.get_doc_before_save()
+		if not before or not before.is_active:
+			return
+		groups = frappe.get_all(
+			"HRIS Employee Group",
+			filters={"rotation": self.name, "is_active": 1},
+			pluck="name",
+		)
+		if groups:
+			frappe.throw(
+				_("Rotasi {0} masih dipakai grup aktif: {1}. Nonaktifkan atau pindahkan grupnya dulu.").format(
+					self.name, ", ".join(groups)
 				)
 			)

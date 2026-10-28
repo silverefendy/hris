@@ -65,16 +65,6 @@ class HRISEmployeeGroup(Document):
 		if not shift.is_active:
 			frappe.throw(_("Baris {0}: shift {1} tidak aktif.").format(row.idx, row.shift))
 
-	def get_shift_for_weekday(self, weekday):
-		"""weekday: 0 = Senin ... 6 = Minggu (sama dengan date.weekday()).
-		Mengembalikan (nama_shift atau None, wajib_hadir)."""
-		for row in self.get("weekly_schedule") or []:
-			start = DAYS.index(row.day_from)
-			end = DAYS.index(row.day_to or row.day_from)
-			if start <= weekday <= end:
-				return row.shift, bool(row.is_required)
-		return None, False
-
 	def validate_schedule_type(self):
 		# Jadwal Mingguan atau Rotasi, tidak boleh bercampur. Kosong dianggap Jadwal Mingguan.
 		if not self.schedule_type:
