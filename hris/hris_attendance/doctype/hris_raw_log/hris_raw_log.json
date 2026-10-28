@@ -1,0 +1,240 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-28 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tab_details",
+  "section_source",
+  "company",
+  "device",
+  "device_user_id",
+  "column_break_1",
+  "punch_time",
+  "verify_mode",
+  "punch_status_raw",
+  "section_employee",
+  "employee",
+  "employee_name",
+  "column_break_2",
+  "employee_number",
+  "punch_role",
+  "section_review",
+  "review_status",
+  "reviewed_by",
+  "column_break_3",
+  "reviewed_on",
+  "review_note",
+  "section_change",
+  "change_reason",
+  "tab_audit",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "tab_details",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "section_source",
+   "fieldtype": "Section Break",
+   "label": "Log Source"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1,
+   "fetch_from": "device.company"
+  },
+  {
+   "fieldname": "device",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Device",
+   "options": "HRIS Device",
+   "reqd": 1
+  },
+  {
+   "fieldname": "device_user_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Device User ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "punch_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Punch Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "verify_mode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Verify Mode"
+  },
+  {
+   "fieldname": "punch_status_raw",
+   "fieldtype": "Data",
+   "label": "Punch Status (Raw)"
+  },
+  {
+   "fieldname": "section_employee",
+   "fieldtype": "Section Break",
+   "label": "Employee"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee.employee_number",
+   "fieldname": "employee_number",
+   "fieldtype": "Data",
+   "label": "Employee Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "punch_role",
+   "fieldtype": "Select",
+   "label": "Punch Role",
+   "options": "\nMasuk\nPulang\nDiabaikan Otomatis",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_review",
+   "fieldtype": "Section Break",
+   "label": "Review"
+  },
+  {
+   "default": "Menunggu",
+   "fieldname": "review_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Review Status",
+   "options": "Menunggu\nTidak Cocok\nDisetujui\nDitolak\nTerkirim"
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reviewed_on",
+   "fieldtype": "Datetime",
+   "label": "Reviewed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_note",
+   "fieldtype": "Small Text",
+   "label": "Review Note"
+  },
+  {
+   "fieldname": "section_change",
+   "fieldtype": "Section Break",
+   "label": "Change Reason"
+  },
+  {
+   "description": "Wajib diisi (alasan baru) setiap kali data sumber diubah.",
+   "fieldname": "change_reason",
+   "fieldtype": "Small Text",
+   "label": "Change Reason"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "tab_audit",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-28 05:54:45.555197",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Raw Log",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "HRIS Manager",
+   "read": 1,
+   "write": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "HRIS HR Admin",
+   "read": 1,
+   "write": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "HRIS Attendance Operator",
+   "read": 1,
+   "create": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Attendance Supervisor",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "search_fields": "device_user_id,employee_name",
+ "sort_field": "punch_time",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
