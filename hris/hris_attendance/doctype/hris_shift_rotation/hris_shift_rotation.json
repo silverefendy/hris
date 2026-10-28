@@ -1,0 +1,149 @@
+{
+ "creation": "2026-10-28 17:00:00.000000",
+ "modified": "2026-10-28 17:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Attendance",
+ "engine": "InnoDB",
+ "custom": 0,
+ "index_web_pages_for_search": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "HRIS Shift Rotation",
+ "autoname": "field:rotation_name",
+ "naming_rule": "By fieldname",
+ "allow_rename": 1,
+ "track_changes": 1,
+ "title_field": "rotation_name",
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "rotation_name",
+   "fieldtype": "Data",
+   "label": "Nama Rotasi",
+   "reqd": 1,
+   "unique": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Aktif",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cycle_days",
+   "fieldtype": "Int",
+   "label": "Panjang Siklus (hari)",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Dihitung otomatis dari jumlah baris pola."
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Keterangan"
+  },
+  {
+   "fieldname": "pattern_section",
+   "fieldtype": "Section Break",
+   "label": "Pola Siklus"
+  },
+  {
+   "fieldname": "pattern",
+   "fieldtype": "Table",
+   "label": "Pola",
+   "options": "HRIS Shift Rotation Day",
+   "reqd": 1,
+   "description": "Satu baris = satu hari dalam siklus. Pola berulang otomatis sejak tanggal mulai di Employee Group."
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS",
+   "depends_on": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "field_order": [
+  "details_tab",
+  "rotation_name",
+  "company",
+  "is_active",
+  "column_break_1",
+  "cycle_days",
+  "description",
+  "pattern_section",
+  "pattern",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Attendance Supervisor"
+  },
+  {
+   "read": 1,
+   "role": "HRIS Attendance Operator"
+  }
+ ]
+}
