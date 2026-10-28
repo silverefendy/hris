@@ -39,3 +39,15 @@
   - Perapian data lewat `set_value` tidak tercatat di audit trail; wajar untuk master data, bukan untuk perubahan biasa.
   - Pemicu otomatis audit tab untuk semua DocType tidak dipakai karena bergantung event Frappe yang belum diverifikasi; dipilih satu JS kecil per DocType (lihat [development/doctype-checklist.md](../development/doctype-checklist.md)).
 - Belum: Bagian B (rotasi dan Shift Assignment), data awal contoh, jalur data mesin.
+
+## 2026-10-28 (sesi lanjutan: Bagian B rotasi dan Shift Assignment)
+- Script 6 (`HRIS Shift Rotation` + tabel anak `HRIS Shift Rotation Day`, commit fd8b082) dan Script 7 (`HRIS Employee Group` memilih Jadwal Mingguan atau Rotasi, commit 27947d5) lolos. Uji browser Script 7: rotasi yang dipakai grup ditolak diubah dengan pesan yang menyebut grup; pindah ke Jadwal Mingguan tercatat di audit (Jenis Jadwal, Rotasi, Tanggal Mulai).
+- Script 8 (commit 4fcb41b): `HRIS Shift Assignment` dan service `shift_schedule.py`. Pemasangan lolos (backup, migrate tanpa error). Uji otomatis 8c lolos 20 pemeriksaan: rotasi (5), jadwal mingguan (4), assignment (4), penolakan tumpang tindih, alasan kosong, tanggal terbalik, shift nonaktif, libur (2), audit (1); semua di-rollback.
+- K-31 sampai K-33 dicatat (rotasi, Shift Assignment, urutan penentuan shift dan aturan libur).
+- Kendala dan pelajaran:
+  - Uji 8c pertama berhenti sendiri karena site belum punya Employee Active (pengaman skrip bekerja). Skrip direvisi: bila tidak ada karyawan Active, dibuat karyawan sementara (butuh Gender, tanggal lahir, tanggal bergabung, Company) lalu rollback.
+  - Nama field grup di `Employee` tidak ditebak; service mencarinya dari meta lewat daftar Link field yang menunjuk `HRIS Employee Group` (hasil: `hris_employee_group`).
+  - Penolakan "alasan kosong" datang dari validasi field wajib Frappe, bukan dari pesan di controller; keduanya menolak, jadi hasilnya sama.
+  - File `.py` ditulis dengan spasi lalu dikonversi ke tab (gaya Frappe) dengan `sed` setelah dibuat.
+- Pembacaan kode setelah push menghasilkan empat temuan kecil (lihat `progress/status.md`, bagian Temuan).
+- Belum: uji browser Shift Assignment, data awal contoh, working hour, jalur data mesin.

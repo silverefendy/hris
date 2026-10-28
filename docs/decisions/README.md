@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 28 Oktober 2026
+Diperbarui: 28 Oktober 2026 (malam)
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -35,12 +35,17 @@ Diperbarui: 28 Oktober 2026
 | K-28 | Zona waktu site kerja: Asia/Jakarta (WIB), agar audit trail berwaktu WIB | 2026-10-28 | Diterapkan |
 | K-29 | `Department` tetap master ERPNext (modul Setup), dipakai lewat `Employee.department`; HRIS tidak membuat Department sendiri; field `department` di HRIS Employee Group opsional. Audit tab dipasang di semua DocType HRIS (Raw Log tetap). HRIS Holiday punya centang "Berlaku untuk Semua Company" | 2026-10-28 | Diterapkan |
 | K-30 | Tidak ada penomoran hash di DocType HRIS; penomoran memuat YYMM dengan format `PREFIX-YYMM-NNNN`. Holiday `HOL-YYMM-NNNN` (4 digit), YYMM dari tanggal dibuat; data lama bernomor hash dihapus manual, tidak di-rename. Pengecualian: HRIS Raw Log (nama = kunci anti-duplikat), DocType bernama dari field nama, dan tabel anak | 2026-10-28 | Diterapkan (Holiday, 22126c0) |
+| K-31 | Rotasi shift: `HRIS Shift Rotation` (nama dari field `rotation_name`) dengan tabel anak `HRIS Shift Rotation Day`; satu baris = satu hari siklus, boleh hari libur, minimal satu hari berisi shift, panjang siklus dihitung otomatis. Hari ke-n = (tanggal - tanggal mulai) mod panjang siklus. `HRIS Employee Group` memilih salah satu: Jadwal Mingguan atau Rotasi (tidak bercampur). Tipe Rotasi mewajibkan rotasi dan Tanggal Mulai Rotasi (hari ke-1) serta mengosongkan jadwal mingguan; tipe Jadwal Mingguan mengosongkan rotasi. Pola dan company rotasi yang sudah dipakai grup dikunci: buat rotasi baru lalu pindahkan grupnya | 2026-10-28 | Diterapkan (fd8b082, 27947d5) |
+| K-32 | `HRIS Shift Assignment` (`SAS-YYMM-NNNN`, YYMM dari tanggal dibuat) untuk menimpa jadwal per karyawan per rentang tanggal (tukar shift, pinjam karyawan). Isi: karyawan, tanggal dari/sampai, shift, alasan wajib, centang Aktif, field opsional "Dipinjam untuk Grup". Tanpa approval; dibuat HRD dan tercatat di audit trail. Pembatalan dengan mematikan centang Aktif (HR Admin tanpa hak hapus, riwayat tetap ada). Validasi: tanggal sampai tidak sebelum dari; karyawan Active; shift aktif dan satu company dengan karyawan; tidak tumpang tindih dengan Assignment aktif lain milik karyawan yang sama. `company` dan nama karyawan diisi dari server | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip |
+| K-33 | Urutan penentuan shift karyawan pada satu tanggal (service `shift_schedule`): 1) Shift Assignment aktif, 2) Rotasi grup, 3) Jadwal Mingguan grup, 4) tidak ada (bukan hari kerja). Hari libur (HRIS Holiday) ditandai terpisah: dari Assignment dianggap masuk kerja, dari rotasi atau jadwal mingguan dianggap tidak masuk. Jadwal dihitung saat dibutuhkan, tidak disimpan per hari. Sebelum tanggal mulai rotasi dianggap belum berlaku | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip |
 
 ## Belum diputuskan
 - Nama merek dan lisensi final (implikasi GPLv3 ERPNext/HRMS perlu diverifikasi).
 - Jalur data mesin (ADMS/push, agen Windows via SDK, pull lewat IP); diparkir sampai menu ADMS, model, dan firmware mesin dicek.
-- Penentuan shift: HRIS Shift dan HRIS Employee Group (jadwal mingguan) sudah ada; rotasi dan Shift Assignment (Bagian B), jadwal per hari atau deteksi otomatis, serta shift lintas tengah malam untuk security 3 atau 4 shift belum.
-- Cuti dan izin; aturan "pinjam karyawan"; aturan lembur dan insentif; komponen gaji spesifik.
+- Working hour: batas "hari kerja" untuk shift lintas tengah malam (security 3 atau 4 shift, bisa memakai Rotasi), pemakaian jendela tempel, dan penanda telat/lembur. Jadwal per hari sudah dijawab K-33.
+- Pengaruh "Dipinjam untuk Grup" pada laporan, lembur, dan insentif (field sudah ada, aturannya belum).
+- Rotasi nonaktif: apakah jadwal grup yang memakainya tetap dihitung (saat ini dicek hanya ketika grup disimpan).
+- Cuti dan izin; aturan lembur dan insentif; komponen gaji spesifik.
 - Akuntansi gaji: jurnal otomatis ke ERPNext atau cukup laporan.
 - Apakah `hrms` tetap `required_apps` jika hanya Employee yang dipakai.
 - Pemetaan `verify_mode` (jari/wajah) dan arti "no akun" dan "no induk" di Raw Log.
