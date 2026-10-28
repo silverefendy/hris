@@ -51,3 +51,16 @@
   - File `.py` ditulis dengan spasi lalu dikonversi ke tab (gaya Frappe) dengan `sed` setelah dibuat.
 - Pembacaan kode setelah push menghasilkan empat temuan kecil (lihat `progress/status.md`, bagian Temuan).
 - Belum: uji browser Shift Assignment, data awal contoh, working hour, jalur data mesin.
+
+## 2026-10-29 (sesi lanjutan: cek dan perbaikan temuan kode)
+- Empat temuan pembacaan kode dicek dulu lewat skrip baca-saja (grep dan konsol) sebelum diperbaiki. Hasil: nama field `schedule_section` ganda terbukti di JSON, meta, dan `tabDocField` (hanya di Employee Group; label section kedua menimpa yang pertama); `get_shift_for_weekday` tanpa pemanggil; belum ada data yang terkena temuan 4.
+- Pembacaan controller menemukan celah tambahan: `HRIS Shift Rotation` tidak mengunci status Aktif. Diputuskan K-34 (rotasi tidak boleh dinonaktifkan selama dipakai grup aktif) alih-alih menambal service.
+- Perbaikan (commit efd88fa): section Employee Group diganti nama dan dirapikan, deskripsi `weekly_schedule` diperbarui, `get_shift_for_weekday` dihapus, `validate_deactivation` ditambahkan di rotasi. Backup, migrate, dan clear-cache dalam satu blok lolos; uji konsol lolos (meta tanpa nama ganda, fungsi hilang, rotasi terpakai grup aktif ditolak dan boleh dinonaktifkan setelah grup nonaktif, semua di-rollback); uji browser lolos.
+- Pengecekan `HRIS Shift`: belum ada kunci nonaktif maupun kunci perubahan jam; karena jadwal dihitung saat dibutuhkan, mengubah jam shift mengubah tanggal lampau. Dicatat di "Belum diputuskan", dibahas bersama working hour.
+- Pelajaran:
+  - Cek dulu dengan skrip baca-saja, baru perbaiki; hasil cek mengubah rekomendasi (dari menambal service ke mengunci di rotasi).
+  - Patch file `.py` dengan penggantian teks yang di-`assert` dan penulisan ulang JSON utuh lebih aman daripada penyuntingan manual; skrip berhenti bila file target punya perubahan lokal.
+  - Jam OS server tampaknya UTC (`date` mencetak 23:29 saat log backup mencatat 06:29 WIB); nilai `modified` pada JSON mengikuti jam OS.
+  - Mengganti nama Section Break aman karena tidak punya kolom di database.
+- Keputusan: karyawan contoh dibuat lewat skrip dan dihapus otomatis setelah uji.
+- Belum: rancangan dan skrip data awal contoh, uji browser Shift Assignment, working hour, jalur data mesin.

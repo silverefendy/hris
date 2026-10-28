@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 28 Oktober 2026 (malam)
+Diperbarui: 29 Oktober 2026 (pagi)
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -38,13 +38,14 @@ Diperbarui: 28 Oktober 2026 (malam)
 | K-31 | Rotasi shift: `HRIS Shift Rotation` (nama dari field `rotation_name`) dengan tabel anak `HRIS Shift Rotation Day`; satu baris = satu hari siklus, boleh hari libur, minimal satu hari berisi shift, panjang siklus dihitung otomatis. Hari ke-n = (tanggal - tanggal mulai) mod panjang siklus. `HRIS Employee Group` memilih salah satu: Jadwal Mingguan atau Rotasi (tidak bercampur). Tipe Rotasi mewajibkan rotasi dan Tanggal Mulai Rotasi (hari ke-1) serta mengosongkan jadwal mingguan; tipe Jadwal Mingguan mengosongkan rotasi. Pola dan company rotasi yang sudah dipakai grup dikunci: buat rotasi baru lalu pindahkan grupnya | 2026-10-28 | Diterapkan (fd8b082, 27947d5) |
 | K-32 | `HRIS Shift Assignment` (`SAS-YYMM-NNNN`, YYMM dari tanggal dibuat) untuk menimpa jadwal per karyawan per rentang tanggal (tukar shift, pinjam karyawan). Isi: karyawan, tanggal dari/sampai, shift, alasan wajib, centang Aktif, field opsional "Dipinjam untuk Grup". Tanpa approval; dibuat HRD dan tercatat di audit trail. Pembatalan dengan mematikan centang Aktif (HR Admin tanpa hak hapus, riwayat tetap ada). Validasi: tanggal sampai tidak sebelum dari; karyawan Active; shift aktif dan satu company dengan karyawan; tidak tumpang tindih dengan Assignment aktif lain milik karyawan yang sama. `company` dan nama karyawan diisi dari server | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip |
 | K-33 | Urutan penentuan shift karyawan pada satu tanggal (service `shift_schedule`): 1) Shift Assignment aktif, 2) Rotasi grup, 3) Jadwal Mingguan grup, 4) tidak ada (bukan hari kerja). Hari libur (HRIS Holiday) ditandai terpisah: dari Assignment dianggap masuk kerja, dari rotasi atau jadwal mingguan dianggap tidak masuk. Jadwal dihitung saat dibutuhkan, tidak disimpan per hari. Sebelum tanggal mulai rotasi dianggap belum berlaku | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip |
+| K-34 | Rotasi tidak boleh dinonaktifkan selama masih dipakai grup aktif: `HRIS Shift Rotation` menolak perubahan Aktif menjadi nonaktif dan menyebut nama grup yang memakainya; grup nonaktif tidak menghalangi. Dengan begitu grup aktif tidak pernah menunjuk rotasi nonaktif, sehingga service `shift_schedule` tidak perlu mengecek status rotasi | 2026-10-29 | Diterapkan (efd88fa), teruji skrip dan browser |
 
 ## Belum diputuskan
 - Nama merek dan lisensi final (implikasi GPLv3 ERPNext/HRMS perlu diverifikasi).
 - Jalur data mesin (ADMS/push, agen Windows via SDK, pull lewat IP); diparkir sampai menu ADMS, model, dan firmware mesin dicek.
 - Working hour: batas "hari kerja" untuk shift lintas tengah malam (security 3 atau 4 shift, bisa memakai Rotasi), pemakaian jendela tempel, dan penanda telat/lembur. Jadwal per hari sudah dijawab K-33.
 - Pengaruh "Dipinjam untuk Grup" pada laporan, lembur, dan insentif (field sudah ada, aturannya belum).
-- Rotasi nonaktif: apakah jadwal grup yang memakainya tetap dihitung (saat ini dicek hanya ketika grup disimpan).
+- `HRIS Shift`: apakah shift nonaktif atau berubah jam boleh bila masih dipakai grup, rotasi, atau assignment. Karena jadwal dihitung saat dibutuhkan (K-33), mengubah jam shift ikut mengubah tanggal lampau. Opsi: tolak nonaktifkan shift yang dipakai (seperti K-34), kunci jam shift yang sudah dipakai (perubahan lewat shift baru), atau bahas bersama rancangan working hour.
 - Cuti dan izin; aturan lembur dan insentif; komponen gaji spesifik.
 - Akuntansi gaji: jurnal otomatis ke ERPNext atau cukup laporan.
 - Apakah `hrms` tetap `required_apps` jika hanya Employee yang dipakai.
