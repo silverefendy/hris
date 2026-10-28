@@ -7,6 +7,7 @@ DAYS = ("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu")
 
 class HRISEmployeeGroup(Document):
 	def validate(self):
+		self.validate_schedule_type()
 		self.group_name = (self.group_name or "").strip()
 		self.validate_department()
 		self.validate_weekly_schedule()
@@ -73,3 +74,25 @@ class HRISEmployeeGroup(Document):
 			if start <= weekday <= end:
 				return row.shift, bool(row.is_required)
 		return None, False
+
+	def validate_schedule_type(self):
+		# Jadwal Mingguan atau Rotasi, tidak boleh bercampur. Kosong dianggap Jadwal Mingguan.
+		if not self.schedule_type:
+			self.schedule_type = "Jadwal Mingguan"
+
+		if self.schedule_type == "Rotasi":
+			self.set("weekly_schedule", [])
+			if not self.rotation:
+				frappe.throw(_("Pilih Rotasi untuk grup bertipe Rotasi."))
+			if not self.rotation_start_date:
+				frappe.throw(_("Isi Tanggal Mulai Rotasi (tanggal hari ke-1 siklus)."))
+			rot = frappe.db.get_value("HRIS Shift Rotation", self.rotation, ["company", "is_active"], as_dict=True)
+			if not rot:
+				frappe.throw(_("Rotasi {0} tidak ditemukan.").format(self.rotation))
+			if not rot.is_active:
+				frappe.throw(_("Rotasi {0} tidak aktif.").format(self.rotation))
+			if self.company and rot.company != self.company:
+				frappe.throw(_("Rotasi {0} milik company {1}, bukan {2}.").format(self.rotation, rot.company, self.company))
+		else:
+			self.rotation = None
+			self.rotation_start_date = None

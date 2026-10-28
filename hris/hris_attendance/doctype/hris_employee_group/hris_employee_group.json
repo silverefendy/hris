@@ -13,6 +13,10 @@
   "column_break_1",
   "is_active",
   "schedule_section",
+  "schedule_type",
+  "rotation",
+  "rotation_start_date",
+  "schedule_section",
   "weekly_schedule",
   "audit_trail_tab",
   "audit_trail_html"
@@ -68,7 +72,8 @@
    "fieldname": "weekly_schedule",
    "fieldtype": "Table",
    "label": "Jadwal Mingguan",
-   "options": "HRIS Employee Group Day"
+   "options": "HRIS Employee Group Day",
+   "depends_on": "eval:doc.schedule_type!='Rotasi'"
   },
   {
    "depends_on": "eval:!doc.__islocal",
@@ -80,11 +85,41 @@
    "fieldname": "audit_trail_html",
    "fieldtype": "HTML",
    "label": "Audit Trail"
+  },
+  {
+   "fieldname": "schedule_section",
+   "fieldtype": "Section Break",
+   "label": "Jenis Jadwal"
+  },
+  {
+   "fieldname": "schedule_type",
+   "fieldtype": "Select",
+   "label": "Jenis Jadwal",
+   "options": "Jadwal Mingguan\nRotasi",
+   "default": "Jadwal Mingguan",
+   "in_list_view": 1,
+   "description": "Pilih salah satu. Jadwal Mingguan: shift sama tiap minggu. Rotasi: pola siklus berputar."
+  },
+  {
+   "fieldname": "rotation",
+   "fieldtype": "Link",
+   "label": "Rotasi",
+   "options": "HRIS Shift Rotation",
+   "depends_on": "eval:doc.schedule_type=='Rotasi'",
+   "mandatory_depends_on": "eval:doc.schedule_type=='Rotasi'"
+  },
+  {
+   "fieldname": "rotation_start_date",
+   "fieldtype": "Date",
+   "label": "Tanggal Mulai Rotasi",
+   "depends_on": "eval:doc.schedule_type=='Rotasi'",
+   "mandatory_depends_on": "eval:doc.schedule_type=='Rotasi'",
+   "description": "Tanggal yang dihitung sebagai hari ke-1 siklus."
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 17:00:00.000000",
+ "modified": "2026-10-28 17:30:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Employee Group",

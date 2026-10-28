@@ -7,6 +7,7 @@ class HRISShiftRotation(Document):
 	def validate(self):
 		self.rotation_name = (self.rotation_name or "").strip()
 		self.validate_pattern()
+		self.validate_not_locked()
 
 	def validate_pattern(self):
 		# validate jalan SEBELUM cek field wajib, jadi kosong dilewati dulu
@@ -33,3 +34,20 @@ class HRISShiftRotation(Document):
 			frappe.throw(_("Pola tidak boleh libur semua. Minimal satu hari berisi Shift."))
 
 		self.cycle_days = len(rows)
+
+	def validate_not_locked(self):
+		# Pola yang sudah dipakai grup tidak boleh berubah: jadwal lama ikut bergeser.
+		before = self.get_doc_before_save()
+		if not before:
+			return
+		used_by = frappe.get_all("HRIS Employee Group", filters={"rotation": self.name}, pluck="name")
+		if not used_by:
+			return
+		old = [(1 if r.is_off else 0, r.shift or "") for r in before.pattern]
+		new = [(1 if r.is_off else 0, r.shift or "") for r in self.pattern]
+		if old != new or before.company != self.company:
+			frappe.throw(
+				_("Rotasi ini sudah dipakai grup: {0}. Pola dan Company tidak boleh diubah. Buat Rotation baru, lalu pindahkan grupnya.").format(
+					", ".join(used_by)
+				)
+			)

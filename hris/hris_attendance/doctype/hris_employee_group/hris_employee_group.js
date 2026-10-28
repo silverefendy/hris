@@ -12,6 +12,11 @@ frappe.ui.form.on("HRIS Employee Group", {
             if (frm.doc.company) filters.company = frm.doc.company;
             return { filters };
         });
+        frm.set_query("rotation", () => {
+            const filters = { is_active: 1 };
+            if (frm.doc.company) filters.company = frm.doc.company;
+            return { filters };
+        });
     },
     refresh(frm) {
         if (hris.audit.render) {
