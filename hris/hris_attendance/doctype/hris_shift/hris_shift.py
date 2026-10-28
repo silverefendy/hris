@@ -12,8 +12,17 @@ def _minutes(value):
 class HRISShift(Document):
 	def validate(self):
 		self.shift_name = (self.shift_name or "").strip()
+		self.round_seconds()
 		self.validate_times()
 		self.validate_numbers()
+
+	def round_seconds(self):
+		# Field Time menerima detik; shift hanya dihitung sampai menit.
+		for fieldname in ("start_time", "end_time"):
+			value = self.get(fieldname)
+			if value:
+				t = get_time(value)
+				self.set(fieldname, "{:02d}:{:02d}:00".format(t.hour, t.minute))
 
 	def validate_times(self):
 		# validate jalan SEBELUM cek field wajib, jadi kosong dilewati dulu
