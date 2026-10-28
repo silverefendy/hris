@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "hash",
+ "autoname": "format:HOL-{YY}{MM}-{####}",
  "creation": "2026-10-28 12:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -80,11 +80,11 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 17:00:00.000000",
+ "modified": "2026-10-28 17:30:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Holiday",
- "naming_rule": "Random",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -134,5 +134,6 @@
  "sort_order": "DESC",
  "states": [],
  "title_field": "holiday_name",
- "track_changes": 1
+ "track_changes": 1,
+ "allow_rename": 0
 }
