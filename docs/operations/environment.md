@@ -1,6 +1,6 @@
 # Lingkungan Kerja
 
-Diperbarui: 27 Oktober 2026. Tanpa IP, kata sandi, atau nama mesin internal.
+Diperbarui: 28 Oktober 2026. Tanpa IP, kata sandi, atau nama mesin internal.
 
 ## Bench kerja (development)
 | Komponen | Kondisi |
@@ -17,13 +17,14 @@ Diperbarui: 27 Oktober 2026. Tanpa IP, kata sandi, atau nama mesin internal.
 ## Site
 | Site | Kondisi |
 |---|---|
-| Site kerja | Belum production, belum berisi data. Target pengembangan |
+| Site kerja | Belum production, belum berisi data. Target pengembangan. Zona waktu System Settings: Asia/Jakarta (diganti dari Asia/Kolkata pada 28 Okt 2026) |
 | Site uji lama | Schema database lama, kode sudah baru. Jangan dipakai dan jangan di-migrate. Nasib (pulihkan atau hapus) belum diputuskan |
 
 ## Aturan kerja
 - Selalu `bench --site <nama>`; jangan `bench update` biasa (men-migrate semua site, termasuk site uji lama).
 - Backup sebelum perubahan besar: `bench --site <nama> backup`.
 - Setelah mengubah `modules.txt`, jalankan `bench clear-cache` sebelum `install-app`.
+- Setelah mengubah JSON DocType, naikkan `modified` lalu jalankan `bench --site <nama> migrate` dan `clear-cache`; JS form/list butuh hard refresh browser. Mode development memuat kode Python baru tanpa restart.
 - `frappe`, `erpnext`, `hrms` memakai remote `upstream` (hanya fetch dan `merge --ff-only`, tidak pernah push). `hris` dan `wms` memakai `origin`.
 
 ## Isu ikon desk (diparkir)
