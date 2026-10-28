@@ -33,12 +33,14 @@ Diperbarui: 28 Oktober 2026
 | K-26 | `HRIS Device` lengkap: mode koneksi (Pull IP / Push ADMS), IP, port (default 4370), model, firmware; serial wajib dan unik; Comm Key per mesin | 2026-10-28 | Diterapkan |
 | K-27 | Role tambahan untuk input data karyawan (nama usulan: `HRIS Employee Admin`) | 2026-10-28 | Disetujui, belum dibuat |
 | K-28 | Zona waktu site kerja: Asia/Jakarta (WIB), agar audit trail berwaktu WIB | 2026-10-28 | Diterapkan |
+| K-29 | `Department` tetap master ERPNext (modul Setup), dipakai lewat `Employee.department`; HRIS tidak membuat Department sendiri; field `department` di HRIS Employee Group opsional. Audit tab dipasang di semua DocType HRIS (Raw Log tetap). HRIS Holiday punya centang "Berlaku untuk Semua Company" | 2026-10-28 | Diterapkan |
+| K-30 | Tidak ada penomoran hash di DocType HRIS; penomoran memuat YYMM dengan format `PREFIX-YYMM-NNNN`. Holiday `HOL-YYMM-NNNN` (4 digit), YYMM dari tanggal dibuat; data lama bernomor hash dihapus manual, tidak di-rename. Pengecualian: HRIS Raw Log (nama = kunci anti-duplikat), DocType bernama dari field nama, dan tabel anak | 2026-10-28 | Diterapkan (Holiday, 22126c0) |
 
 ## Belum diputuskan
 - Nama merek dan lisensi final (implikasi GPLv3 ERPNext/HRMS perlu diverifikasi).
 - Jalur data mesin (ADMS/push, agen Windows via SDK, pull lewat IP); diparkir sampai menu ADMS, model, dan firmware mesin dicek.
-- Penentuan shift: jadwal per hari atau deteksi otomatis (ada shift lintas tengah malam; security 3 atau 4 shift); model grup karyawan (N1).
-- Cuti, izin, hari libur; aturan "pinjam karyawan"; aturan lembur dan insentif; komponen gaji spesifik.
+- Penentuan shift: HRIS Shift dan HRIS Employee Group (jadwal mingguan) sudah ada; rotasi dan Shift Assignment (Bagian B), jadwal per hari atau deteksi otomatis, serta shift lintas tengah malam untuk security 3 atau 4 shift belum.
+- Cuti dan izin; aturan "pinjam karyawan"; aturan lembur dan insentif; komponen gaji spesifik.
 - Akuntansi gaji: jurnal otomatis ke ERPNext atau cukup laporan.
 - Apakah `hrms` tetap `required_apps` jika hanya Employee yang dipakai.
 - Pemetaan `verify_mode` (jari/wajah) dan arti "no akun" dan "no induk" di Raw Log.
@@ -46,4 +48,4 @@ Diperbarui: 28 Oktober 2026
 - Satu atau dua bench untuk production; nasib site uji lama.
 - Navigasi: Sidebar modul dan Dock (usulan), bukan Desktop Icon.
 
-Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md).
+Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
