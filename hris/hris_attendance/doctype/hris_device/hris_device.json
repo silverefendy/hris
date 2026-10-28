@@ -6,6 +6,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "details_tab",
   "company",
   "device_name",
   "location",
@@ -21,9 +22,16 @@
   "device_model",
   "firmware_version",
   "section_security",
-  "comm_key"
+  "comm_key",
+  "audit_trail_tab",
+  "audit_trail_html"
  ],
  "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
   {
    "fieldname": "company",
    "fieldtype": "Link",
@@ -123,11 +131,22 @@
    "fieldname": "comm_key",
    "fieldtype": "Password",
    "label": "Comm Key"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
   }
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 05:00:58.218741",
+ "modified": "2026-10-28 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Device",

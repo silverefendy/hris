@@ -268,3 +268,11 @@ required_apps = ["frappe", "erpnext", "hrms"]
 
 after_install = "hris.setup.install.after_install"
 after_migrate = ["hris.setup.install.after_migrate"]
+
+doc_events = {
+	"Employee": {
+		"validate": "hris.hris_attendance.services.employee_group.validate_employee_group",
+	},
+}
+
+app_include_js = "/assets/hris/js/hris_audit_trail.js"

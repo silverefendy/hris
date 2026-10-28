@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "creation": "2026-10-28 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "day_from",
+  "day_to",
+  "shift",
+  "is_required"
+ ],
+ "fields": [
+  {"columns": 2, "fieldname": "day_from", "fieldtype": "Select", "in_list_view": 1, "label": "Dari Hari", "options": "Senin\nSelasa\nRabu\nKamis\nJumat\nSabtu\nMinggu", "reqd": 1},
+  {"columns": 2, "description": "Kosong = hanya satu hari", "fieldname": "day_to", "fieldtype": "Select", "in_list_view": 1, "label": "Sampai Hari", "options": "\nSenin\nSelasa\nRabu\nKamis\nJumat\nSabtu\nMinggu"},
+  {"columns": 4, "description": "Kosong = libur", "fieldname": "shift", "fieldtype": "Link", "in_list_view": 1, "label": "Shift", "options": "HRIS Shift"},
+  {"columns": 2, "default": "1", "fieldname": "is_required", "fieldtype": "Check", "in_list_view": 1, "label": "Wajib Hadir"}
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-28 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Employee Group Day",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

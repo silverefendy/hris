@@ -1,0 +1,138 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-10-28 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "holiday_date",
+  "holiday_name",
+  "column_break_1",
+  "holiday_type",
+  "applies_to_all_companies",
+  "company",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "holiday_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Tanggal",
+   "reqd": 1
+  },
+  {
+   "fieldname": "holiday_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nama Hari Libur",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Nasional",
+   "fieldname": "holiday_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Jenis",
+   "options": "Nasional\nCuti Bersama\nKhusus Perusahaan",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "description": "Aktifkan untuk libur nasional. Matikan untuk libur khusus satu company.",
+   "fieldname": "applies_to_all_companies",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Berlaku untuk Semua Company"
+  },
+  {
+   "description": "Diisi hanya bila tidak berlaku untuk semua company.",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "depends_on": "eval:!doc.applies_to_all_companies"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-28 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Holiday",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Attendance Supervisor"
+  },
+  {
+   "read": 1,
+   "role": "HRIS Attendance Operator"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "holiday_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "holiday_name",
+ "track_changes": 1
+}

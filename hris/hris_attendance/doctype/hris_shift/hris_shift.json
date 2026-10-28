@@ -1,0 +1,199 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:shift_name",
+ "creation": "2026-10-28 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "shift_name",
+  "company",
+  "is_active",
+  "column_break_1",
+  "start_time",
+  "end_time",
+  "crosses_midnight",
+  "duration_minutes",
+  "tolerance_section",
+  "late_tolerance_min",
+  "early_leave_tolerance_min",
+  "column_break_2",
+  "window_before_min",
+  "window_after_min",
+  "break_minutes",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "shift_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nama Shift",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Aktif"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Jam Mulai",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Jam Selesai",
+   "reqd": 1
+  },
+  {
+   "fieldname": "crosses_midnight",
+   "fieldtype": "Check",
+   "label": "Lintas Tengah Malam",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "duration_minutes",
+   "fieldtype": "Int",
+   "label": "Durasi (menit)",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "tolerance_section",
+   "fieldtype": "Section Break",
+   "label": "Toleransi dan Jendela Tempel"
+  },
+  {
+   "default": "0",
+   "fieldname": "late_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Telat (menit)"
+  },
+  {
+   "default": "0",
+   "fieldname": "early_leave_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Pulang Cepat (menit)"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "120",
+   "description": "Tempelan masuk dianggap milik shift ini mulai X menit sebelum jam mulai.",
+   "fieldname": "window_before_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sebelum Mulai (menit)"
+  },
+  {
+   "default": "240",
+   "description": "Tempelan pulang dianggap milik shift ini sampai X menit setelah jam selesai. Ini juga batas lembur.",
+   "fieldname": "window_after_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sesudah Selesai (menit)"
+  },
+  {
+   "default": "0",
+   "fieldname": "break_minutes",
+   "fieldtype": "Int",
+   "label": "Istirahat (menit)"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-28 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Shift",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Attendance Supervisor"
+  },
+  {
+   "read": 1,
+   "role": "HRIS Attendance Operator"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
