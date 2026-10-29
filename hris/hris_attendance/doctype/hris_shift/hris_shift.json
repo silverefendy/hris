@@ -144,10 +144,10 @@
   },
   {
    "default": "30",
-   "description": "Selisih pulang dan jam selesai di bawah angka ini tidak dihitung lembur.",
+   "description": "Lembur dihitung per kelipatan angka ini, dibulatkan ke bawah, dari jam selesai. Selisih di bawah angka ini = 0. Contoh 30: pulang 17:35 (jam selesai 17:00) = 30 menit; 18:01 = 60 menit.",
    "fieldname": "overtime_min_minutes",
    "fieldtype": "Int",
-   "label": "Lembur Minimal (menit)"
+   "label": "Lembur Minimal dan Kelipatan (menit)"
   },
   {
    "default": "0",
@@ -188,7 +188,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-29 06:42:05.496601",
+ "modified": "2026-10-29 07:04:19.206000",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Shift",

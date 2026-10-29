@@ -99,7 +99,7 @@ def get_schedule_for_date(employee, date):
 					delta = date_diff(day, group.rotation_start_date)
 					if delta >= 0:
 						rotation = frappe.get_doc("HRIS Shift Rotation", group.rotation)
-						if rotation.pattern:
+						if rotation.is_active and rotation.pattern:
 							row = rotation.pattern[delta % len(rotation.pattern)]
 							result.update({
 								"source": "Rotasi",

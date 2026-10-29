@@ -1,0 +1,573 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-10-29 07:04:19.127474",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_tab",
+  "identity_section",
+  "employee",
+  "employee_name",
+  "company",
+  "identity_break",
+  "work_date",
+  "unique_key",
+  "emp_copy_section",
+  "employee_group",
+  "department",
+  "emp_copy_break",
+  "borrowed_for_group",
+  "schedule_section",
+  "schedule_source",
+  "shift",
+  "schedule_break",
+  "is_holiday",
+  "rules_section",
+  "shift_start",
+  "shift_end",
+  "crosses_midnight",
+  "break_minutes",
+  "scheduled_minutes",
+  "late_tolerance_min",
+  "early_leave_tolerance_min",
+  "rules_break",
+  "window_before_min",
+  "late_limit_min",
+  "window_after_min",
+  "min_out_after_in_min",
+  "overtime_min_minutes",
+  "deduction_block_min",
+  "deduction_hours_per_block",
+  "punch_section",
+  "check_in",
+  "check_out",
+  "punch_break",
+  "check_in_log",
+  "check_out_log",
+  "punch_count",
+  "result_section",
+  "status",
+  "late_minutes",
+  "early_leave_minutes",
+  "late_deduction_hours",
+  "early_leave_deduction_hours",
+  "result_break",
+  "scheduled_hours",
+  "effective_hours",
+  "overtime_minutes",
+  "has_overtime",
+  "overtime_type",
+  "review_section",
+  "needs_review",
+  "review_reason",
+  "review_status",
+  "review_break",
+  "review_note",
+  "reviewed_by",
+  "reviewed_on",
+  "adjust_section",
+  "adjustment_hours",
+  "adjustment_reason",
+  "adjust_break",
+  "final_effective_hours",
+  "trace_section",
+  "calculated_on",
+  "trace_break",
+  "calculated_by",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "identity_section",
+   "fieldtype": "Section Break",
+   "label": "Identitas"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Karyawan",
+   "options": "Employee",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nama Karyawan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "identity_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "work_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Tanggal Kerja",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "unique_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Kunci Unik",
+   "no_copy": 1,
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "emp_copy_section",
+   "fieldtype": "Section Break",
+   "label": "Salinan Data Karyawan"
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Grup",
+   "options": "HRIS Employee Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "emp_copy_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "borrowed_for_group",
+   "fieldtype": "Link",
+   "label": "Dipinjam untuk Grup",
+   "options": "HRIS Employee Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "schedule_section",
+   "fieldtype": "Section Break",
+   "label": "Jadwal"
+  },
+  {
+   "fieldname": "schedule_source",
+   "fieldtype": "Select",
+   "label": "Sumber Jadwal",
+   "options": "\nShift Assignment\nRotasi\nJadwal Mingguan\nTidak Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Shift",
+   "options": "HRIS Shift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "schedule_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_holiday",
+   "fieldtype": "Check",
+   "label": "Hari Libur",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rules_section",
+   "fieldtype": "Section Break",
+   "label": "Salinan Aturan Shift"
+  },
+  {
+   "fieldname": "shift_start",
+   "fieldtype": "Time",
+   "label": "Jam Mulai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_end",
+   "fieldtype": "Time",
+   "label": "Jam Selesai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "crosses_midnight",
+   "fieldtype": "Check",
+   "label": "Lintas Tengah Malam",
+   "read_only": 1
+  },
+  {
+   "fieldname": "break_minutes",
+   "fieldtype": "Int",
+   "label": "Istirahat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scheduled_minutes",
+   "fieldtype": "Int",
+   "label": "Menit Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "late_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Telat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "early_leave_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Pulang Cepat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rules_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "window_before_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sebelum Mulai (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "late_limit_min",
+   "fieldtype": "Int",
+   "label": "Batas Terlambat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "window_after_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sesudah Selesai (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "min_out_after_in_min",
+   "fieldtype": "Int",
+   "label": "Jarak Minimum Masuk ke Pulang (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_min_minutes",
+   "fieldtype": "Int",
+   "label": "Lembur Minimal dan Kelipatan (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deduction_block_min",
+   "fieldtype": "Int",
+   "label": "Blok Potongan (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deduction_hours_per_block",
+   "fieldtype": "Float",
+   "label": "Jam Dipotong per Blok",
+   "read_only": 1
+  },
+  {
+   "fieldname": "punch_section",
+   "fieldtype": "Section Break",
+   "label": "Punch"
+  },
+  {
+   "fieldname": "check_in",
+   "fieldtype": "Datetime",
+   "label": "Masuk",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out",
+   "fieldtype": "Datetime",
+   "label": "Pulang",
+   "read_only": 1
+  },
+  {
+   "fieldname": "punch_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "check_in_log",
+   "fieldtype": "Link",
+   "label": "Raw Log Masuk",
+   "options": "HRIS Raw Log",
+   "read_only": 1
+  },
+  {
+   "fieldname": "check_out_log",
+   "fieldtype": "Link",
+   "label": "Raw Log Pulang",
+   "options": "HRIS Raw Log",
+   "read_only": 1
+  },
+  {
+   "fieldname": "punch_count",
+   "fieldtype": "Int",
+   "label": "Jumlah Punch",
+   "read_only": 1
+  },
+  {
+   "fieldname": "result_section",
+   "fieldtype": "Section Break",
+   "label": "Hasil Hitung"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nHadir\nTidak Lengkap\nTidak Hadir\nLibur\nTidak Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "late_minutes",
+   "fieldtype": "Int",
+   "label": "Menit Telat",
+   "read_only": 1
+  },
+  {
+   "fieldname": "early_leave_minutes",
+   "fieldtype": "Int",
+   "label": "Menit Pulang Cepat",
+   "read_only": 1
+  },
+  {
+   "fieldname": "late_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Potongan Telat (jam)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "early_leave_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Potongan Pulang Cepat (jam)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "result_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scheduled_hours",
+   "fieldtype": "Float",
+   "label": "Jam Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "effective_hours",
+   "fieldtype": "Float",
+   "label": "Jam Efektif",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_minutes",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Menit Lembur",
+   "read_only": 1
+  },
+  {
+   "fieldname": "has_overtime",
+   "fieldtype": "Check",
+   "label": "Ada Lembur",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_type",
+   "fieldtype": "Select",
+   "label": "Jenis Lembur",
+   "options": "\nHari Kerja\nHari Libur",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_section",
+   "fieldtype": "Section Break",
+   "label": "Tinjauan HRD"
+  },
+  {
+   "fieldname": "needs_review",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Perlu Tinjauan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "review_reason",
+   "fieldtype": "Small Text",
+   "label": "Alasan Tinjauan",
+   "read_only": 1
+  },
+  {
+   "default": "Tidak Perlu",
+   "fieldname": "review_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status Tinjauan",
+   "options": "Tidak Perlu\nMenunggu\nSudah Ditinjau"
+  },
+  {
+   "fieldname": "review_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "review_note",
+   "fieldtype": "Small Text",
+   "label": "Catatan Tinjauan"
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Ditinjau Oleh",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewed_on",
+   "fieldtype": "Datetime",
+   "label": "Ditinjau Pada",
+   "read_only": 1
+  },
+  {
+   "fieldname": "adjust_section",
+   "fieldtype": "Section Break",
+   "label": "Penyesuaian HRD"
+  },
+  {
+   "default": "0",
+   "description": "Positif menambah, negatif mengurangi jam efektif. Alasan wajib bila diisi.",
+   "fieldname": "adjustment_hours",
+   "fieldtype": "Float",
+   "label": "Penyesuaian (jam)"
+  },
+  {
+   "fieldname": "adjustment_reason",
+   "fieldtype": "Small Text",
+   "label": "Alasan Penyesuaian"
+  },
+  {
+   "fieldname": "adjust_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "final_effective_hours",
+   "fieldtype": "Float",
+   "label": "Jam Efektif Akhir",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trace_section",
+   "fieldtype": "Section Break",
+   "label": "Jejak Perhitungan"
+  },
+  {
+   "fieldname": "calculated_on",
+   "fieldtype": "Datetime",
+   "label": "Dihitung Pada",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trace_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "calculated_by",
+   "fieldtype": "Link",
+   "label": "Dihitung Oleh",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:!doc.__islocal",
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-29 07:04:19.127474",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Working Hour",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Manager",
+   "write": 1
+  },
+  {
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Attendance Supervisor"
+  },
+  {
+   "read": 1,
+   "role": "HRIS Attendance Operator"
+  }
+ ],
+ "row_format": "Dynamic",
+ "search_fields": "employee_name,work_date,shift",
+ "sort_field": "work_date",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "employee_name",
+ "track_changes": 1
+}
