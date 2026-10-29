@@ -20,8 +20,14 @@
   "early_leave_tolerance_min",
   "column_break_2",
   "window_before_min",
+  "late_limit_min",
   "window_after_min",
+  "min_out_after_in_min",
+  "overtime_min_minutes",
   "break_minutes",
+  "deduction_section",
+  "deduction_block_min",
+  "deduction_hours_per_block",
   "audit_trail_tab",
   "audit_trail_html"
  ],
@@ -117,16 +123,56 @@
   },
   {
    "default": "240",
+   "description": "Tempelan masuk sampai batas ini (menit setelah jam mulai) masih dianggap masuk. Setelahnya bukan lagi masuk.",
+   "fieldname": "late_limit_min",
+   "fieldtype": "Int",
+   "label": "Batas Terlambat (menit setelah mulai)"
+  },
+  {
+   "default": "240",
    "description": "Tempelan pulang dianggap milik shift ini sampai X menit setelah jam selesai. Ini juga batas lembur.",
    "fieldname": "window_after_min",
    "fieldtype": "Int",
    "label": "Jendela Sesudah Selesai (menit)"
   },
   {
+   "default": "60",
+   "description": "Punch pulang harus minimal X menit setelah punch masuk. Punch yang lebih dekat dianggap scan dobel dan diabaikan.",
+   "fieldname": "min_out_after_in_min",
+   "fieldtype": "Int",
+   "label": "Jarak Minimum Masuk ke Pulang (menit)"
+  },
+  {
+   "default": "30",
+   "description": "Selisih pulang dan jam selesai di bawah angka ini tidak dihitung lembur.",
+   "fieldname": "overtime_min_minutes",
+   "fieldtype": "Int",
+   "label": "Lembur Minimal (menit)"
+  },
+  {
    "default": "0",
    "fieldname": "break_minutes",
    "fieldtype": "Int",
    "label": "Istirahat (menit)"
+  },
+  {
+   "fieldname": "deduction_section",
+   "fieldtype": "Section Break",
+   "label": "Potongan Telat dan Pulang Cepat"
+  },
+  {
+   "default": "60",
+   "description": "Telat atau pulang cepat dibulatkan ke atas per blok ini.",
+   "fieldname": "deduction_block_min",
+   "fieldtype": "Int",
+   "label": "Blok Potongan (menit)"
+  },
+  {
+   "default": "1",
+   "description": "Jam kerja yang dipotong untuk setiap blok.",
+   "fieldname": "deduction_hours_per_block",
+   "fieldtype": "Float",
+   "label": "Jam Dipotong per Blok"
   },
   {
    "depends_on": "eval:!doc.__islocal",
@@ -142,7 +188,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 17:00:00.000000",
+ "modified": "2026-10-29 06:42:05.496601",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Shift",

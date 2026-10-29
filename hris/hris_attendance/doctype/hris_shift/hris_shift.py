@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import get_time
+from frappe.utils import flt, get_time
 
 
 def _minutes(value):
@@ -15,6 +15,8 @@ class HRISShift(Document):
 		self.round_seconds()
 		self.validate_times()
 		self.validate_numbers()
+		self.validate_out_rules()
+		self.validate_deduction()
 
 	def round_seconds(self):
 		# Field Time menerima detik; shift hanya dihitung sampai menit.
@@ -41,6 +43,9 @@ class HRISShift(Document):
 			"early_leave_tolerance_min": "Toleransi Pulang Cepat",
 			"window_before_min": "Jendela Sebelum Mulai",
 			"window_after_min": "Jendela Sesudah Selesai",
+			"late_limit_min": "Batas Terlambat",
+			"min_out_after_in_min": "Jarak Minimum Masuk ke Pulang",
+			"overtime_min_minutes": "Lembur Minimal",
 			"break_minutes": "Istirahat",
 		}
 		for fieldname, label in labels.items():
@@ -49,3 +54,29 @@ class HRISShift(Document):
 		duration = self.duration_minutes or 0
 		if duration and (self.break_minutes or 0) >= duration:
 			frappe.throw(_("Istirahat harus lebih kecil dari durasi shift."))
+
+	def validate_out_rules(self):
+		# K-36 (revisi): pulang = punch minimal X menit setelah masuk, sampai batas lembur.
+		duration = self.duration_minutes or 0
+		min_out = self.min_out_after_in_min or 0
+		if duration and min_out >= duration:
+			frappe.throw(
+				_("Jarak Minimum Masuk ke Pulang ({0} menit) harus lebih kecil dari durasi shift ({1} menit).").format(
+					min_out, duration
+				)
+			)
+		window_after = self.window_after_min or 0
+		overtime_min = self.overtime_min_minutes or 0
+		if overtime_min > window_after:
+			frappe.throw(
+				_("Lembur Minimal ({0} menit) tidak boleh melebihi Jendela Sesudah Selesai ({1} menit).").format(
+					overtime_min, window_after
+				)
+			)
+
+	def validate_deduction(self):
+		# K-37: potongan dihitung per blok menit, kelipatan jam.
+		if (self.deduction_block_min or 0) <= 0:
+			frappe.throw(_("Blok Potongan harus lebih dari 0 menit."))
+		if flt(self.deduction_hours_per_block) < 0:
+			frappe.throw(_("Jam Dipotong per Blok tidak boleh negatif."))
