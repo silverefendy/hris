@@ -13,6 +13,8 @@ Diperbarui: 29 Oktober 2026 (pagi)
 - Belum ada koneksi ke mesin; jalur data diparkir. Log hanya bisa masuk manual atau lewat skrip.
 - Site kerja belum production dan belum punya karyawan Active; uji otomatis membuat karyawan sementara lalu rollback.
 - Data di site (cek 29 Okt): 1 Company, 4 HRIS Shift (Lapangan Senin - Kamis, Lapangan Sabtu, Lapangan Jumat, Malam lintas tengah malam), 2 HRIS Employee Group, 1 HRIS Shift Rotation, 1 HRIS Holiday, 0 Employee, 0 Shift Assignment. Sebagian adalah sisa uji (lihat Tertunda).
+- Data contoh `ZZ-UJI` (4 karyawan, 1 rotasi, 1 grup rotasi) dibuat lewat skrip pada 29 Okt lalu dihapus otomatis; pemeriksaan sisa: semua 0, total Employee 0, grup nyata `Lapangan Harian` tetap ada.
+- Jadwal mingguan grup nyata `Lapangan Harian` (dari keluaran skrip 29 Okt): Senin sampai Kamis shift `Lapangan Senin - Kamis`, Jumat shift `Lapangan Jumat`, Sabtu shift `Lapangan Sabtu`, dan Minggu shift `Malam` (wajib). Baris Minggu belum dikonfirmasi disengaja atau sisa uji (lihat Tertunda).
 - Kode terbaru sudah di-push ke `origin main` (fd8b082 rotasi, 27947d5 tipe jadwal grup, 4fcb41b Shift Assignment dan service jadwal, efd88fa perbaikan Employee Group dan penguncian rotasi).
 
 ## Selesai
@@ -33,11 +35,14 @@ Diperbarui: 29 Oktober 2026 (pagi)
 | Uji skrip Shift Assignment dan jadwal | 20 pemeriksaan lolos (rotasi, mingguan, assignment, 4 penolakan, libur, audit), di-rollback |
 | Perbaikan temuan pembacaan kode (efd88fa) | Teruji skrip konsol dan browser, lihat bagian Temuan |
 | Zona waktu | Asia/Jakarta |
+| Data awal contoh `ZZ-UJI` (29 Okt) | Skrip pembuat dan pembersih lolos. Jadwal 7 hari (29 Okt sampai 4 Nov) sesuai harapan: grup mingguan bersumber `Jadwal Mingguan`; grup rotasi (Malam, Malam, Libur, Libur mulai 29 Okt) bersumber `Rotasi` dengan shift Malam pada 29, 30 Okt, 2, 3 Nov dan libur pada 31 Okt, 1 Nov, 4 Nov |
+| Uji browser Shift Assignment (29 Okt) | Langkah 1 sampai 6 lolos: simpan (`SAS-2610-0001`, karyawan `HR-EMP-00001`, 30 sampai 31 Okt); tumpang tindih ditolak dengan pesan menyebut assignment yang bentrok; alasan kosong ditolak (pesan field wajib); tanggal sampai sebelum tanggal dari ditolak; nonaktif lalu simpan ulang berhasil; tab Audit Trail mencatat Aktif 1 menjadi 0 dan pembuatan dokumen |
+| Server di `da94503` | Efendy sudah `git pull origin main` (29 Okt) |
 
 ## Belum teruji
-- Form `HRIS Shift Assignment` di browser (8 langkah uji; ditunda sampai ada karyawan Active).
-- Rotasi dengan shift lintas tengah malam pada data nyata (security).
-- `shift_schedule` dengan karyawan dan grup nyata, serta pemanggilan `get_employee_schedule` dari browser.
+- Form `HRIS Shift Assignment` di browser: langkah 7 (field "Dipinjam untuk Grup") dan pemeriksaan `get_employee_schedule` dari konsol browser belum dilaporkan hasilnya.
+- Rotasi dengan shift lintas tengah malam pada data nyata (security). Jadwal rotasi shift Malam sudah teruji dengan karyawan contoh; perhitungan jam kerja belum ada.
+- `shift_schedule` dengan karyawan dan grup nyata. Dengan karyawan contoh sudah teruji lewat skrip.
 - Pencocokan Employee dengan karyawan nyata.
 - Pengguna non-editor (Operator): penguncian form.
 - Log berstatus Terkirim terkunci di form.
@@ -58,8 +63,9 @@ Temuan baru dari pengecekan: `HRIS Shift` belum punya kunci nonaktif maupun kunc
 ## Tertunda
 | Item | Catatan |
 |---|---|
-| Data awal contoh | Disetujui: karyawan contoh lewat skrip, masing-masing 2 untuk grup mingguan dan grup rotasi, dihapus otomatis setelah uji (nomor `HR-EMP` boleh maju; dapat disesuaikan untuk data asli). Rancangan isi data menunggu persetujuan |
-| Pembersihan sisa uji (manual) | Holiday "Merdeka" bernomor hash lama (input ulang agar bernomor `HOL-YYMM-NNNN`), grup "Uji Rotasi", rotasi "Rotasi Baru" |
+| Pembersihan sisa uji (manual) | Holiday "Merdeka" bernomor hash lama (input ulang agar bernomor `HOL-YYMM-NNNN`), grup "Uji Rotasi", rotasi "Rotasi Baru". Urutan hapus: grup, rotasi, Holiday |
+| Baris Minggu di grup `Lapangan Harian` | Jadwal mingguan memuat Minggu = shift `Malam` (wajib). Perlu dipastikan Efendy: disengaja atau sisa uji. Bila sisa uji, hapus barisnya lewat form |
+| Penomoran `SAS` dan `HR-EMP` setelah uji | `HR-EMP` maju (counter 4 pada `tabSeries`, diterima). Pada pengecekan `tabSeries` 29 Okt tidak ada baris untuk `SAS-`; penyebabnya belum diketahui dan tidak ada tindakan yang diminta. Format `YYMM` memisahkan counter per bulan |
 | Report "HRIS Audit Trail" | Ditunda atas permintaan Efendy |
 | Jalur data mesin | Cek menu ADMS dan model/firmware mesin lebih dulu |
 | Pemetaan `verify_mode` | Menunggu jalur data dan uji mesin |
@@ -72,8 +78,8 @@ Temuan baru dari pengecekan: `HRIS Shift` belum punya kunci nonaktif maupun kunc
 | Isu ikon desk | Diparkir (lihat `operations/environment.md`) |
 
 ## Langkah berikutnya
-1. Rancang data awal contoh (tanpa kode), setujui, lalu skrip pembuat dan pembersih karyawan contoh.
-2. Uji browser Shift Assignment dengan karyawan contoh.
+1. Pastikan baris Minggu di `Lapangan Harian`, lalu hapus manual tiga sisa uji dan input ulang libur 17 Agustus 2027.
+2. Laporkan langkah 7 uji browser dan pemeriksaan `get_employee_schedule` bila masih ingin dicatat.
 3. Diskusi rancangan working hour: jam kerja dari Raw Log dan jadwal, jendela tempel, punch ganda, telat/lembur, shift lintas tengah malam, dan nasib `HRIS Shift` yang dipakai.
 4. Cek menu ADMS, model, dan firmware pada mesin (penentu jalur data).
 5. Terapkan CI ke `main`; putuskan lisensi dan nama merek.

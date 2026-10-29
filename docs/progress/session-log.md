@@ -64,3 +64,15 @@
   - Mengganti nama Section Break aman karena tidak punya kolom di database.
 - Keputusan: karyawan contoh dibuat lewat skrip dan dihapus otomatis setelah uji.
 - Belum: rancangan dan skrip data awal contoh, uji browser Shift Assignment, working hour, jalur data mesin.
+
+## 2026-10-29 (sesi lanjutan: data contoh dan uji browser Shift Assignment)
+- Skrip data contoh `ZZ-UJI` (`/tmp/hris_demo_run.sh`, di luar repo) dijalankan: membuat rotasi `ZZ-UJI Rotasi 4 Hari` (Malam, Malam, Libur, Libur), grup `ZZ-UJI Security` (tipe Rotasi, mulai 2026-10-29), dan 4 karyawan (`HR-EMP-00001` sampai `00004`), mencetak jadwal 7 hari, menunggu Enter, lalu membersihkan. Pemeriksaan awal, jadwal, dan pembersihan lolos; sisa `ZZ-UJI` 0 dan total Employee 0.
+- Jadwal terverifikasi: karyawan grup `Lapangan Harian` bersumber `Jadwal Mingguan`; karyawan grup rotasi bersumber `Rotasi` (Malam pada 29, 30 Okt, 2, 3 Nov; libur 31 Okt, 1 Nov, 4 Nov).
+- Temuan data: jadwal mingguan `Lapangan Harian` memuat baris Minggu = shift `Malam` (wajib), sehingga Minggu tercetak "masuk: ya". Belum dikonfirmasi disengaja atau sisa uji.
+- Uji browser `HRIS Shift Assignment` langkah 1 sampai 6 lolos (simpan `SAS-2610-0001`; tumpang tindih, alasan kosong, dan tanggal terbalik ditolak; nonaktifkan lalu simpan ulang berhasil; tab Audit Trail mencatat Aktif 1 menjadi 0 dan pembuatan dokumen). Langkah 7 ("Dipinjam untuk Grup") dan pemeriksaan `get_employee_schedule` dari konsol browser belum dilaporkan.
+- Pengecekan `tabSeries` (baca-saja): hanya `HR-EMP-` dengan counter 4; tidak ada baris `SAS-`. Penyebabnya belum diketahui; tidak ada tindakan yang diminta.
+- Efendy sudah `git pull origin main` (server di `da94503`).
+- Pelajaran:
+  - `bench console` yang dialirkan lewat pipa tidak bisa membaca input; penantian Enter dilakukan di skrip bash, bukan di Python. Pembersih dipasang lewat `trap` sehingga tetap jalan saat Ctrl+C atau terminal terputus.
+  - Skrip uji memakai tanggal tetap (29 Okt 2026), bukan tanggal sistem, karena jam OS server tampaknya UTC.
+- Belum: konfirmasi baris Minggu `Lapangan Harian`, pembersihan manual tiga sisa uji lama, rancangan working hour, jalur data mesin.
