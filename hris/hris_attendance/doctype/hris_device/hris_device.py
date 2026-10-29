@@ -17,11 +17,11 @@ class HRISDevice(Document):
 	def validate_network(self):
 		host = (self.ip_address or "").strip()
 		self.ip_address = host
-		if self.connection_mode == "Pull (IP)":
+		if self.connection_mode == "Pull (IP)" or self.use_pull:
 			if not host:
-				frappe.throw(_("IP Address / hostname wajib diisi untuk mode Pull (IP)."))
+				frappe.throw(_("IP Address / hostname wajib diisi untuk mode Pull (IP) atau jalur Via Pull (pyzk)."))
 			if not self.port:
-				frappe.throw(_("Port wajib diisi untuk mode Pull (IP)."))
+				frappe.throw(_("Port wajib diisi untuk mode Pull (IP) atau jalur Via Pull (pyzk)."))
 		if host:
 			looks_numeric = re.fullmatch(r"[\d.]+", host)
 			try:

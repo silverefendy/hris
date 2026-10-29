@@ -14,6 +14,7 @@
   "punch_time",
   "verify_mode",
   "punch_status_raw",
+  "source",
   "section_employee",
   "employee",
   "employee_name",
@@ -28,6 +29,8 @@
   "review_note",
   "section_change",
   "change_reason",
+  "section_raw",
+  "raw_payload",
   "tab_audit",
   "audit_trail_html"
  ],
@@ -90,6 +93,15 @@
    "fieldname": "punch_status_raw",
    "fieldtype": "Data",
    "label": "Punch Status (Raw)"
+  },
+  {
+   "description": "Jalur masuknya log. Diisi sistem saat log dibuat dan tidak dapat diubah.",
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Source",
+   "options": "\nAgen Windows\nPull pyzk\nImpor File",
+   "set_only_once": 1
   },
   {
    "fieldname": "section_employee",
@@ -177,6 +189,20 @@
    "label": "Change Reason"
   },
   {
+   "collapsible": 1,
+   "fieldname": "section_raw",
+   "fieldtype": "Section Break",
+   "label": "Raw Payload"
+  },
+  {
+   "description": "Data mentah dari sumber. Diisi sistem saat log dibuat dan tidak dapat diubah.",
+   "fieldname": "raw_payload",
+   "fieldtype": "Long Text",
+   "label": "Raw Payload",
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
    "depends_on": "eval:!doc.__islocal",
    "fieldname": "tab_audit",
    "fieldtype": "Tab Break",
@@ -190,7 +216,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 05:54:45.555197",
+ "modified": "2026-10-29 23:41:32.464494",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Raw Log",

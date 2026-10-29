@@ -21,6 +21,12 @@
   "column_break_2",
   "device_model",
   "firmware_version",
+  "section_channels",
+  "use_agent",
+  "use_pull",
+  "column_break_3",
+  "last_agent_at",
+  "last_pull_at",
   "section_security",
   "comm_key",
   "audit_trail_tab",
@@ -98,14 +104,14 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "IP Address / Hostname",
-   "mandatory_depends_on": "eval:doc.connection_mode=='Pull (IP)'"
+   "mandatory_depends_on": "eval:doc.connection_mode=='Pull (IP)' || doc.use_pull"
   },
   {
    "default": "4370",
    "fieldname": "port",
    "fieldtype": "Int",
    "label": "Port",
-   "mandatory_depends_on": "eval:doc.connection_mode=='Pull (IP)'"
+   "mandatory_depends_on": "eval:doc.connection_mode=='Pull (IP)' || doc.use_pull"
   },
   {
    "fieldname": "column_break_2",
@@ -120,6 +126,45 @@
    "fieldname": "firmware_version",
    "fieldtype": "Data",
    "label": "Firmware Version"
+  },
+  {
+   "fieldname": "section_channels",
+   "fieldtype": "Section Break",
+   "label": "Data Channels"
+  },
+  {
+   "default": "0",
+   "description": "Mesin ini dilayani agen Windows (middleware) yang mengirim log ke HRIS.",
+   "fieldname": "use_agent",
+   "fieldtype": "Check",
+   "label": "Via Windows Agent"
+  },
+  {
+   "default": "0",
+   "description": "Server HRIS boleh menarik log langsung lewat IP dan port (pyzk). IP dan port wajib diisi.",
+   "fieldname": "use_pull",
+   "fieldtype": "Check",
+   "label": "Via Pull (pyzk)"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Waktu kiriman terakhir dari agen. Diisi sistem.",
+   "fieldname": "last_agent_at",
+   "fieldtype": "Datetime",
+   "label": "Last Agent Sync",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "description": "Waktu pull terakhir yang berhasil. Diisi sistem.",
+   "fieldname": "last_pull_at",
+   "fieldtype": "Datetime",
+   "label": "Last Pull",
+   "no_copy": 1,
+   "read_only": 1
   },
   {
    "fieldname": "section_security",
@@ -146,7 +191,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 17:00:00.000000",
+ "modified": "2026-10-29 23:41:32.463921",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Device",
