@@ -138,7 +138,24 @@ hris.wh.open_dialog = function (listview) {
 };
 
 frappe.listview_settings["HRIS Working Hour"] = {
+    add_fields: ["status", "review_status", "needs_review"],
+    get_indicator(doc) {
+        const colors = {
+            "Hadir": "green",
+            "Tidak Lengkap": "orange",
+            "Tidak Hadir": "red",
+            "Libur": "gray",
+            "Tidak Terjadwal": "light-gray",
+        };
+        if (!doc.status || !colors[doc.status]) {
+            return null;
+        }
+        return [__(doc.status), colors[doc.status], "status,=," + doc.status];
+    },
     onload(listview) {
+        listview.page.add_inner_button(__("Perlu Ditinjau"), () => {
+            frappe.set_route("List", "HRIS Working Hour", { review_status: "Menunggu" });
+        });
         if (!frappe.user.has_role(["HRIS HR Admin", "HRIS Manager", "System Manager"])) {
             return;
         }
