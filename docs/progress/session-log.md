@@ -55,39 +55,47 @@
 ## 2026-10-29 (sesi lanjutan: cek dan perbaikan temuan kode)
 - Empat temuan pembacaan kode dicek dulu lewat skrip baca-saja (grep dan konsol) sebelum diperbaiki. Hasil: nama field `schedule_section` ganda terbukti di JSON, meta, dan `tabDocField` (hanya di Employee Group; label section kedua menimpa yang pertama); `get_shift_for_weekday` tanpa pemanggil; belum ada data yang terkena temuan 4.
 - Pembacaan controller menemukan celah tambahan: `HRIS Shift Rotation` tidak mengunci status Aktif. Diputuskan K-34 (rotasi tidak boleh dinonaktifkan selama dipakai grup aktif) alih-alih menambal service.
-- Perbaikan (commit efd88fa): section Employee Group diganti nama dan dirapikan, deskripsi `weekly_schedule` diperbarui, `get_shift_for_weekday` dihapus, `validate_deactivation` ditambahkan di rotasi. Backup, migrate, dan clear-cache dalam satu blok lolos; uji konsol lolos (meta tanpa nama ganda, fungsi hilang, rotasi terpakai grup aktif ditolak dan boleh dinonaktifkan setelah grup nonaktif, semua di-rollback); uji browser lolos.
-- Pengecekan `HRIS Shift`: belum ada kunci nonaktif maupun kunci perubahan jam; karena jadwal dihitung saat dibutuhkan, mengubah jam shift mengubah tanggal lampau. Dicatat di "Belum diputuskan", dibahas bersama working hour.
+- Perbaikan (commit efd88fa): section Employee Group diganti nama dan dirapikan, deskripsi `weekly_schedule` diperbarui, `get_shift_for_weekday` dihapus, `validate_deactivation` ditambahkan di rotasi. Backup, migrate, dan clear-cache dalam satu blok lolos; uji konsol lolos; uji browser lolos.
+- Pengecekan `HRIS Shift`: belum ada kunci nonaktif maupun kunci perubahan jam; karena jadwal dihitung saat dibutuhkan, mengubah jam shift mengubah tanggal lampau. Dicatat di "Belum diputuskan".
 - Pelajaran:
   - Cek dulu dengan skrip baca-saja, baru perbaiki; hasil cek mengubah rekomendasi (dari menambal service ke mengunci di rotasi).
   - Patch file `.py` dengan penggantian teks yang di-`assert` dan penulisan ulang JSON utuh lebih aman daripada penyuntingan manual; skrip berhenti bila file target punya perubahan lokal.
   - Jam OS server tampaknya UTC (`date` mencetak 23:29 saat log backup mencatat 06:29 WIB); nilai `modified` pada JSON mengikuti jam OS.
   - Mengganti nama Section Break aman karena tidak punya kolom di database.
 - Keputusan: karyawan contoh dibuat lewat skrip dan dihapus otomatis setelah uji.
-- Belum: rancangan dan skrip data awal contoh, uji browser Shift Assignment, working hour, jalur data mesin.
 
 ## 2026-10-29 (sesi lanjutan: data contoh, uji browser Assignment, rancangan working hour)
-- Skrip data contoh `ZZ-UJI` (`/tmp/hris_demo_run.sh`, di luar repo) dijalankan: membuat rotasi `ZZ-UJI Rotasi 4 Hari` (Malam, Malam, Libur, Libur), grup `ZZ-UJI Security` (tipe Rotasi, mulai 2026-10-29), dan 4 karyawan, mencetak jadwal 7 hari, menunggu Enter, lalu membersihkan. Pemeriksaan awal, jadwal, dan pembersihan lolos.
-- Jadwal terverifikasi: karyawan grup `Lapangan Harian` bersumber `Jadwal Mingguan`; karyawan grup rotasi bersumber `Rotasi` (Malam pada 29, 30 Okt, 2, 3 Nov; libur 31 Okt, 1 Nov, 4 Nov).
-- Temuan data: jadwal mingguan `Lapangan Harian` saat itu memuat baris Minggu = shift `Malam` (wajib). Efendy menyatakan itu hanya percobaan; barisnya kemudian dihapus.
-- Uji browser `HRIS Shift Assignment` langkah 1 sampai 7 lolos (simpan `SAS-2610-0001` dan `SAS-2610-0002`; tumpang tindih, alasan kosong, dan tanggal terbalik ditolak; nonaktifkan lalu simpan ulang berhasil; "Dipinjam untuk Grup" tersimpan; tab Audit Trail mencatat semuanya). Pemanggilan `get_employee_schedule` dari konsol browser belum dilaporkan.
-- Pemeriksaan baca-saja (`/tmp/hris_check.py`, dengan `--site erp.ciptamebel.co.id`) setelah pembersihan: sisa `ZZ-UJI` semua 0, total Employee 0, total Shift Assignment 0, `tabSeries` hanya `HR-EMP-` = 0, label field Link ke `HRIS Shift` = "Shift" (jadi "Sif" yang tampil di form berasal dari terjemahan Indonesia).
-- Koreksi catatan sebelumnya (commit 59b0902): penomoran `HR-EMP` tidak maju, melainkan kembali ke 0 setelah data contoh dihapus (diduga karena Frappe menurunkan counter bila dokumen nomor terakhir dihapus; belum diverifikasi di kode Frappe). Pengecekan `tabSeries` pertama dijalankan tanpa `--site`, sehingga hasilnya (tanpa baris `SAS-`, `HR-EMP-` = 4) tidak konklusif; baris `SAS-` tetap tidak muncul pada pengecekan dengan `--site`, penyebabnya belum diketahui.
-- Efendy sudah `git pull origin main` (server di `da94503`, lalu `379bcef`).
-- Rancangan working hour dibahas dan disetujui (K-35 sampai K-39), kemudian direvisi (bagian berikut).
+- Skrip data contoh `ZZ-UJI` (di luar repo) dijalankan: membuat rotasi, grup rotasi, dan 4 karyawan, mencetak jadwal 7 hari, lalu membersihkan. Jadwal terverifikasi: grup `Lapangan Harian` bersumber `Jadwal Mingguan`; grup rotasi bersumber `Rotasi`.
+- Temuan data: jadwal mingguan `Lapangan Harian` saat itu memuat baris Minggu = shift `Malam` (wajib). Efendy menyatakan itu hanya percobaan; barisnya dihapus.
+- Uji browser `HRIS Shift Assignment` langkah 1 sampai 7 lolos. Pemanggilan `get_employee_schedule` dari konsol browser belum dilaporkan.
+- Pemeriksaan baca-saja setelah pembersihan: sisa `ZZ-UJI` semua 0, total Employee 0, total Shift Assignment 0.
+- Koreksi catatan sebelumnya (59b0902): penomoran `HR-EMP` kembali ke 0 setelah data contoh dihapus (diduga karena Frappe menurunkan counter; belum diverifikasi di kode Frappe).
+- Rancangan working hour dibahas dan disetujui (K-35 sampai K-39), kemudian direvisi.
 - Pelajaran:
-  - `bench console` yang dialirkan lewat pipa tidak bisa membaca input; penantian Enter dilakukan di skrip bash, bukan di Python. Pembersih dipasang lewat `trap` sehingga tetap jalan saat Ctrl+C atau terminal terputus.
-  - Skrip uji memakai tanggal tetap (29 Okt 2026), bukan tanggal sistem, karena jam OS server tampaknya UTC.
+  - `bench console` yang dialirkan lewat pipa tidak bisa membaca input; penantian Enter dilakukan di skrip bash. Pembersih dipasang lewat `trap`.
+  - Skrip uji memakai tanggal tetap, bukan tanggal sistem, karena jam OS server tampaknya UTC.
   - Perintah pemeriksaan selalu memakai `--site`; `bench console` tanpa `--site` bisa membaca site yang tidak dimaksud.
 
 ## 2026-10-29 (sesi lanjutan: HRIS Shift untuk working hour)
-- Pengecekan baca-saja `HRIS Shift` (field, isi shift, controller): sudah ada `late_tolerance_min` dan `early_leave_tolerance_min` (nilai 0), `window_before_min` (120), `window_after_min` (240, juga batas lembur), `break_minutes` (0 di semua shift). Efendy sudah memperbarui daftar shift menjadi 8 shift. Perhitungan nilai bentrok yang saya berikan sebelumnya memakai data lama (4 shift, termasuk `Malam` 22:00 sampai 06:00) sehingga klaim "Malam bentrok pada 240/240" keliru dan sudah dikoreksi: dengan data nyata yang bentrok hanya Kantor Sabtu (420 menit).
-- Skrip pertama (`hris_shift_run.sh`): menambah `late_limit_min`, `early_leave_limit_min`, `deduction_block_min`, `deduction_hours_per_block`, validasi tidak tumpang tindih, dan mengisi 8 shift (Kantor Sabtu 180/180). Lolos: backup (`20261029_125955`), migrate tanpa error, dua uji penolakan.
-- Efendy mengusulkan aturan pulang baru: tanpa jendela awal pulang; pulang = punch minimal 60 menit setelah masuk, dibatasi batas lembur; pulang di luar jam kerja diberi tanda untuk HRD (contoh: masuk 09:00 lupa pulang, esoknya masuk 08:00, jangan tercatat 23 jam; setengah hari permisi pulang). Disetujui bersama: pulang cepat tetap dipotong otomatis lalu HRD menyesuaikan dengan alasan; jarak minimum per shift; istirahat Lapangan sama dengan Kantor (60, 90, 60 menit); istirahat Security nanti.
-- Aturan lembur: minimal 30 menit dan dihitung kelipatan 30 menit, dibulatkan ke bawah (17:30 sampai 17:59 = 30 menit; 18:01 = 60 menit; 17:05 dan 17:29 tidak dihitung). Satu field dipakai untuk minimal sekaligus kelipatan.
-- Skrip kedua (`hris_shift_run2.sh`): menghapus `early_leave_limit_min` dan aturan tumpang tindih, menambah `min_out_after_in_min` (60) dan `overtime_min_minutes` (30), mengisi istirahat, mengembalikan batas terlambat ke 240, validasi baru. Lolos: backup (`20261029_134203`), migrate tanpa error, 8 shift terisi, tiga uji penolakan (jarak minimum 9999, lembur minimal 300, blok 0). Kolom lama `early_leave_limit_min` masih ada di tabel setelah field dihapus dari DocType (terverifikasi dengan `has_column`): Frappe tidak menghapus kolom otomatis. Terjadwal per shift: Kantor Senin - Kamis 480 menit, Kantor Jumat 480, Kantor Sabtu 360, Lapangan Senin - Kamis 495, Lapangan Jumat 495, Lapangan Sabtu 435, Security 720.
-- Penamaan dokumen `HRIS Working Hour`: `WH-YYMMDD-NNNN` (tanggal kerja) dengan `unique_key` unik di database disetujui menggantikan usulan awal berbentuk `HR-EMP-xxxxx-tanggal` (K-40). Punch kurang: status "Tidak Lengkap" (K-41).
+- Pengecekan baca-saja `HRIS Shift`; Efendy memperbarui daftar shift menjadi 8 shift. Perhitungan bentrok yang diberikan sebelumnya memakai data lama (4 shift) sehingga keliru dan dikoreksi.
+- Skrip pertama (`hris_shift_run.sh`) dan kedua (`hris_shift_run2.sh`) lolos: field aturan working hour ditambah, `early_leave_limit_min` dan aturan tumpang tindih dihapus, aturan pulang direvisi (K-36), istirahat diisi, validasi baru. Commit e1cd6f7.
+- Efendy mengusulkan aturan pulang baru (tanpa jendela awal pulang; minimal 60 menit setelah masuk; punch di luar batas diberi tanda untuk HRD). Aturan lembur: minimal 30 menit, kelipatan 30, dibulatkan ke bawah (K-38).
+- Penamaan `WH-YYMMDD-NNNN` dengan `unique_key` (K-40); punch kurang = "Tidak Lengkap" (K-41).
 - Pelajaran:
-  - Jangan menghitung dari data catatan lama; ambil ulang data nyata sebelum menghitung (kasus 4 shift lama versus 8 shift baru).
-  - Skrip kedua yang menyentuh file yang sama tidak boleh berhenti hanya karena file itu sudah berubah oleh skrip pertama; pemeriksaan awal dibuat menerima hanya dua file itu dan memverifikasi keadaan yang diharapkan.
+  - Jangan menghitung dari data catatan lama; ambil ulang data nyata sebelum menghitung.
+  - Skrip kedua yang menyentuh file yang sama tidak boleh berhenti hanya karena file itu sudah berubah oleh skrip pertama.
   - Menghapus field dari JSON DocType tidak menghapus kolomnya di tabel.
-- Belum: push kode `HRIS Shift` (Efendy), DocType `HRIS Working Hour` (5a), service perhitungan (5b), tombol hitung ulang (5c), pembersihan manual tiga sisa uji lama, jalur data mesin, istirahat Security.
+
+## 2026-10-29 (sesi lanjutan: Working Hour 5a, 5b, 5c-1)
+- 5a (f607a0b, f582aff): DocType `HRIS Working Hour` (72 field, `unique_key` unik di database terverifikasi) dan tab Audit Trail. Penjaga controller (K-42).
+- 5b (5230691): `services/working_hour.py`; 25 pemeriksaan skrip semua OK, di-rollback. Aturan hitung K-43 dan K-44.
+- 5c-1 (523d70e): `services/working_hour_batch.py`, `hris_working_hour_list.js` (baru), `hris_working_hour.js` (tombol Hitung Ulang). Rancangan disetujui Efendy: cakupan Semua, Karyawan, Department, Grup; opsi lewati baris HRD; manual dulu; batas 31 hari sampai kemarin; hanya karyawan Active; indikator wajib agar masalah tidak tersembunyi (K-45).
+- Pemasangan `hris_wh_run4.sh` lolos: backup, `py_compile`, uji T1 sampai T9 semua OK, `SEMUA OK`; ping worker `long` merespons dalam 1 detik; status git sesuai harapan. Efendy commit dan push (`5230691..523d70e`).
+- Dugaan teknis yang terjawab: bentuk `frappe.cache` di v16 (`RedisWrapper`), `frappe.db.savepoint` dan `rollback(save_point=...)`, antrean `long` dan worker hidup.
+- Yang belum teruji: tampilan browser 5c-1 (tombol, dialog, `depends_on`) dan job background sungguhan di atas 300 karyawan-hari. Efendy memutuskan uji browser menunggu data nyata karena site belum punya karyawan Active.
+- Tambahan di luar permintaan awal (disetujui lewat penerimaan skrip): hari sebelum tanggal masuk karyawan dilewati; menu "Status Hitung".
+- Pelajaran:
+  - Skrip uji server tidak menguji sisi browser; jangan menyebut fitur browser "teruji" sebelum dicek di browser.
+  - Memanggil `run_batch` langsung tidak membuktikan antrean berjalan; ping worker hanya membuktikan worker hidup.
+- Docs K-42 sampai K-45, status, session-log, data-model, dan api diperbarui dan di-push oleh Claude atas izin Efendy (29 Okt).
+- Belum: 5c-2 (warna list view, Report ringkasan), data nyata, jalur data mesin, istirahat Security, pembersihan sisa uji lama.
