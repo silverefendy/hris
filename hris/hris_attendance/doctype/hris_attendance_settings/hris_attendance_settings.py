@@ -30,7 +30,9 @@ class HRISAttendanceSettings(Document):
 				frappe.throw(_("Alamat IP tidak valid: {0}").format(value))
 			if value not in lines:
 				lines.append(value)
-		self.allowed_ips = "\n".join(lines)
+		normalized = "\n".join(lines)
+		if normalized != (self.allowed_ips or ""):
+			self.allowed_ips = normalized
 
 
 @frappe.whitelist(methods=["POST"])
