@@ -275,4 +275,7 @@ doc_events = {
 	},
 }
 
-app_include_js = "/assets/hris/js/hris_audit_trail.js"
+app_include_js = [
+    "/assets/hris/js/hris_audit_trail.js",
+    "/assets/hris/js/hris_device_actions.js",
+]
