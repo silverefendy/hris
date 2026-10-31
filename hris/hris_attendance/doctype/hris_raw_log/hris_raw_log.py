@@ -1,8 +1,8 @@
-import re
-
 import frappe
 from frappe import _
 from frappe.model.document import Document
+
+from hris.hris_attendance.services.raw_log_naming import build_raw_log_name
 
 EDIT_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
 SOURCE_FIELDS = (
@@ -18,9 +18,7 @@ REVIEW_FINAL = ("Disetujui", "Ditolak")
 
 class HRISRawLog(Document):
 	def autoname(self):
-		stamp = frappe.utils.get_datetime(self.punch_time).strftime("%Y%m%d%H%M%S")
-		device = re.sub(r"[\s/]+", "_", self.device or "")
-		self.name = f"{device}-{self.device_user_id}-{stamp}"
+		self.name, self.punch_key = build_raw_log_name(self.device, self.device_user_id, self.punch_time)
 
 	def before_validate(self):
 		self.company = frappe.db.get_value("HRIS Device", self.device, "company")
