@@ -97,8 +97,8 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | Dialog bersama `hris_device_actions.js` dan Konsol Mesin | Selesai, teruji (K-70, K-71) |
 | DocType `HRIS Pull Run` (Sesi A) | Selesai, ter-push, teruji (K-73, K-74) |
 | Pencatatan riwayat di `pull_device.py` dan `delete_raw_log.py` (Sesi B) | Selesai, ter-push, teruji di browser (tarik, tarik ulang, hapus) |
-| Sesi C: 10 riwayat terakhir di tombol Status, penanda "tidak responsif" bila Berjalan lebih dari 30 menit, link dari Konsol | Belum |
-| Kosmetik `HRIS Pull Run`: `depends_on` agar blok hasil Tarik dan Hapus tidak tampil bersamaan | Belum (mengubah JSON DocType; ikuti checklist butir 10) |
+| Sesi C: riwayat 10 terakhir di dialog Status, penanda "tidak responsif" (K-76) | Selesai, ter-push (0d0d669), tampilan teruji. Link ke form dan "Lihat semua" serta uji akun HRIS HR Admin masih dicek |
+| Kosmetik `HRIS Pull Run`: `depends_on` per jenis (K-77) | Selesai di database; file JSON di-commit setelah uji browser |
 | Celah data tarikan | Rentang 4 s/d 19 Okt dan 21 s/d 23 Okt belum ditarik; tarik ulang tanggal yang dihapus saat uji. Gunakan Cek Dulu mode Rentang Tanggal |
 | Agen Windows untuk satu mesin Solution (K-72) | Belum; sesi tersendiri |
 | Hak baca HRIS HR Admin atas HRIS Device di Konsol Mesin | Belum diverifikasi |

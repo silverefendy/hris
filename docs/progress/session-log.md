@@ -114,3 +114,12 @@
   - Pencatatan riwayat dibuat aman-gagal agar kegagalan catat tidak menghentikan tarikan atau hapus.
 - Belum: Sesi C, kosmetik `depends_on`, agen Windows, tarik celah data, impor Employee, "Cocokkan Ulang".
 - Catatan: penyimpanan memori proyek terblokir selama chat ini memakai konektor; dokumen ini menjadi catatan utama.
+
+## 2026-10-31 (sesi lanjutan: Sesi C riwayat)
+- Sesi C (0d0d669): fungsi `riwayat` di `pull_device.py` dan tabel riwayat di dialog Status (`hris_device_actions.js`), dipakai form Device dan Konsol Mesin. Tampilan teruji: tiga riwayat (tarik, tarik ulang, hapus) tampil benar (K-76).
+- Kosmetik `depends_on` Pull Run lewat `migrate` (K-77).
+- Keputusan Efendy: riwayat tidak dibatasi hanya Manager; role setara admin yang boleh menarik log juga melihat 10 baris teratas.
+- Pelajaran:
+  - Status cache (1 jam) dan riwayat database (permanen) adalah dua hal berbeda; tampilkan keduanya.
+  - Skrip dengan anchor persis aman, tetapi anchor berisi tanda kutip dari catatan lama bisa gagal cocok; untuk dokumen lama pakai pencarian per awal baris.
+- Belum: tarik celah data (tarik ulang 2 Okt, lalu 4-19 dan 21-23 Okt), `data-model.md` dan `api.md`, agen Windows untuk mesin jalur agen, uji akun HRIS HR Admin pada status terkini (`pull_status` masih menuntut hak write Device).
