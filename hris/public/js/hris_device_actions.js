@@ -195,6 +195,55 @@ hris.device.runPull = function (d, onFinal) {
 
 // ------------------------------------------------------------ Status Tarikan
 
+hris.device.loadRiwayat = function (wrapper, name) {
+    const esc = frappe.utils.escape_html;
+    frappe
+        .call({ method: hris.device.PULL_API + "riwayat", args: { device_name: name } })
+        .then((r) => {
+            const rows = r.message || [];
+            if (!rows.length) {
+                wrapper.html("<p class='text-muted'>" + __("Belum ada riwayat tercatat.") + "</p>");
+                return;
+            }
+            const statusCell = (x) => {
+                if (x.tidak_responsif) {
+                    return "<span class='text-danger'>" + __("Tidak responsif") + "</span>";
+                }
+                if (x.status === "Selesai") {
+                    return "<span class='text-success'>" + __("Selesai") + "</span>";
+                }
+                if (x.status === "Gagal") {
+                    return "<span class='text-danger' title='" + esc(String(x.pesan_error || "")) + "'>" + __("Gagal") + "</span>";
+                }
+                return "<b>" + esc(__(x.status)) + "</b>";
+            };
+            let html =
+                "<h6 style='margin-top:12px'>" + __("Riwayat (10 terakhir)") + "</h6>" +
+                "<table class='table table-bordered table-sm'><thead><tr>" +
+                "<th>" + __("Nomor") + "</th><th>" + __("Jenis") + "</th><th>" + __("Rentang") + "</th>" +
+                "<th>" + __("Status") + "</th><th>" + __("Hasil") + "</th><th>" + __("Waktu") + "</th></tr></thead><tbody>";
+            rows.forEach((x) => {
+                const rentang = x.date_from ? esc(x.date_from + " s/d " + (x.date_to || "")) : __("Otomatis");
+                const hasil = x.jenis === "Hapus Raw Log"
+                    ? __("Dihapus") + " " + (x.jumlah_dihapus || 0)
+                    : __("Baru") + " " + (x.baru || 0) + ", " + __("ada") + " " + (x.sudah_ada || 0) +
+                      (x.gagal ? ", " + __("gagal") + " " + x.gagal : "");
+                html +=
+                    "<tr><td><a href='/desk/hris-pull-run/" + encodeURIComponent(x.name) + "'>" + esc(x.name) + "</a></td>" +
+                    "<td>" + esc(__(x.jenis)) + "</td><td>" + rentang + "</td>" +
+                    "<td>" + statusCell(x) + "</td><td>" + esc(hasil) + "</td>" +
+                    "<td>" + esc(String(x.creation || "").slice(0, 16)) + "</td></tr>";
+            });
+            html +=
+                "</tbody></table><p><a href='/desk/hris-pull-run?device=" + encodeURIComponent(name) + "'>" +
+                __("Lihat semua riwayat") + "</a></p>";
+            wrapper.html(html);
+        })
+        .catch(() => {
+            wrapper.html("<p class='text-muted'>" + __("Riwayat tidak dapat ditampilkan.") + "</p>");
+        });
+};
+
 hris.device.renderStatus = function (body, st) {
     // Kembalikan true bila status sudah final (tidak perlu polling lagi).
     const esc = frappe.utils.escape_html;
@@ -257,7 +306,7 @@ hris.device.showStatus = function (name, onFinal) {
 
     const d = new frappe.ui.Dialog({
         title: __("Status Tarikan: {0}", [name]),
-        fields: [{ fieldname: "body", fieldtype: "HTML" }],
+        fields: [{ fieldname: "body", fieldtype: "HTML" }, { fieldname: "riwayat", fieldtype: "HTML" }],
         primary_action_label: __("Tutup"),
         primary_action: () => d.hide(),
     });
@@ -266,6 +315,8 @@ hris.device.showStatus = function (name, onFinal) {
     };
     d.show();
     const body = d.fields_dict.body.$wrapper;
+    const hist = d.fields_dict.riwayat.$wrapper;
+    hris.device.loadRiwayat(hist, name);
     body.html("<p class='text-muted'>" + __("Memeriksa status...") + "</p>");
 
     const tick = () => {
@@ -278,6 +329,7 @@ hris.device.showStatus = function (name, onFinal) {
                 const st = r.message || {};
                 const isFinal = hris.device.renderStatus(body, st);
                 if (isFinal) {
+                    hris.device.loadRiwayat(hist, name);
                     stopped = true;
                     if (onFinal) {
                         onFinal(st);

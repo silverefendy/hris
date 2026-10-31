@@ -347,6 +347,40 @@ def pull_status(device_name):
     return status
 
 
+RIWAYAT_LIMIT = 10
+RUN_STALE_SECONDS = 1800
+
+
+@frappe.whitelist()
+def riwayat(device_name):
+    """10 riwayat tarik/hapus terbaru satu mesin (dari HRIS Pull Run).
+
+    Dibaca lewat get_all (tidak bergantung hak baca DocType Pull Run), tetapi
+    dibatasi ke PULL_ROLES. Hanya membaca; tidak mengubah record.
+    """
+    if not PULL_ROLES.intersection(frappe.get_roles()):
+        frappe.throw(_("Anda tidak berhak melihat riwayat tarikan."), frappe.PermissionError)
+    rows = frappe.get_all(
+        "HRIS Pull Run",
+        filters={"device": device_name},
+        fields=[
+            "name", "jenis", "mode", "date_from", "date_to", "status",
+            "baru", "sudah_ada", "gagal", "jumlah_dihapus",
+            "started_at", "finished_at", "creation", "pesan_error",
+        ],
+        order_by="creation desc",
+        limit_page_length=RIWAYAT_LIMIT,
+    )
+    now = now_datetime()
+    for row in rows:
+        row["tidak_responsif"] = 0
+        if row.status in ("Antre", "Berjalan"):
+            acuan = row.started_at or row.creation
+            if acuan and (now - get_datetime(acuan)).total_seconds() > RUN_STALE_SECONDS:
+                row["tidak_responsif"] = 1
+    return rows
+
+
 def pull(device_name, date_from=None, date_to=None):
     """Tarik dan simpan sebagai HRIS Raw Log. Serial wajib cocok dengan Device."""
     doc = frappe.get_doc("HRIS Device", device_name)
