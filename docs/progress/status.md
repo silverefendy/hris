@@ -88,6 +88,23 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | `docs/architecture/attendance-flow.md` dan `CLAUDE.md` | Perlu dicek dan diperbarui terhadap working hour, K-18, jalur data mesin, dan penamaan Raw Log |
 | Penomoran | Counter `HR-EMP-` kembali ke 0 setelah data contoh dihapus (belum diverifikasi di kode Frappe); penomoran `SAS` tidak tampil di `tabSeries`, penyebab belum diketahui |
 
+## Pembaruan 31 Okt 2026 (Tarik Log, Hapus Raw Log, Konsol Mesin, Pull Run)
+
+| Item | Status |
+|---|---|
+| Status tarikan polling, perlindungan autofill Comm Key | Selesai, teruji (K-67, K-68) |
+| Hapus Raw Log per rentang | Selesai, teruji (K-69) |
+| Dialog bersama `hris_device_actions.js` dan Konsol Mesin | Selesai, teruji (K-70, K-71) |
+| DocType `HRIS Pull Run` (Sesi A) | Selesai, ter-push, teruji (K-73, K-74) |
+| Pencatatan riwayat di `pull_device.py` dan `delete_raw_log.py` (Sesi B) | Selesai, ter-push, teruji di browser (tarik, tarik ulang, hapus) |
+| Sesi C: 10 riwayat terakhir di tombol Status, penanda "tidak responsif" bila Berjalan lebih dari 30 menit, link dari Konsol | Belum |
+| Kosmetik `HRIS Pull Run`: `depends_on` agar blok hasil Tarik dan Hapus tidak tampil bersamaan | Belum (mengubah JSON DocType; ikuti checklist butir 10) |
+| Celah data tarikan | Rentang 4 s/d 19 Okt dan 21 s/d 23 Okt belum ditarik; tarik ulang tanggal yang dihapus saat uji. Gunakan Cek Dulu mode Rentang Tanggal |
+| Agen Windows untuk satu mesin Solution (K-72) | Belum; sesi tersendiri |
+| Hak baca HRIS HR Admin atas HRIS Device di Konsol Mesin | Belum diverifikasi |
+| Teks "Tidak ada Raw Log di mesin dan rentang ini" | Membingungkan; ganti ke "untuk mesin dan rentang ini" saat perapian |
+| Catatan penomoran | Counter Pull Run dipakai bersama (K-74); nomor mulai tidak dari 0001 karena percobaan uji |
+
 ## Langkah berikutnya
 1. Rancangan input data Employee (`attendance_device_id`), lalu sesi "Cocokkan Ulang".
 2. 3c: dialog tanggal dan tombol "Tarik Sekarang".

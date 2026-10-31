@@ -99,3 +99,18 @@
   - Memanggil `run_batch` langsung tidak membuktikan antrean berjalan; ping worker hanya membuktikan worker hidup.
 - Docs K-42 sampai K-45, status, session-log, data-model, dan api diperbarui dan di-push oleh Claude atas izin Efendy (29 Okt).
 - Belum: 5c-2 (warna list view, Report ringkasan), data nyata, jalur data mesin, istirahat Security, pembersihan sisa uji lama.
+
+## 2026-10-31 (Tarik Log, Hapus Raw Log, Konsol Mesin, HRIS Pull Run)
+- Status tarikan diganti polling karena socket.io gagal lewat IP (K-67). Autofill browser mengisi password login ke Comm Key; dilindungi dengan `autocomplete="new-password"` (K-68). Commit b73cc9e.
+- Hapus Raw Log per mesin dan rentang (K-69, 4f182b3); dialog dipusatkan di `hris_device_actions.js` (K-70, fc8114d); halaman Konsol Mesin (K-71).
+- Data uji tarikan: tanggal yang dihapus untuk uji ditarik ulang dengan hasil identik, membuktikan data mesin utuh.
+- Sesi A: DocType `HRIS Pull Run` (f387543). Penomoran dua awalan diuji: counter `{####}` dipakai bersama (K-74); dipilih diterima apa adanya. Form dan tab Audit Trail lolos uji browser.
+- Sesi B: `pull_run_log.py` dan patch `pull_device.py`, `delete_raw_log.py` (5e886b9). Uji browser: tarik 927 punch (392 baru, 535 sudah ada), tarik ulang (0 baru, 927 sudah ada), hapus satu hari (535 baris), semuanya tercatat sebagai PR/DR.
+- Keputusan: Pull Run merevisi sebagian K-46 (K-73); mesin Solution jalur agen dibangun di sesi tersendiri (K-72); tanpa pembersihan otomatis (K-75).
+- Pelajaran:
+  - Dugaan "counter terpisah per awalan" di `format:` tidak terbukti; uji dulu sebelum mengandalkan perilaku penamaan Frappe.
+  - `bench execute` menerima path modul Python, bukan path file; untuk skrip sekali pakai gunakan `bench console`.
+  - Commit sebelum uji browser membuat status "terpasang, belum teruji"; uji dulu, commit sesudahnya.
+  - Pencatatan riwayat dibuat aman-gagal agar kegagalan catat tidak menghentikan tarikan atau hapus.
+- Belum: Sesi C, kosmetik `depends_on`, agen Windows, tarik celah data, impor Employee, "Cocokkan Ulang".
+- Catatan: penyimpanan memori proyek terblokir selama chat ini memakai konektor; dokumen ini menjadi catatan utama.
