@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 30 Oktober 2026
+Diperbarui: 31 Oktober 2026
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -34,7 +34,7 @@ Diperbarui: 30 Oktober 2026
 | K-27 | Role tambahan untuk input data karyawan (nama usulan: `HRIS Employee Admin`) | 2026-10-28 | Disetujui, belum dibuat |
 | K-28 | Zona waktu site kerja: Asia/Jakarta (WIB), agar audit trail berwaktu WIB | 2026-10-28 | Diterapkan |
 | K-29 | `Department` tetap master ERPNext (modul Setup), dipakai lewat `Employee.department`; HRIS tidak membuat Department sendiri; field `department` di HRIS Employee Group opsional. Audit tab dipasang di semua DocType HRIS (Raw Log tetap). HRIS Holiday punya centang "Berlaku untuk Semua Company" | 2026-10-28 | Diterapkan |
-| K-30 | Tidak ada penomoran hash di DocType HRIS; penomoran memuat YYMM dengan format `PREFIX-YYMM-NNNN`. Holiday `HOL-YYMM-NNNN` (4 digit), YYMM dari tanggal dibuat; data lama bernomor hash dihapus manual, tidak di-rename. Pengecualian: HRIS Raw Log (nama = kunci anti-duplikat), DocType bernama dari field nama, tabel anak, dan HRIS Working Hour (K-40) | 2026-10-28 | Diterapkan (Holiday, 22126c0) |
+| K-30 | Tidak ada penomoran hash di DocType HRIS; penomoran memuat YYMM dengan format `PREFIX-YYMM-NNNN`. Holiday `HOL-YYMM-NNNN` (4 digit), YYMM dari tanggal dibuat; data lama bernomor hash dihapus manual, tidak di-rename. Pengecualian: HRIS Raw Log (penamaan khusus, lihat K-57; semula nama = kunci anti-duplikat), DocType bernama dari field nama, tabel anak, dan HRIS Working Hour (K-40) | 2026-10-28 | Diterapkan (Holiday, 22126c0) |
 | K-31 | Rotasi shift: `HRIS Shift Rotation` (nama dari field `rotation_name`) dengan tabel anak `HRIS Shift Rotation Day`; satu baris = satu hari siklus, boleh hari libur, minimal satu hari berisi shift, panjang siklus dihitung otomatis. Hari ke-n = (tanggal - tanggal mulai) mod panjang siklus. `HRIS Employee Group` memilih salah satu: Jadwal Mingguan atau Rotasi (tidak bercampur). Tipe Rotasi mewajibkan rotasi dan Tanggal Mulai Rotasi (hari ke-1) serta mengosongkan jadwal mingguan; tipe Jadwal Mingguan mengosongkan rotasi. Pola dan company rotasi yang sudah dipakai grup dikunci: buat rotasi baru lalu pindahkan grupnya | 2026-10-28 | Diterapkan (fd8b082, 27947d5) |
 | K-32 | `HRIS Shift Assignment` (`SAS-YYMM-NNNN`, YYMM dari tanggal dibuat) untuk menimpa jadwal per karyawan per rentang tanggal (tukar shift, pinjam karyawan). Isi: karyawan, tanggal dari/sampai, shift, alasan wajib, centang Aktif, field opsional "Dipinjam untuk Grup". Tanpa approval; dibuat HRD dan tercatat di audit trail. Pembatalan dengan mematikan centang Aktif (HR Admin tanpa hak hapus, riwayat tetap ada). Validasi: tanggal sampai tidak sebelum dari; karyawan Active; shift aktif dan satu company dengan karyawan; tidak tumpang tindih dengan Assignment aktif lain milik karyawan yang sama. `company` dan nama karyawan diisi dari server | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip dan browser (29 Okt) |
 | K-33 | Urutan penentuan shift karyawan pada satu tanggal (service `shift_schedule`): 1) Shift Assignment aktif, 2) Rotasi grup, 3) Jadwal Mingguan grup, 4) tidak ada (bukan hari kerja). Hari libur (HRIS Holiday) ditandai terpisah: dari Assignment dianggap masuk kerja, dari rotasi atau jadwal mingguan dianggap tidak masuk. Jadwal dihitung saat dibutuhkan, tidak disimpan per hari. Sebelum tanggal mulai rotasi dianggap belum berlaku | 2026-10-28 | Diterapkan (4fcb41b), teruji skrip |
@@ -52,19 +52,32 @@ Diperbarui: 30 Oktober 2026
 | K-45 | Hitung ulang working hour (5c-1): cakupan Semua, Karyawan, Department (persis, tanpa sub-department), Grup, filter Company opsional; opsi "Lewati baris yang sudah ditinjau atau disesuaikan HRD" default aktif; hanya karyawan Active; hari sebelum tanggal masuk karyawan dilewati; sampai kemarin saja; maksimal 31 hari; sampai 300 karyawan-hari langsung, di atasnya job background (antrean `long`); role HRIS HR Admin, HRIS Manager, System Manager; pemicu manual (scheduler ditunda). Indikator: status di cache Redis (TTL 1 jam; Antre, Berjalan, Selesai, Gagal), progres tiap 5 item, peringatan Antre lebih dari 60 detik dan tanpa kemajuan lebih dari 120 detik, kunci proses aktif, kegagalan per item diisolasi dengan savepoint dan dicatat di Error Log, dialog polling tiap 2 detik | 2026-10-29 | Diterapkan (523d70e), teruji skrip; job background sungguhan dan tampilan browser belum diuji |
 | K-46 | Nama DocType jalur data tetap `HRIS Device` dan `HRIS Raw Log`; tidak dibuat DocType baru ([0003](0003-jalur-data-mesin.md)) | 2026-10-30 | Diterapkan |
 | K-47 | `HRIS Device`: jalur data lewat dua centang `use_agent` dan `use_pull` (boleh keduanya), field read-only `last_agent_at` dan `last_pull_at`, section "Data Channels"; `pull_method` tunggal ditinggalkan | 2026-10-30 | Diterapkan (Sesi 1) |
-| K-48 | `HRIS Raw Log`: tambah `source` (Agen Windows, Pull pyzk, Impor File) dan `raw_payload`, keduanya `set_only_once`; tanpa `unique_key` dan tanpa `match_status` | 2026-10-30 | Diterapkan (Sesi 1), teruji console dan browser |
+| K-48 | `HRIS Raw Log`: tambah `source` (Agen Windows, Pull pyzk, Impor File) dan `raw_payload`, keduanya `set_only_once`; tanpa `unique_key` dan tanpa `match_status`. Catatan 31 Okt: penjaga duplikat kini field `punch_key` (K-58) | 2026-10-30 | Diterapkan (Sesi 1), teruji console dan browser |
 | K-49 | `comm_key` dan `connection_mode` dibiarkan (`connection_mode` warisan; kode baru hanya melihat `use_pull`); Comm Key agen disimpan di sisi agen | 2026-10-30 | Aktif |
 | K-50 | IP dan port wajib bila `connection_mode` = Pull (IP) atau `use_pull`; ditegakkan di controller dan di JSON (browser) | 2026-10-30 | Diterapkan (Sesi 1); perilaku di browser belum diuji |
-| K-51 | Anti-duplikat lewat nama dokumen Raw Log; agen dan pull boleh jalan bersamaan tanpa baris ganda | 2026-10-30 | Diterapkan, teruji HTTP |
+| K-51 | Anti-duplikat lewat nama dokumen Raw Log; agen dan pull boleh jalan bersamaan tanpa baris ganda | 2026-10-30 | Diganti oleh K-58 (mekanisme); prinsip "agen dan pull boleh bersamaan" tetap berlaku |
 | K-52 | Autentikasi agen: token buatan sendiri di `HRIS Attendance Settings` (hash, saklar default mati, Allowed IPs opsional, pembatas 10 gagal per 10 menit per IP, pesan error seragam, rotasi mematikan token lama); mengganti rencana user API key | 2026-10-30 | Diterapkan (d773aeb), teruji HTTP dan `curl` |
 | K-53 | Kontrak `save_punches` dan `push_punches`: satu device per panggilan, maksimal 500 baris, hasil per baris created/duplicate/error, waktu WIB tanpa zona, maksimal 1 hari ke depan; lihat [agent-api.md](../architecture/agent-api.md) | 2026-10-30 | Diterapkan (2A) |
 | K-54 | `last_agent_at` dan `last_pull_at` diperbarui dengan `set_value(update_modified=False)` agar audit trail Device tidak penuh | 2026-10-30 | Diterapkan, teruji browser |
 | K-55 | Scheduler, hitung ulang otomatis, dan impor manual dulu; saklar otomatisasi (default mati) ditambah bersama fitur masing-masing | 2026-10-30 | Aktif |
 | K-56 | ERP hanya di LAN dengan HTTP; HTTPS wajib dan Allowed IPs sebaiknya diisi bila dibuka ke internet | 2026-10-30 | Aktif |
+| K-57 | Penamaan `HRIS Raw Log`: `{mesin}-{ID pegawai}-{YYMMDD}-{NNNNN}`, contoh `PLTB_220-6887-261031-00001`. Tanggal dari waktu punch. Nomor urut 5 digit berulang tiap bulan per mesin + ID + bulan (counter `getseries`, kunci `mesin-ID-YYMM`). Counter tidak direset setelah data uji dihapus ([0004](0004-pull-pyzk-dan-penamaan-raw-log.md)) | 2026-10-30/31 | Diterapkan (009ff78), teruji 54 dari 54 dan 2.306 dari 2.306 sesuai pola |
+| K-58 | Penjaga duplikat Raw Log = field `punch_key` (`mesin\|ID\|waktu sampai detik`): tersembunyi, unik di database (indeks unik terverifikasi), hanya diisi saat dokumen baru, tidak berubah walau HRD mengoreksi waktu. Nama dokumen tidak lagi menjadi penjaga duplikat. Menggantikan K-51 | 2026-10-30/31 | Diterapkan (009ff78), teruji tarikan ulang dan jalur agen |
+| K-59 | Nomor record mesin (`uid`) bukan bagian kunci: berputar 0 sampai 65535 sebelum mesin penuh dan bisa berubah bila mesin direset atau diganti. Disimpan di `raw_payload`. Field `device_record_no` untuk audit dan laporan kelengkapan **ditunda** | 2026-10-31 | Aktif; field ditunda |
+| K-60 | Penanda `punch` dari mesin tidak andal (mis. 5 kali berturut-turut `punch=0` dalam 18 detik; `status` selalu 1); hanya disimpan di `punch_status_raw` (sejalan K-23). Punch berulang disaring di working hour (K-24), bukan saat tarikan | 2026-10-30 | Aktif |
+| K-61 | Rentang tarikan Pull: tanpa tanggal = `last_pull_at` dikurangi 1 hari; tarikan pertama default 2026-10-01; `date_from` dan `date_to` opsional; tarikan ber-`date_to` tidak memajukan `last_pull_at`. Masa percobaan dibatasi 25 sampai 31 Okt 2026 | 2026-10-30/31 | Diterapkan (009ff78) |
+| K-62 | Setiap `pull()` mencocokkan serial mesin dengan serial `HRIS Device` dan berhenti bila berbeda. Tombol "Ambil Info dari Mesin" mengisi serial, firmware, model ke form tanpa menyimpan. Device Type PLTB 220 diubah ke ZKTeco | 2026-10-30 | Diterapkan (00eba4d), teruji |
+| K-63 | Tarikan dijalankan lewat antrean (`enqueue_pull`, antrean `long`) atau langsung dari console; aman diulang karena K-58. Worker aktif terbukti 31 Okt | 2026-10-31 | Diterapkan, teruji (2.306 baris) |
+| K-64 | Pull tetap dijalankan walau Employee belum ada; punch berstatus "Tidak Cocok" dan dicocokkan nanti lewat "Cocokkan Ulang" (sesi tersendiri) | 2026-10-30 | Disetujui; "Cocokkan Ulang" belum dibuat |
+| K-65 | Aplikasi tidak pernah menghapus log di mesin | 2026-10-30 | Aktif |
+| K-66 | `pyzk>=0.9` menjadi dependensi app di `pyproject.toml` | 2026-10-30 | Diterapkan (6e36db0) |
 
 ## Belum diputuskan
 - Nama merek dan lisensi final (implikasi GPLv3 ERPNext/HRMS perlu diverifikasi).
-- Rancangan Sesi 3 (tombol Pull pyzk, background job, apakah `pyzk` menjadi dependensi app) dan Sesi 4 (agen Windows, endpoint konfigurasi agen, penyimpanan token di PC agen); format Impor File menunggu contoh berkas ekspor.
+- Rancangan sisa Sesi 3 (dialog tanggal dan tombol "Tarik Sekarang", penjadwalan tarikan rutin) dan Sesi 4 (agen Windows, endpoint konfigurasi agen, penyimpanan token di PC agen); format Impor File menunggu contoh berkas ekspor.
+- Field `device_record_no` (ditunda, K-59).
+- Mesin `WP 221` (kelas masalah kode 6001): jalur apa yang dipakai.
+- Perilaku mesin saat jejak transaksi penuh (perlu dicek di manual MB460).
 - Arti status `Terkirim` pada Raw Log (tidak ada kode yang mengisinya; mengunci edit dan ikut dihitung).
 - Aturan lembur lanjutan (pengali, hari libur) dan aturan khusus Security (istirahat Security Pagi dan Malam sementara 0).
 - `overtime_min_minutes` berfungsi sebagai lembur minimal sekaligus kelipatan; dipisah menjadi dua field bila aturannya berubah.
@@ -80,4 +93,4 @@ Diperbarui: 30 Oktober 2026
 - Satu atau dua bench untuk production; nasib site uji lama.
 - Navigasi: Sidebar modul dan Dock (usulan), bukan Desktop Icon.
 
-Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
+Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
