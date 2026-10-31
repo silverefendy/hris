@@ -24,6 +24,7 @@ CONNECT_TIMEOUT = 10
 COMMIT_EVERY = 200
 SAMPLE_SIZE = 5
 SAVEPOINT = "hris_pull_punch"
+PULL_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
 
 
 # ------------------------------------------------------------------ util
@@ -214,21 +215,130 @@ def dry_run(device_name, date_from=None, date_to=None):
 
 # ------------------------------------------------------------------ tarikan sungguhan
 
+def _check_pull_access(device_name):
+    """Hak write pada Device dan salah satu role di PULL_ROLES."""
+    frappe.has_permission("HRIS Device", "write", doc=device_name, throw=True)
+    if not PULL_ROLES.intersection(frappe.get_roles()):
+        frappe.throw(
+            _("Hanya HRIS HR Admin, HRIS Manager, atau System Manager yang boleh menarik log."),
+            frappe.PermissionError,
+        )
+
+
+def _validate_range_args(date_from, date_to):
+    """Dua tanggal sekaligus atau kosong keduanya. Kembalikan (dari, sampai) berupa teks."""
+    if bool(date_from) != bool(date_to):
+        frappe.throw(_("Isi Dari Tanggal dan Sampai Tanggal sekaligus, atau kosongkan keduanya."))
+    if not date_from:
+        return None, None
+    since, until = getdate(date_from), getdate(date_to)
+    if until < since:
+        frappe.throw(_("Sampai Tanggal tidak boleh lebih awal dari Dari Tanggal."))
+    if until > now_datetime().date():
+        frappe.throw(_("Sampai Tanggal tidak boleh melewati hari ini."))
+    return str(since), str(until)
+
+
+STATUS_TTL = 3600
+
+
+def _status_key(device_name):
+    return f"hris_pull_status::{device_name}"
+
+
+def _cache():
+    cache = frappe.cache
+    return cache() if callable(cache) else cache
+
+
+def _set_status(device_name, data):
+    """Simpan status tarikan terakhir di cache Redis (TTL 1 jam) untuk polling dialog."""
+    try:
+        data = dict(data, at=str(now_datetime()))
+        _cache().set_value(_status_key(device_name), data, expires_in_sec=STATUS_TTL)
+    except Exception:
+        frappe.log_error(title="HRIS Pull: gagal menyimpan status tarikan")
+
+
+def _job_active(job_id):
+    """True bila job dengan id ini masih antre atau berjalan. Gagal baca dianggap tidak aktif."""
+    try:
+        from frappe.utils.background_jobs import is_job_enqueued
+
+        return bool(is_job_enqueued(job_id))
+    except Exception:
+        return False
+
+
+@frappe.whitelist()
+def check_pull(device_name, date_from=None, date_to=None):
+    """Cek Dulu: hubungi mesin dan hitung, TANPA menyimpan apa pun."""
+    _check_pull_access(device_name)
+    since, until = _validate_range_args(date_from, date_to)
+    doc = frappe.get_doc("HRIS Device", device_name)
+    info = dry_run(device_name, since, until)
+
+    masalah = []
+    if not doc.is_active:
+        masalah.append(_("Device tidak aktif."))
+    if not doc.use_pull:
+        masalah.append(_("Via Pull (pyzk) belum dicentang."))
+    if not info["serial_cocok"]:
+        masalah.append(_("Serial mesin berbeda dari Serial Number Device; tarikan akan dihentikan."))
+    if info["baris_pull_lama_tanpa_punch_key"]:
+        masalah.append(
+            _("Ada {0} baris Raw Log Pull lama tanpa punch_key; hapus dulu agar tidak duplikat.").format(
+                info["baris_pull_lama_tanpa_punch_key"]
+            )
+        )
+    return {"mesin_merespons": True, "siap": not masalah, "masalah": masalah, **info}
+
+
 @frappe.whitelist()
 def enqueue_pull(device_name, date_from=None, date_to=None):
     """Antrekan tarikan sungguhan. Satu Device hanya satu job pada satu waktu."""
-    frappe.has_permission("HRIS Device", "write", doc=device_name, throw=True)
+    _check_pull_access(device_name)
+    since, until = _validate_range_args(date_from, date_to)
+    job_id = f"hris_pull::{device_name}"
+    if _job_active(job_id):
+        return {"queued": False, "message": _("Masih ada tarikan untuk {0} yang antre atau berjalan.").format(device_name)}
+    _set_status(device_name, {"status": "Antre", "user": frappe.session.user})
     frappe.enqueue(
-        "hris.hris_attendance.services.pull_device.pull",
+        "hris.hris_attendance.services.pull_device.run_pull_job",
         queue="long",
         timeout=1800,
-        job_id=f"hris_pull::{device_name}",
+        job_id=job_id,
         deduplicate=True,
         device_name=device_name,
-        date_from=date_from or None,
-        date_to=date_to or None,
+        date_from=since,
+        date_to=until,
+        notify_user=frappe.session.user,
     )
     return {"queued": True}
+
+
+def run_pull_job(device_name, date_from=None, date_to=None, notify_user=None):
+    """Pembungkus job: jalankan pull() dan catat status untuk polling dialog."""
+    _set_status(device_name, {"status": "Berjalan", "user": notify_user})
+    try:
+        result = pull(device_name, date_from=date_from, date_to=date_to)
+    except Exception as exc:
+        _set_status(device_name, {"status": "Gagal", "user": notify_user, "message": str(exc)})
+        raise
+    _set_status(device_name, {"status": "Selesai", "user": notify_user, "result": result})
+    return result
+
+
+@frappe.whitelist()
+def pull_status(device_name):
+    """Status tarikan terakhir (Antre, Berjalan, Selesai, Gagal); kosong bila sudah lewat 1 jam."""
+    from frappe.utils import get_datetime
+
+    _check_pull_access(device_name)
+    status = _cache().get_value(_status_key(device_name)) or {}
+    if status.get("at"):
+        status["detik"] = int((now_datetime() - get_datetime(status["at"])).total_seconds())
+    return status
 
 
 def pull(device_name, date_from=None, date_to=None):
