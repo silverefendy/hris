@@ -17,6 +17,7 @@ from frappe import _
 from frappe.utils import add_days, add_to_date, get_datetime, getdate, now_datetime
 from frappe.utils.password import get_decrypted_password
 
+from hris.hris_attendance.services import pull_run_log
 from hris.hris_attendance.services.raw_log_naming import make_punch_key
 
 FIRST_PULL_FROM = "2026-10-01"
@@ -303,6 +304,7 @@ def enqueue_pull(device_name, date_from=None, date_to=None):
     if _job_active(job_id):
         return {"queued": False, "message": _("Masih ada tarikan untuk {0} yang antre atau berjalan.").format(device_name)}
     _set_status(device_name, {"status": "Antre", "user": frappe.session.user})
+    run_name = pull_run_log.buat("Tarik", device_name, since, until)
     frappe.enqueue(
         "hris.hris_attendance.services.pull_device.run_pull_job",
         queue="long",
@@ -313,19 +315,23 @@ def enqueue_pull(device_name, date_from=None, date_to=None):
         date_from=since,
         date_to=until,
         notify_user=frappe.session.user,
+        run_name=run_name,
     )
     return {"queued": True}
 
 
-def run_pull_job(device_name, date_from=None, date_to=None, notify_user=None):
+def run_pull_job(device_name, date_from=None, date_to=None, notify_user=None, run_name=None):
     """Pembungkus job: jalankan pull() dan catat status untuk polling dialog."""
     _set_status(device_name, {"status": "Berjalan", "user": notify_user})
+    pull_run_log.mulai(run_name)
     try:
         result = pull(device_name, date_from=date_from, date_to=date_to)
     except Exception as exc:
         _set_status(device_name, {"status": "Gagal", "user": notify_user, "message": str(exc)})
+        pull_run_log.gagal(run_name, exc)
         raise
     _set_status(device_name, {"status": "Selesai", "user": notify_user, "result": result})
+    pull_run_log.selesai_tarik(run_name, result)
     return result
 
 

@@ -9,6 +9,8 @@ import frappe
 from frappe import _
 from frappe.utils import add_days, get_datetime, getdate, now_datetime
 
+from hris.hris_attendance.services import pull_run_log
+
 DELETE_ROLES = {"System Manager", "HRIS Manager"}
 PROTECTED_STATUS = ("Disetujui", "Terkirim")
 BATCH = 500
@@ -116,6 +118,7 @@ def enqueue_delete(device_name, date_from, date_to, confirm_name):
             return {"queued": False, "message": "Masih ada penghapusan yang berjalan untuk mesin ini."}
 
     _set_status(device_name, {"status": "Antre", "user": frappe.session.user, "total": info["total"]})
+    run_name = pull_run_log.buat("Hapus Raw Log", device_name, str(d1), str(d2))
     frappe.enqueue(
         "hris.hris_attendance.services.delete_raw_log.run_delete_job",
         queue="long",
@@ -124,12 +127,14 @@ def enqueue_delete(device_name, date_from, date_to, confirm_name):
         date_from=str(d1),
         date_to=str(d2),
         notify_user=frappe.session.user,
+        run_name=run_name,
     )
     return {"queued": True, "total": info["total"]}
 
 
-def run_delete_job(device_name, date_from, date_to, notify_user=None):
+def run_delete_job(device_name, date_from, date_to, notify_user=None, run_name=None):
     d1, d2, start, end = _range(device_name, date_from, date_to)
+    pull_run_log.mulai(run_name)
     try:
         info = _analyze(device_name, d1, d2, start, end)
         total = info["total"]
@@ -172,10 +177,12 @@ def run_delete_job(device_name, date_from, date_to, notify_user=None):
                 "sampai_tanggal": str(d2),
             },
         )
+        pull_run_log.selesai_hapus(run_name, terhapus)
         return terhapus
     except Exception as exc:
         frappe.db.rollback()
         _set_status(device_name, {"status": "Gagal", "user": notify_user, "message": str(exc)})
+        pull_run_log.gagal(run_name, exc)
         frappe.log_error(title="HRIS Hapus Raw Log gagal")
         raise
 
