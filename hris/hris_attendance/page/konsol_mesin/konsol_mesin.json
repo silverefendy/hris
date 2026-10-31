@@ -1,0 +1,14 @@
+{
+ "doctype": "Page",
+ "name": "konsol-mesin",
+ "page_name": "konsol-mesin",
+ "title": "Konsol Mesin",
+ "module": "HRIS Attendance",
+ "standard": "Yes",
+ "system_page": 0,
+ "roles": [
+  {"role": "HRIS HR Admin"},
+  {"role": "HRIS Manager"},
+  {"role": "System Manager"}
+ ]
+}
