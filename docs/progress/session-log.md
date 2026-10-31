@@ -100,6 +100,41 @@
 - Docs K-42 sampai K-45, status, session-log, data-model, dan api diperbarui dan di-push oleh Claude atas izin Efendy (29 Okt).
 - Belum: 5c-2 (warna list view, Report ringkasan), data nyata, jalur data mesin, istirahat Security, pembersihan sisa uji lama.
 
+## 2026-10-30 (jalur data mesin, Sesi 1 sampai 2B)
+- Arah jalur data diputuskan (29 sampai 30 Okt): semua mesin lewat middleware seperti mesin Solution, Pull pyzk tetap diimplementasikan, satu mesin boleh lebih dari satu jalur. Rinci di [0003](../decisions/0003-jalur-data-mesin.md) (K-46 sampai K-56).
+- Sesi 1: field jalur data di `HRIS Device` dan `HRIS Raw Log`, validasi IP/port wajib bersyarat. Uji console lulus.
+- Sesi 2A: `punch_ingest.save_punches` dan endpoint `push_punches`. Uji console lulus.
+- Sesi 2B (d773aeb): token buatan sendiri di `HRIS Attendance Settings`, `agent_auth.py`, izin role agen dicabut. Uji console lulus.
+- Uji HTTP, `curl`, dan browser lulus (ringkasan di [agent-api.md](../architecture/agent-api.md)). Data uji dihapus.
+- Kendala dan pelajaran:
+  - Uji PowerShell pertama gagal: skrip ber-`Read-Host` ditempel ke konsol dan baris berikutnya tertelan. Solusi: file `.ps1` lewat here-string.
+  - Uji kedua gagal 13 dari 13: `-Base` memakai alamat mesin absensi, bukan server ERP. Skrip versi 2 memeriksa `/api/method/ping` lebih dulu.
+  - Uji ketiga 10 lulus, 4 gagal: urutan di browser tidak sesuai (saklar belum tersimpan, Allowed IPs dan rotasi belum tersimpan saat Enter ditekan). Log `hris_agent.log` menunjukkan `saklar mati` dan `diblokir`, bukan kesalahan token. Pembatas 10 kegagalan per 10 menit ikut memblokir IP PC saat uji beruntun.
+  - Pemeriksaan status lewat skrip baca-saja (`agent_enabled`, prefix, `modified`) membedakan "saklar tidak tersimpan" dari "token salah".
+  - Blok heredoc panjang yang ditempel kehilangan baris `cat > ... <<'EOF'`, sehingga isi Python dijalankan sebagai perintah bash. Pecah menjadi langkah pendek.
+  - Token sempat tampil di chat (diketik di teks prompt `read -p`, dan ditempel di chat). Token dirotasi setelah uji.
+  - Temuan teknis: `mandatory_depends_on` hanya dievaluasi di browser; `set_only_once` ditegakkan server; `modified` JSON harus dinaikkan agar `migrate` mengenali perubahan; mencabut izin dilakukan dengan menghapus entri dan menaikkan `modified`.
+  - Server berjalan dengan `bench start` (tanpa nginx dan HTTPS); web dimuat ulang otomatis, worker tidak.
+- Belum: Sesi 3 (Pull pyzk), Sesi 4 (agen Windows), data nyata, perbaikan kecil Settings, sinkronisasi `data-model.md` dan `api.md`.
+
+## 2026-10-30 sampai 31 (Pull pyzk)
+- Pyzk 0.9 dipasang di env bench dan `pyproject.toml` (6e36db0). Patch `normalize_allowed_ips` lulus 3 dari 3 (057251c).
+- Uji koneksi ke PLTB 220 berhasil (TCP, jam mesin sama dengan WIB).
+- `services/pull_device.py` dan tombol "Ambil Info dari Mesin" (00eba4d).
+- Penamaan Raw Log baru, `punch_key`, `raw_log_naming.py`, dan tarikan dengan `date_from`/`date_to` (009ff78).
+- Tarikan satu minggu 25 sampai 31 Okt: 2.306 baris, 66 user, tanpa duplikat. Rincian dan keputusan: [0004](../decisions/0004-pull-pyzk-dan-penamaan-raw-log.md).
+- Kendala dan pelajaran:
+  - Placeholder harfiah (`NAMA DEVICE`, `IP_MESIN`, `Mesin Gudang`) dijalankan dua kali sebagai nilai sungguhan. Selalu beri nilai nyata, jangan contoh yang mirip nilai sungguhan.
+  - Arti `uid` ditebak salah dua kali; dibuktikan dari data bahwa nomor berputar 0 sampai 65535.
+  - Console dengan loop `for` multi-baris tidak mencetak hasil; pakai file `/tmp/*.py` lalu `exec(open(...).read(), {"frappe": frappe})`.
+  - Tampilan terminal saat menempel heredoc panjang berantakan karena gema layar; yang menentukan adalah `py_compile` dan uji yang berjalan.
+  - Setelah `enqueue_pull` pengecekan pertama menunjukkan 0 baris, lalu diduga worker tidak aktif. Dugaan itu **keliru**: `doctor` menunjukkan 1 worker online dan proses `bench worker` ada (filter `rq` sebelumnya cocok dengan `irq/` kernel). Seluruh 2.306 baris dibuat oleh job pada 09:02:26 sampai 09:02:32. Penyebab "0 baris" tidak terbukti; dugaan: dicek sebelum job selesai. Pelajaran: verifikasi asumsi infrastruktur dulu, dan beri waktu job background.
+  - Temuan sampingan: server berjalan lewat `honcho` di terminal (`pts/0`), sehingga web dan worker ikut mati bila sesi terminal tertutup; `pause_scheduler` aktif di konfigurasi, jadi tarikan terjadwal belum akan berjalan; proses `esbuild` (bench watch) memakai sekitar 626 MB RAM. Dicatat untuk persiapan produksi.
+- Belum: `device_record_no` (ditunda), data Employee, "Cocokkan Ulang", dialog tanggal dan tombol "Tarik Sekarang" (3c, kemudian selesai 31 Okt), penjadwalan tarikan, `WP 221`, perilaku mesin saat penuh.
+- Cek `git log` untuk `hris_shift.json` dan `hris_shift.py` (revisi 29 Okt; status commit tidak diketahui dari sesi ini).
+- Membaca `working_hour.py` utuh untuk memastikan query punch (per karyawan atau per mesin).
+- Merapikan docstring `punch_ingest.py`.
+
 ## 2026-10-31 (Tarik Log, Hapus Raw Log, Konsol Mesin, HRIS Pull Run)
 - Status tarikan diganti polling karena socket.io gagal lewat IP (K-67). Autofill browser mengisi password login ke Comm Key; dilindungi dengan `autocomplete="new-password"` (K-68). Commit b73cc9e.
 - Hapus Raw Log per mesin dan rentang (K-69, 4f182b3); dialog dipusatkan di `hris_device_actions.js` (K-70, fc8114d); halaman Konsol Mesin (K-71).
@@ -117,9 +152,9 @@
 
 ## 2026-10-31 (sesi lanjutan: Sesi C riwayat)
 - Sesi C (0d0d669): fungsi `riwayat` di `pull_device.py` dan tabel riwayat di dialog Status (`hris_device_actions.js`), dipakai form Device dan Konsol Mesin. Tampilan teruji: tiga riwayat (tarik, tarik ulang, hapus) tampil benar (K-76).
-- Kosmetik `depends_on` Pull Run lewat `migrate` (K-77).
+- Kosmetik `depends_on` Pull Run lewat `migrate` (K-77; commit 92027bf).
 - Keputusan Efendy: riwayat tidak dibatasi hanya Manager; role setara admin yang boleh menarik log juga melihat 10 baris teratas.
 - Pelajaran:
   - Status cache (1 jam) dan riwayat database (permanen) adalah dua hal berbeda; tampilkan keduanya.
   - Skrip dengan anchor persis aman, tetapi anchor berisi tanda kutip dari catatan lama bisa gagal cocok; untuk dokumen lama pakai pencarian per awal baris.
-- Belum: tarik celah data (tarik ulang 2 Okt, lalu 4-19 dan 21-23 Okt), `data-model.md` dan `api.md`, agen Windows untuk mesin jalur agen, uji akun HRIS HR Admin pada status terkini (`pull_status` masih menuntut hak write Device).
+- Belum: tarik celah data (tarik ulang 2 Okt, lalu 4-19 dan 21-23 Okt), `data-model.md` dan `api.md`, agen Windows untuk mesin jalur agen, uji akun HRIS HR Admin pada status terkini (`pull_status` masih menuntut hak write Device), laporan uji tampilan `depends_on`.
