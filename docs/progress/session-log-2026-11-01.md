@@ -52,3 +52,19 @@ Tertunda:
 - Grup untuk Employee selain 65 yang sudah terisi (jalur mesin lain belum ditarik).
 - Rancangan tombol Cocokkan Ulang di Konsol Mesin.
 - Pindahkan K-78 sampai K-85 ke tabel README.md bila disetujui.
+
+## Sesi lanjutan 1 sampai 2 November 2026: tombol Cocokkan Ulang
+
+Selesai:
+- Tombol Cocokkan Ulang di list view Raw Log dengan Cek Dulu per ID, penyaring ID dan rentang tanggal (K-87); 110 punch satu ID yang baru dibuat Employee-nya sudah terhubung; Raw Log kini semuanya berstatus Menunggu.
+- Jam kerja security malam tetap 20:00 sampai 08:00 tanpa toleransi khusus (K-86).
+
+Temuan:
+- Raw Log menuntut `change_reason` yang baru saat `employee` diubah; alasan yang sama dengan sebelumnya ditolak. Alasan Cocokkan Ulang kini memuat tanggal dan jam.
+- Label "ID Mesin" menyesatkan karena berarti ID karyawan di mesin, bukan nama mesin; label diganti.
+
+Tertunda:
+- Custom field Department dan Employee masuk repo (patch atau fixtures).
+- Grup untuk Employee selain 65 yang sudah terisi.
+- Restart worker lalu uji hitung ulang Working Hour dari UI.
+- Pindahkan K-78 sampai K-87 ke tabel README.md bila disetujui.

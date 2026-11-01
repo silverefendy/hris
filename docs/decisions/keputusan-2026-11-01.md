@@ -1,4 +1,4 @@
-# Keputusan 1 November 2026 (K-78 sampai K-85)
+# Keputusan 1 November 2026 (K-78 sampai K-87)
 
 Catatan: berkas sementara. Pindahkan barisnya ke tabel `README.md` bila disetujui.
 
@@ -12,11 +12,10 @@ Catatan: berkas sementara. Pindahkan barisnya ke tabel `README.md` bila disetuju
 | K-83 | Pengisian `hris_employee_group` untuk 65 Employee berdasarkan jam masuk modus (punch berstatus mesin 0) dan akhiran nama Department. Jam 06 sampai 08 dengan Department berakhiran ANGGOTA atau ANGGOTA HARIAN masuk `Lapangan Harian` (51). Jam 18 dengan Department berakhiran ANGGOTA masuk `Security Malam` (14). Dua ID dikecualikan (satu belum punya Employee, satu berada di Department induk). Grup `Security Malam` dibuat: Jadwal Mingguan, Senin sampai Minggu, shift `Security Malam`, tanpa Department. **Sementara**: flag masuk/keluar mesin tidak andal (K-23) dan 28 ID punya punch jam 18 yang cukup banyak; koreksi lewat form Employee | 2026-11-01 | Diterapkan (backup, COBA, SIMPAN; 65 baru, error 0) |
 | K-84 | Penandaan `needs_review` pada `HRIS Working Hour` hanya untuk anomali nyata. Alasan log berstatus Menunggu dihapus. Punch yang diabaikan ditandai hanya bila lebih dari 10 menit dari Masuk atau Pulang (`GEROMBOL_MENIT`), karena mesin mengirim punch bergerombol 4 sampai 6 kali dalam hitungan detik. Punch di luar jendela ditandai (shift biasa: sisa tanggal yang sama; shift lewat tengah malam: margin 180 menit, `MARGIN_LUAR_MENIT`). Angka hitungan tidak berubah | 2026-11-01 | Diterapkan (7cc6a6d), teruji 8 kasus dengan rollback |
 | K-85 | Lembur hanya dihitung bila status Hadir. Hari Tidak Lengkap berlembur 0 dan HRD menyesuaikan, selaras K-41 | 2026-11-01 | Diterapkan (4d63cb0), teruji 5 kasus dengan rollback |
+| K-86 | Jam kerja security malam tetap 20:00 sampai 08:00 pada shift `Security Malam`, tanpa toleransi khusus (opsi A). Telat, pulang awal, dan lembur dicatat dan dihitung dengan aturan standar (blok 60 menit, 1.0 jam per blok, toleransi 0). Punch nyata menunjukkan masuk sekitar 18:30 sampai 19:30 dan pulang sekitar 06:00 sampai 07:59, sehingga potongan pulang awal 1 sampai 2 jam per hari akan sering terjadi; HRD perlu mengetahuinya | 2026-11-01 | Diputuskan; tanpa perubahan kode |
+| K-87 | Tombol Cocokkan Ulang di list view `HRIS Raw Log` (bukan Konsol Mesin) untuk baris Tidak Cocok. Cek Dulu mengelompokkan per ID karyawan di mesin dengan status (Bisa dicocokkan, Tidak ada Employee, Employee tidak Active, Employee beda company, Ambigu) dan menaruh yang bermasalah di atas. Cocokkan hanya memproses ID berstatus Bisa dicocokkan, memakai `match_employee` dan `doc.save()` dengan `change_reason` (selaras K-82); alasan memuat waktu karena aturan Raw Log menuntut alasan yang baru. Penyaring opsional: ID dan rentang tanggal. Maksimal 500 baris per klik, tanpa job latar belakang (realtime tidak tersedia, K-67). Role: HRIS HR Admin, HRIS Manager, System Manager | 2026-11-01 | Diterapkan (3ab6e54, b7413a8, 510576f), teruji di console dengan rollback dan di UI |
 
 ## Belum diputuskan
-- Tombol Cocokkan Ulang di Konsol Mesin: perlu rancangan.
 - Penetapan grup atau Shift Assignment untuk Employee hasil impor selain 65 yang sudah terisi (K-83).
 - Cara HRD memperbaiki penanda 1900-01-01, gender, dan Department kosong.
-- Jam kerja resmi security malam dan pagi: punch nyata masuk sekitar 18:30 sampai 19:30 dan pulang sekitar 06:00 sampai 07:59, sedangkan shift di sistem 20:00 sampai 08:00. Bila tidak diubah, hampir semua security terpotong pulang awal 1 sampai 2 jam per hari. Menunggu HRD; perubahan lewat form HRIS Shift.
-- Satu ID dengan 110 punch Oktober belum punya Employee (ditahan saat impor); alasan penahanan dan keputusan impor belum dikonfirmasi.
 - Pengujian hitung ulang Working Hour lewat UI setelah worker direstart (uji sejauh ini lewat console).
