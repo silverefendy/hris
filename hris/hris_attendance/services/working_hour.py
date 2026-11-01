@@ -10,6 +10,8 @@ from hris.hris_attendance.services.shift_schedule import get_schedule_for_date
 DT = "HRIS Working Hour"
 COUNTED = ["Menunggu", "Disetujui", "Terkirim"]
 SOURCES = ("Shift Assignment", "Rotasi", "Jadwal Mingguan")
+GEROMBOL_MENIT = 10
+MARGIN_LUAR_MENIT = 180
 RULE_FIELDS = [
 	"name", "start_time", "end_time", "crosses_midnight", "duration_minutes", "break_minutes",
 	"window_before_min", "late_limit_min", "window_after_min", "min_out_after_in_min",
@@ -121,11 +123,17 @@ def compute_day(rule, day, punches, is_holiday=0):
 	reasons = []
 	if status == "Tidak Lengkap":
 		reasons.append("Punch tidak lengkap (hanya {0})".format("masuk" if masuk else "pulang"))
-	if any(p and p.get("review_status") == "Menunggu" for p in (masuk, pulang)):
-		reasons.append("Memakai log berstatus Menunggu")
-	ignored = sum(1 for r in roles.values() if r == "Diabaikan Otomatis")
-	if ignored:
-		reasons.append("{0} punch diabaikan otomatis".format(ignored))
+	# Punch ganda dalam gerombolan (<= GEROMBOL_MENIT dari Masuk/Pulang) tidak ditandai.
+	anchors = [p["time"] for p in (masuk, pulang) if p]
+	jauh = 0
+	for p in punches:
+		if roles.get(p["name"]) != "Diabaikan Otomatis":
+			continue
+		if anchors and min(abs(_minutes_between(p["time"], a)) for a in anchors) <= GEROMBOL_MENIT:
+			continue
+		jauh += 1
+	if jauh:
+		reasons.append("{0} punch diabaikan di luar gerombolan {1} menit".format(jauh, GEROMBOL_MENIT))
 
 	return {
 		"roles": roles,
@@ -173,6 +181,31 @@ def _day_punch_count(employee, day):
 	start = datetime.combine(day, datetime.min.time())
 	rows = frappe.get_all("HRIS Raw Log", filters=_punch_filters(employee, start, start + timedelta(days=1), False), pluck="name")
 	return len(rows)
+
+
+def _outside_window_count(employee, day, win_from, win_to, crosses_midnight):
+	"""Jumlah punch di luar jendela hari kerja (dicatat, tidak dihitung).
+
+	Shift biasa: sisa tanggal yang sama. Shift lewat tengah malam: margin
+	MARGIN_LUAR_MENIT di kedua sisi jendela.
+	"""
+	one = timedelta(seconds=1)
+	if crosses_midnight:
+		margin = timedelta(minutes=MARGIN_LUAR_MENIT)
+		ranges = [(win_from - margin, win_from - one), (win_to + one, win_to + margin)]
+	else:
+		d0 = datetime.combine(day, datetime.min.time())
+		ranges = [(d0, win_from - one), (win_to + one, d0 + timedelta(days=1) - one)]
+	total = 0
+	for a, b in ranges:
+		if a >= b:
+			continue
+		total += frappe.db.count("HRIS Raw Log", {
+			"employee": employee,
+			"review_status": ["in", COUNTED],
+			"punch_time": ["between", [a, b]],
+		})
+	return total
 
 
 def _signature(doc):
@@ -247,11 +280,10 @@ def calculate_working_hour(employee, work_date):
 		}
 		start = datetime.combine(day, rule["start_time"])
 		end = start + timedelta(minutes=rule["duration_minutes"])
-		punches = _window_punches(
-			employee,
-			start - timedelta(minutes=rule["window_before_min"]),
-			end + timedelta(minutes=rule["window_after_min"]),
-		)
+		win_from = start - timedelta(minutes=rule["window_before_min"])
+		win_to = end + timedelta(minutes=rule["window_after_min"])
+		punches = _window_punches(employee, win_from, win_to)
+		luar = _outside_window_count(employee, day, win_from, win_to, cint(shift["crosses_midnight"]))
 
 		doc.shift = shift["name"]
 		doc.shift_start = _hms(shift["start_time"])
@@ -274,7 +306,9 @@ def calculate_working_hour(employee, work_date):
 			for fieldname, value in result["fields"].items():
 				doc.set(fieldname, value)
 			roles = result["roles"]
-			reasons = result["reasons"]
+			reasons = list(result["reasons"])
+			if luar:
+				reasons.append("{0} punch di luar jendela hari kerja (dicatat, tidak dihitung)".format(luar))
 
 	doc.needs_review = 1 if reasons else 0
 	doc.review_reason = "; ".join(reasons) if reasons else None
