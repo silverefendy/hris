@@ -107,7 +107,7 @@ def compute_day(rule, day, punches, is_holiday=0):
 			early_hours = _deduction_hours(diff, rule["deduction_block_min"], rule["deduction_hours_per_block"])
 		over = _minutes_between(_floor_minute(pulang["time"]), end)
 		step = rule["overtime_min_minutes"] or 1
-		if over > 0 and over >= step:
+		if status == "Hadir" and over > 0 and over >= step:
 			overtime = (min(over, rule["window_after_min"]) // step) * step
 
 	scheduled_minutes = max(0, rule["duration_minutes"] - rule["break_minutes"])
