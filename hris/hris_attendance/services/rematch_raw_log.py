@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import add_days, getdate
+from frappe.utils import add_days, getdate, now_datetime
 
 DT = "HRIS Raw Log"
 ROLES = ["HRIS HR Admin", "HRIS Manager", "System Manager"]
@@ -111,7 +111,7 @@ def _jalankan(device_user_id, commit, date_from=None, date_to=None):
 				doc.match_employee()
 				if not doc.employee:
 					continue
-				doc.change_reason = "Cocokkan Ulang: ID mesin {0} cocok dengan {1}".format(g["id"], doc.employee)
+				doc.change_reason = "Cocokkan Ulang {0}: ID mesin {1} cocok dengan {2}".format(now_datetime().strftime("%Y-%m-%d %H:%M:%S"), g["id"], doc.employee)
 				doc.flags.ignore_permissions = True
 				doc.save()
 				ok += 1
