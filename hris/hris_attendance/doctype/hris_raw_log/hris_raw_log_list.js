@@ -208,3 +208,137 @@ hris.rawlog.showStatus = function (name, listview) {
     };
     tick();
 };
+
+// ---- HRIS_RAWLOG_REMATCH: Cocokkan Ulang baris Tidak Cocok ----
+hris.rawlog.REMATCH_ROLES = ["HRIS HR Admin", "HRIS Manager", "System Manager"];
+hris.rawlog.REMATCH_API = "hris.hris_attendance.services.rematch_raw_log.";
+
+(function () {
+    const settings = (frappe.listview_settings["HRIS Raw Log"] = frappe.listview_settings["HRIS Raw Log"] || {});
+    const previous = settings.onload;
+    settings.onload = function (listview) {
+        if (previous) {
+            previous.call(this, listview);
+        }
+        if (hris.rawlog.REMATCH_ROLES.some((role) => frappe.user.has_role(role))) {
+            listview.page.add_inner_button(__("Cocokkan Ulang"), () => hris.rawlog.openRematch(listview));
+        }
+    };
+})();
+
+hris.rawlog.openRematch = function (listview) {
+    const d = new frappe.ui.Dialog({
+        title: __("Cocokkan Ulang Raw Log"),
+        fields: [
+            {
+                fieldname: "info",
+                fieldtype: "HTML",
+                options:
+                    "<p>" +
+                    __("Hanya menyentuh baris berstatus Tidak Cocok. Klik Cek Dulu untuk melihat ID mana yang bisa dicocokkan dan mana yang bermasalah.") +
+                    "</p>",
+            },
+            {
+                fieldname: "device_user_id",
+                fieldtype: "Data",
+                label: __("ID Mesin (kosongkan untuk semua)"),
+                onchange: () => (d._ok = false),
+            },
+            { fieldname: "check_btn", fieldtype: "Button", label: __("Cek Dulu (tidak mengubah)"), click: () => hris.rawlog.runRematchCheck(d) },
+            { fieldname: "result", fieldtype: "HTML" },
+        ],
+        primary_action_label: __("Cocokkan"),
+        primary_action: () => hris.rawlog.runRematch(d, listview),
+    });
+    d._ok = false;
+    d.show();
+};
+
+hris.rawlog.runRematchCheck = function (d) {
+    d._ok = false;
+    d.fields_dict.result.$wrapper.html("");
+    frappe
+        .call({
+            method: hris.rawlog.REMATCH_API + "check_rematch",
+            args: { device_user_id: d.get_value("device_user_id") || "" },
+            freeze: true,
+            freeze_message: __("Menghitung..."),
+        })
+        .then((r) => {
+            const m = r.message || {};
+            const esc = frappe.utils.escape_html;
+            const rows = (m.ids || []).map((x) => {
+                const ok = x.kategori === "Bisa dicocokkan";
+                return (
+                    "<tr><td>" + esc(String(x.id)) + "</td><td>" + esc(String(x.n)) + "</td><td>" +
+                    esc(x.dari + " s/d " + x.sampai) + "</td><td class='" + (ok ? "text-success" : "text-danger") + "'><b>" +
+                    esc(x.kategori) + "</b></td><td>" + esc(x.employee || "-") + "</td></tr>"
+                );
+            });
+            let html =
+                "<p>" + esc(__("Baris Tidak Cocok tanpa Employee")) + ": <b>" + esc(String(m.total || 0)) + "</b> | " +
+                esc(__("bisa dicocokkan")) + ": <b>" + esc(String(m.bisa_baris || 0)) + "</b> | " +
+                esc(__("perlu tindakan")) + ": <b>" + esc(String(m.tindakan_baris || 0)) + "</b></p>";
+            if (rows.length) {
+                html +=
+                    "<table class='table table-bordered table-sm'><thead><tr><th>" +
+                    [__("ID Mesin"), __("Baris"), __("Rentang"), __("Status"), __("Employee")].map(esc).join("</th><th>") +
+                    "</th></tr></thead><tbody>" + rows.join("") + "</tbody></table>";
+            }
+            if (m.terpotong) {
+                html += "<p class='text-muted'>" + esc(__("Daftar dipotong 100 ID pertama; isi ID Mesin untuk menyaring.")) + "</p>";
+            }
+            if (m.bisa_baris > 0) {
+                d._ok = true;
+                html += "<div class='text-success'><b>" + esc(__("Klik Cocokkan (maksimal 500 baris per klik).")) + "</b></div>";
+            } else {
+                html += "<div class='text-danger'><b>" + esc(__("Tidak ada yang bisa dicocokkan sekarang. Perbaiki ID berstatus merah dulu, lalu Cek Dulu lagi.")) + "</b></div>";
+            }
+            d.fields_dict.result.$wrapper.html(html);
+        });
+};
+
+hris.rawlog.runRematch = function (d, listview) {
+    if (!d._ok) {
+        frappe.msgprint(__("Klik Cek Dulu lebih dulu (dan ulangi bila ID mesin berubah)."));
+        return;
+    }
+    const btn = d.get_primary_btn();
+    btn.prop("disabled", true);
+    frappe
+        .call({
+            method: hris.rawlog.REMATCH_API + "run_rematch",
+            args: { device_user_id: d.get_value("device_user_id") || "" },
+            freeze: true,
+            freeze_message: __("Mencocokkan..."),
+        })
+        .then((r) => {
+            const m = r.message || {};
+            const esc = frappe.utils.escape_html;
+            d.hide();
+            let html = "<p>" + esc(__("Dicocokkan")) + ": <b>" + esc(String(m.dicocokkan || 0)) + "</b> " + esc(__("baris")) + "</p>";
+            if ((m.ringkas || []).length) {
+                html +=
+                    "<table class='table table-bordered table-sm'><thead><tr><th>" +
+                    [__("ID Mesin"), __("Employee"), __("Baris"), __("Rentang")].map(esc).join("</th><th>") +
+                    "</th></tr></thead><tbody>" +
+                    m.ringkas.map((x) =>
+                        "<tr><td>" + esc(String(x.id)) + "</td><td>" + esc(x.employee) + "</td><td>" + esc(String(x.jumlah)) +
+                        "</td><td>" + esc(x.dari + " s/d " + x.sampai) + "</td></tr>"
+                    ).join("") + "</tbody></table>";
+            }
+            if ((m.gagal || []).length) {
+                html += "<div class='text-danger'><b>" + esc(__("Gagal")) + ":</b><ul>" + m.gagal.map((x) => "<li>" + esc(x) + "</li>").join("") + "</ul></div>";
+            }
+            html +=
+                "<p>" + esc(__("Sisa bisa dicocokkan")) + ": <b>" + esc(String(m.sisa_bisa || 0)) + "</b> | " +
+                esc(__("sisa perlu tindakan")) + ": <b>" + esc(String(m.sisa_tindakan || 0)) + "</b></p>";
+            frappe.msgprint({
+                title: __("Hasil Cocokkan Ulang"),
+                message: html,
+                indicator: (m.gagal || []).length ? "orange" : "green",
+            });
+            listview.refresh();
+        })
+        .catch(() => btn.prop("disabled", false));
+};
