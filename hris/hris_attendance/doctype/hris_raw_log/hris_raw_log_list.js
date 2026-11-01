@@ -241,9 +241,14 @@ hris.rawlog.openRematch = function (listview) {
             {
                 fieldname: "device_user_id",
                 fieldtype: "Data",
-                label: __("ID Mesin (kosongkan untuk semua)"),
+                label: __("ID Karyawan di Mesin (kosongkan untuk semua)"),
+                description: __("ID orang yang terdaftar di mesin absensi, bukan nama mesin."),
                 onchange: () => (d._ok = false),
             },
+            { fieldname: "date_from", fieldtype: "Date", label: __("Dari Tanggal (opsional)"), onchange: () => (d._ok = false) },
+            { fieldname: "col_to", fieldtype: "Column Break" },
+            { fieldname: "date_to", fieldtype: "Date", label: __("Sampai Tanggal (opsional)"), onchange: () => (d._ok = false) },
+            { fieldname: "sec_check", fieldtype: "Section Break" },
             { fieldname: "check_btn", fieldtype: "Button", label: __("Cek Dulu (tidak mengubah)"), click: () => hris.rawlog.runRematchCheck(d) },
             { fieldname: "result", fieldtype: "HTML" },
         ],
@@ -254,13 +259,29 @@ hris.rawlog.openRematch = function (listview) {
     d.show();
 };
 
+hris.rawlog.rematchArgs = function (d) {
+    const v = d.get_values();
+    if (!v) {
+        return null;
+    }
+    if (v.date_from && v.date_to && v.date_to < v.date_from) {
+        frappe.msgprint(__("Sampai Tanggal tidak boleh lebih awal dari Dari Tanggal."));
+        return null;
+    }
+    return { device_user_id: v.device_user_id || "", date_from: v.date_from || "", date_to: v.date_to || "" };
+};
+
 hris.rawlog.runRematchCheck = function (d) {
+    const args = hris.rawlog.rematchArgs(d);
+    if (!args) {
+        return;
+    }
     d._ok = false;
     d.fields_dict.result.$wrapper.html("");
     frappe
         .call({
             method: hris.rawlog.REMATCH_API + "check_rematch",
-            args: { device_user_id: d.get_value("device_user_id") || "" },
+            args: args,
             freeze: true,
             freeze_message: __("Menghitung..."),
         })
@@ -282,11 +303,11 @@ hris.rawlog.runRematchCheck = function (d) {
             if (rows.length) {
                 html +=
                     "<table class='table table-bordered table-sm'><thead><tr><th>" +
-                    [__("ID Mesin"), __("Baris"), __("Rentang"), __("Status"), __("Employee")].map(esc).join("</th><th>") +
+                    [__("ID di Mesin"), __("Baris"), __("Rentang"), __("Status"), __("Employee")].map(esc).join("</th><th>") +
                     "</th></tr></thead><tbody>" + rows.join("") + "</tbody></table>";
             }
             if (m.terpotong) {
-                html += "<p class='text-muted'>" + esc(__("Daftar dipotong 100 ID pertama; isi ID Mesin untuk menyaring.")) + "</p>";
+                html += "<p class='text-muted'>" + esc(__("Daftar dipotong 100 ID pertama; isi ID untuk menyaring.")) + "</p>";
             }
             if (m.bisa_baris > 0) {
                 d._ok = true;
@@ -300,7 +321,11 @@ hris.rawlog.runRematchCheck = function (d) {
 
 hris.rawlog.runRematch = function (d, listview) {
     if (!d._ok) {
-        frappe.msgprint(__("Klik Cek Dulu lebih dulu (dan ulangi bila ID mesin berubah)."));
+        frappe.msgprint(__("Klik Cek Dulu lebih dulu (dan ulangi bila ID atau tanggal berubah)."));
+        return;
+    }
+    const args = hris.rawlog.rematchArgs(d);
+    if (!args) {
         return;
     }
     const btn = d.get_primary_btn();
@@ -308,7 +333,7 @@ hris.rawlog.runRematch = function (d, listview) {
     frappe
         .call({
             method: hris.rawlog.REMATCH_API + "run_rematch",
-            args: { device_user_id: d.get_value("device_user_id") || "" },
+            args: args,
             freeze: true,
             freeze_message: __("Mencocokkan..."),
         })
@@ -320,7 +345,7 @@ hris.rawlog.runRematch = function (d, listview) {
             if ((m.ringkas || []).length) {
                 html +=
                     "<table class='table table-bordered table-sm'><thead><tr><th>" +
-                    [__("ID Mesin"), __("Employee"), __("Baris"), __("Rentang")].map(esc).join("</th><th>") +
+                    [__("ID di Mesin"), __("Employee"), __("Baris"), __("Rentang")].map(esc).join("</th><th>") +
                     "</th></tr></thead><tbody>" +
                     m.ringkas.map((x) =>
                         "<tr><td>" + esc(String(x.id)) + "</td><td>" + esc(x.employee) + "</td><td>" + esc(String(x.jumlah)) +
