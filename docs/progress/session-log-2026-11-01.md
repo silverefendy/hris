@@ -75,13 +75,14 @@ Selesai:
 - `install.py` dilengkapi: 6 Custom Field Employee, 1 Custom Field Department, 4 Property Setter Employee, idempoten, server tidak ditimpa (076e4b7).
 - Terbukti: definisi kode identik dengan server, jumlah Custom Field dan Property Setter tidak berubah.
 
+- Pemasangan dari nol dan `after_migrate` terbukti di site uji kosong (dihapus setelah uji).
+
 Temuan:
 - `attendance_device_id` bukan Custom Field, melainkan field standar HRMS.
 - 4 Property Setter Employee sebelumnya hanya ada di server (dibuat 27 Oktober), tidak di repo.
 - K-87 menulis "teruji di UI" padahal hanya versi awal yang diklik; sudah dikoreksi di catatan.
 
 Tertunda:
-- Site uji (`bench new-site`) untuk membuktikan pemasangan dari nol dan hook `after_migrate`.
 - Uji UI dialog Cocokkan Ulang versi terakhir.
 - Grup untuk Employee ID 11356 dan Employee selain 65.
 - Restart worker lalu uji hitung ulang Working Hour dari UI.
