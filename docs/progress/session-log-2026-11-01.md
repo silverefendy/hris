@@ -64,7 +64,26 @@ Temuan:
 - Label "ID Mesin" menyesatkan karena berarti ID karyawan di mesin, bukan nama mesin; label diganti.
 
 Tertunda:
-- Custom field Department dan Employee masuk repo (patch atau fixtures).
 - Grup untuk Employee selain 65 yang sudah terisi.
 - Restart worker lalu uji hitung ulang Working Hour dari UI.
 - Pindahkan K-78 sampai K-87 ke tabel README.md bila disetujui.
+
+## Sesi lanjutan 2 November 2026: custom field masuk repo
+
+Selesai:
+- Inventaris baca-saja: dari 31 Custom Field Employee dan Department, 7 milik HRIS; sisanya milik HRMS. Tidak ada `fixtures`, `install.py` baru membuat 2 field (K-88).
+- `install.py` dilengkapi: 6 Custom Field Employee, 1 Custom Field Department, 4 Property Setter Employee, idempoten, server tidak ditimpa (076e4b7).
+- Terbukti: definisi kode identik dengan server, jumlah Custom Field dan Property Setter tidak berubah.
+
+Temuan:
+- `attendance_device_id` bukan Custom Field, melainkan field standar HRMS.
+- 4 Property Setter Employee sebelumnya hanya ada di server (dibuat 27 Oktober), tidak di repo.
+- K-87 menulis "teruji di UI" padahal hanya versi awal yang diklik; sudah dikoreksi di catatan.
+
+Tertunda:
+- Site uji (`bench new-site`) untuk membuktikan pemasangan dari nol dan hook `after_migrate`.
+- Uji UI dialog Cocokkan Ulang versi terakhir.
+- Grup untuk Employee ID 11356 dan Employee selain 65.
+- Restart worker lalu uji hitung ulang Working Hour dari UI.
+- Info potongan pulang awal security (K-86) ke HRD.
+- Pindahkan K-78 sampai K-88 ke tabel README.md bila disetujui.
