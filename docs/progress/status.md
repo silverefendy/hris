@@ -6,7 +6,7 @@ Diperbarui: 31 Oktober 2026 (malam)
 - App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`).
 - Modul HRIS Attendance berisi DocType terpasang: `HRIS Device`, `HRIS Raw Log`, `HRIS Shift`, `HRIS Employee Group` (+ tabel anak), `HRIS Holiday`, `HRIS Shift Rotation` (+ tabel anak), `HRIS Shift Assignment`, `HRIS Working Hour`, `HRIS Pull Run`, dan `HRIS Attendance Settings` (Single), serta Page `Konsol Mesin`. Custom Field dan hook validasi di `Employee` untuk grup karyawan (`hris_employee_group`).
 - Service: `shift_schedule.py` (K-33), `working_hour.py` (K-35 sampai K-44), `working_hour_batch.py` (K-45), `audit_trail.py`, `employee_group.py`; jalur data mesin: `punch_ingest.py`, `agent_auth.py`, `pull_device.py`, `delete_raw_log.py`, `pull_run_log.py`, `raw_log_naming.py`; endpoint `integrations/agent_api.py` ([agent-api.md](../architecture/agent-api.md)).
-- **Jalur data mesin (K-46 sampai K-77, [0003](../decisions/0003-jalur-data-mesin.md), [0004](../decisions/0004-pull-pyzk-dan-penamaan-raw-log.md)):** jalur agen (`push_punches`) teruji; jalur Pull pyzk sudah berjalan untuk mesin `PLTB 220`. Form Device dan Konsol Mesin memiliki dialog Tarik Log (Otomatis atau Rentang Tanggal, dengan Cek Dulu), Status (polling) dengan riwayat 10 terakhir, dan Hapus Raw Log. Tombol "Ambil Info dari Mesin" ada di form Device. Agen Windows belum dibuat (Sesi 4, K-72).
+- **Jalur data mesin (K-46 sampai K-77, [0003](../decisions/0003-jalur-data-mesin.md), [0004](../decisions/0004-pull-pyzk-dan-penamaan-raw-log.md)):** jalur agen (`push_punches`) teruji; jalur Pull pyzk sudah berjalan untuk mesin `PLTB 220`. Form Device dan Konsol Mesin memiliki dialog Tarik Log (Otomatis atau Rentang Tanggal, dengan Cek Dulu), Status (polling) dengan riwayat 10 terakhir, dan Hapus Raw Log. Tombol "Ambil Info dari Mesin" ada di form Device. Agen Windows sudah dibuat sebagai jendela manual dan teruji di satu PC (K-90 sampai K-93, [agen-windows.md](../development/agen-windows.md)).
 - Tab "Audit Trail HRIS" ada di semua DocType HRIS.
 - Arah arsitektur: HRIS mandiri; dari HRMS/ERPNext hanya `Employee` dan `Company` (K-18). Bridge hanya arah HRIS ke ERPNext, ditunda (K-19).
 - Zona waktu site kerja: Asia/Jakarta (K-28). Jam OS server dan `logs/hris_agent.log` tampaknya UTC.
@@ -65,7 +65,7 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | `device_record_no` | Ditunda (K-59); data tetap di `raw_payload` |
 | Mesin `WP 221` | `pyzk` gagal "Can't connect" (kelas kode 6001); dijangkau lewat agen Windows (K-72), sesi tersendiri |
 | Perilaku mesin saat penuh | Cek manual MB460; perkiraan penuh dalam 5 sampai 6 bulan (kasar) |
-| Sesi 4: agen Windows | Dipecah 4a uji baca SDK, 4b skrip agen, 4c Scheduled Task; butuh endpoint konfigurasi agen |
+| Sesi 4: agen Windows | 4a uji baca SDK dan 4b skrip agen selesai (K-90 sampai K-93); 4c Scheduled Task ditunda karena penarikan dibuat manual |
 | Sesi 5: scheduler, hitung ulang malam, impor file | Opsional; sekarang semuanya manual (K-55) |
 | Perbaikan kecil Settings | Refresh form setelah Generate Token (form basi membuat Simpan berikutnya tidak berlaku) |
 | Sebelum produksi | `developer_mode` mati, nginx, supervisor atau service pengganti `honcho` di terminal, HTTPS, rotasi token (lihat agent-api.md) |
@@ -99,7 +99,7 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | Sesi C: riwayat 10 terakhir di dialog Status, penanda "tidak responsif" (K-76) | Selesai, ter-push (0d0d669), tampilan teruji. Link ke form dan "Lihat semua" serta uji akun HRIS HR Admin masih dicek |
 | Kosmetik `HRIS Pull Run`: `depends_on` per jenis (K-77) | Di-commit (92027bf); tampilan di browser belum dilaporkan. Cek: `PR-2610-0008` tanpa "Jumlah Dihapus", `DR-2610-0010` hanya "Jumlah Dihapus" |
 | Celah data tarikan | Tanggal 2 Okt (535 baris dihapus saat uji) belum ditarik ulang; rentang 4 s/d 19 Okt dan 21 s/d 23 Okt belum ditarik. Gunakan Cek Dulu mode Rentang Tanggal |
-| Agen Windows untuk satu mesin Solution (K-72) | Belum; sesi tersendiri |
+| Agen Windows untuk satu mesin Solution (K-72) | Selesai dan teruji di satu PC (K-90 sampai K-93). Sisa: uji PC kedua, `allowed_ips`, rotasi token, mesin Solution lain |
 | Hak baca HRIS HR Admin atas HRIS Device di Konsol Mesin | Belum diverifikasi; Konsol memuat daftar mesin lewat `frappe.client.get_list`. Bila kosong untuk HR Admin, buat fungsi server khusus |
 | Hak HRIS HR Admin pada status terkini | `pull_status` mensyaratkan hak write pada HRIS Device; HR Admin mungkin melihat riwayat tetapi status terkini ditolak. Belum terbukti; perbaikan satu baris bila terbukti, ubah hanya setelah konfirmasi Efendy |
 | Teks "Tidak ada Raw Log di mesin dan rentang ini" | Membingungkan; ganti ke "untuk mesin dan rentang ini" saat perapian |
@@ -110,6 +110,6 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 2. Tarik celah data (Konsol Mesin, PLTB 220, Rentang Tanggal, selalu Cek Dulu): 2 s/d 2 Okt (harapan Baru 535), 4 s/d 19 Okt, 21 s/d 23 Okt.
 3. Perbaikan kecil: docstring `punch_ingest.py`, teks "di mesin dan rentang ini", sinkronisasi `data-model.md` dan `api.md`.
 4. Rancangan input data Employee (`attendance_device_id`), lalu sesi "Cocokkan Ulang".
-5. Sesi 4: agen Windows; `WP 221` (K-72).
+5. Sesi 4: agen Windows untuk `WP 221` selesai (K-90 sampai K-93). Sisa: uji PC kedua, `allowed_ips`, rotasi token, mesin Solution lain.
 6. Setelah ada Employee: uji browser 5c-1 dan working hour dengan data nyata.
 7. Sebelum produksi: lihat daftar di agent-api.md.
