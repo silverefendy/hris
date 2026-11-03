@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 31 Oktober 2026
+Diperbarui: 3 November 2026
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -76,7 +76,7 @@ Diperbarui: 31 Oktober 2026
 | K-69 | Hapus Raw Log per mesin dan rentang tanggal: hanya data di HRIS (mesin tidak disentuh, `last_pull_at` tidak berubah). Role System Manager dan HRIS Manager dicek di fungsi server. Mesin dan dua tanggal wajib. Ditolak seluruhnya bila ada log Disetujui/Terkirim atau dipakai `HRIS Working Hour`. Wajib Cek Dulu lalu ketik nama mesin. Job latar belakang, batch 500. Jejak lewat komentar pada Device dan record Pull Run (`frappe.db.delete` massal tidak membuat entri Deleted Document) | 2026-10-31 | Diterapkan (4f182b3), teruji |
 | K-70 | Dialog Tarik Log, Status, dan Cek Dulu dipusatkan di `public/js/hris_device_actions.js` (namespace `hris.device`, dimuat lewat `app_include_js`), dipakai form Device dan Konsol Mesin | 2026-10-31 | Diterapkan (fc8114d), teruji |
 | K-71 | Konsol Mesin dibuat sebagai Page `konsol-mesin`: tabel semua mesin dengan Tarik Log, Cek Koneksi, Status. Mesin jalur agen tidak menampilkan tombol Tarik Log (tombol khusus agen menyusul). Cek Koneksi di Konsol hanya membaca, tidak menyimpan ke Device | 2026-10-31 | Diterapkan, teruji. Hak baca HRIS HR Admin atas HRIS Device belum diverifikasi |
-| K-72 | Satu mesin Solution (X905) dijangkau lewat agen Windows, dibangun di sesi tersendiri setelah HRIS Pull Run. Agen memakai SDK `zkemkeeper` dengan Python 32-bit; Comm Key disimpan di sisi agen (sejalan K-49). HTTPS wajib sebelum produksi (K-56) | 2026-10-31 | Disetujui; belum dibangun |
+| K-72 | Satu mesin Solution (X905) dijangkau lewat agen Windows, dibangun di sesi tersendiri setelah HRIS Pull Run. Agen memakai SDK `zkemkeeper` dengan Python 32-bit; Comm Key disimpan di sisi agen (sejalan K-49). HTTPS wajib sebelum produksi (K-56) | 2026-10-31 | Dibangun dan teruji; lihat K-90 sampai K-93 |
 | K-73 | DocType `HRIS Pull Run`: riwayat tarik dan hapus Raw Log. Semua field read-only, dibuat oleh kode sistem (`ignore_permissions`), tanpa tombol New. Izin: HRIS HR Admin dan HRIS Manager baca; System Manager baca dan hapus. Pencatatan aman-gagal (error ke Error Log, proses utama tetap jalan). Merevisi sebagian K-46 | 2026-10-31 | Diterapkan (f387543, 5e886b9), teruji tarik, tarik ulang, hapus |
 | K-74 | Penomoran Pull Run: `PR-YYMM-NNNN` (Tarik) dan `DR-YYMM-NNNN` (Hapus Raw Log) lewat `autoname: format:{kode}-{YY}{MM}-{####}`. Counter `{####}` **dipakai bersama** kedua awalan (contoh `PR-2610-0009` lalu `DR-2610-0010`); diterima, bukan bug. Penyebab pasti belum diverifikasi di kode Frappe. Alternatif bila perlu deret terpisah: autoname lewat controller (seperti K-40) | 2026-10-31 | Diterapkan, teruji |
 | K-75 | Pull Run tanpa pembersihan otomatis (tanpa scheduler, K-55); pembersihan manual oleh System Manager lewat list view | 2026-10-31 | Aktif |
@@ -87,7 +87,6 @@ Diperbarui: 31 Oktober 2026
 - Nama merek dan lisensi final (implikasi GPLv3 ERPNext/HRMS perlu diverifikasi).
 - Rancangan sisa Sesi 3 (dialog tanggal dan tombol "Tarik Sekarang", penjadwalan tarikan rutin) dan Sesi 4 (agen Windows, endpoint konfigurasi agen, penyimpanan token di PC agen); format Impor File menunggu contoh berkas ekspor.
 - Field `device_record_no` (ditunda, K-59).
-- Mesin `WP 221` (kelas masalah kode 6001): jalur apa yang dipakai.
 - Perilaku mesin saat jejak transaksi penuh (perlu dicek di manual MB460).
 - Arti status `Terkirim` pada Raw Log (tidak ada kode yang mengisinya; mengunci edit dan ikut dihitung).
 - Aturan lembur lanjutan (pengali, hari libur) dan aturan khusus Security (istirahat Security Pagi dan Malam sementara 0).
@@ -103,5 +102,13 @@ Diperbarui: 31 Oktober 2026
 - Merek/model mesin untuk uji template wajah; prioritas 3 bulan.
 - Satu atau dua bench untuk production; nasib site uji lama.
 - Navigasi: Sidebar modul dan Dock (usulan), bukan Desktop Icon.
+
+## Berkas keputusan per periode
+Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
+
+| Nomor | Berkas |
+|---|---|
+| K-78 sampai K-88 | [keputusan-2026-11-01.md](keputusan-2026-11-01.md) |
+| K-89 sampai K-94 | [keputusan-2026-11-03.md](keputusan-2026-11-03.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
