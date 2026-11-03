@@ -1,6 +1,6 @@
 # Rancangan Payroll (Draf Fase 1)
 
-Status: **draf, menunggu persetujuan**. Belum ada kode. Tanggal: 3 November 2026.
+Status: **disetujui sebagian (K-95 sampai K-99)**; A7 dan model data karyawan masih terbuka. Belum ada kode. Tanggal: 3 November 2026.
 
 ## 1. Prinsip
 - Payroll mengubah fakta Working Hour menjadi uang per orang per periode.
