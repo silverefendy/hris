@@ -1,0 +1,62 @@
+{
+ "app": "hris",
+ "charts": [],
+ "content": "[{\"id\": \"hrisHdr001\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>HRIS</b></span>\", \"col\": 12}}, {\"id\": \"hrisNc001\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"HRIS Karyawan Tanpa Grup\", \"col\": 3}}, {\"id\": \"hrisNc002\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"HRIS Raw Log Menunggu\", \"col\": 3}}, {\"id\": \"hrisNc003\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"HRIS Perlu Tinjauan\", \"col\": 3}}, {\"id\": \"hrisNc004\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"HRIS Tidak Lengkap\", \"col\": 3}}, {\"id\": \"hrisSpc001\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"hrisHdr002\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h5\\\"><b>Akses Cepat</b></span>\", \"col\": 12}}, {\"id\": \"hrisSc001\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Konsol Mesin\", \"col\": 4}}, {\"id\": \"hrisSc002\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"HRIS Working Hour\", \"col\": 4}}, {\"id\": \"hrisSc003\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Working Hour Ringkasan\", \"col\": 4}}]",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "users",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "HRIS",
+ "link_type": "DocType",
+ "links": [],
+ "module": "HRIS Attendance",
+ "name": "HRIS",
+ "number_cards": [
+  {
+   "label": "HRIS Karyawan Tanpa Grup",
+   "number_card_name": "HRIS Karyawan Tanpa Grup"
+  },
+  {
+   "label": "HRIS Raw Log Menunggu",
+   "number_card_name": "HRIS Raw Log Menunggu"
+  },
+  {
+   "label": "HRIS Perlu Tinjauan",
+   "number_card_name": "HRIS Perlu Tinjauan"
+  },
+  {
+   "label": "HRIS Tidak Lengkap",
+   "number_card_name": "HRIS Tidak Lengkap"
+  }
+ ],
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 3.0,
+ "shortcuts": [
+  {
+   "label": "Konsol Mesin",
+   "type": "Page",
+   "link_to": "konsol-mesin"
+  },
+  {
+   "label": "HRIS Working Hour",
+   "type": "DocType",
+   "link_to": "HRIS Working Hour",
+   "doc_view": "List"
+  },
+  {
+   "label": "Working Hour Ringkasan",
+   "type": "Report",
+   "link_to": "HRIS Working Hour Ringkasan",
+   "report_ref_doctype": "HRIS Working Hour"
+  }
+ ],
+ "title": "HRIS",
+ "type": "Workspace"
+}

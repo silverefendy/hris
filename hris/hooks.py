@@ -279,3 +279,12 @@ app_include_js = [
     "/assets/hris/js/hris_audit_trail.js",
     "/assets/hris/js/hris_device_actions.js",
 ]
+
+add_to_apps_screen = [
+	{
+		"name": "hris",
+		"logo": "/assets/hris/images/hris-logo.svg",
+		"title": "HRIS",
+		"route": "/desk/hris-attendance/hris",
+	}
+]

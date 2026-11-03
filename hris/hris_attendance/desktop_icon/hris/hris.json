@@ -1,0 +1,16 @@
+{
+ "app": "hris",
+ "bg_color": "green",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon_type": "Link",
+ "idx": 0,
+ "label": "HRIS",
+ "link_to": "HRIS",
+ "link_type": "Workspace Sidebar",
+ "name": "HRIS",
+ "restrict_removal": 0,
+ "roles": [],
+ "standard": 1
+}
