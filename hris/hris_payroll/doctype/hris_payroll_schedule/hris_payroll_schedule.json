@@ -1,0 +1,52 @@
+{
+ "creation": "2026-11-04 09:00:00.000000",
+ "modified": "2026-11-04 09:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Payroll",
+ "engine": "InnoDB",
+ "custom": 0,
+ "index_web_pages_for_search": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "HRIS Payroll Schedule",
+ "autoname": "field:schedule_name",
+ "naming_rule": "By fieldname",
+ "allow_rename": 1,
+ "track_changes": 1,
+ "title_field": "schedule_name",
+ "fields": [
+  {"fieldname": "details_tab", "fieldtype": "Tab Break", "label": "Details"},
+  {"fieldname": "schedule_name", "fieldtype": "Data", "label": "Nama Jadwal", "reqd": 1, "unique": 1, "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "company", "fieldtype": "Link", "label": "Company", "options": "Company", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "schedule_type", "fieldtype": "Select", "label": "Jenis Jadwal", "options": "Bulanan\nMingguan\nHarian\nTanggal Tetap", "reqd": 1, "in_list_view": 1, "in_standard_filter": 1},
+  {"fieldname": "is_active", "fieldtype": "Check", "label": "Aktif", "default": "1", "in_list_view": 1},
+  {"fieldname": "column_break_1", "fieldtype": "Column Break"},
+  {"fieldname": "pay_date_offset_days", "fieldtype": "Int", "label": "Jeda ke Hari Bayar (hari)", "default": "0", "description": "Jumlah hari dari akhir periode sampai hari bayar. 0 = hari bayar sama dengan akhir periode."},
+  {"fieldname": "sunday_rule", "fieldtype": "Select", "label": "Bila Hari Bayar Jatuh Hari Minggu", "options": "Maju ke Senin\nTetap", "default": "Maju ke Senin", "description": "Hanya menggeser hari bayar. Akhir periode tidak berubah."},
+  {"fieldname": "description", "fieldtype": "Small Text", "label": "Keterangan"},
+  {"fieldname": "params_section", "fieldtype": "Section Break", "label": "Parameter Periode"},
+  {"fieldname": "cut_off_day", "fieldtype": "Int", "label": "Tanggal Cut-off (1-31)", "depends_on": "eval:doc.schedule_type=='Bulanan'", "description": "Hari terakhir periode. Contoh 26 = periode 27 bulan lalu sampai 26 bulan ini. Bulan yang lebih pendek memakai hari terakhir bulan."},
+  {"fieldname": "week_start_day", "fieldtype": "Select", "label": "Hari Awal Minggu", "options": "\nSenin\nSelasa\nRabu\nKamis\nJumat\nSabtu\nMinggu", "depends_on": "eval:doc.schedule_type=='Mingguan'", "description": "Periode 7 hari mulai dari hari ini."},
+  {"fieldname": "period_days", "fieldtype": "Int", "label": "Panjang Periode (hari)", "depends_on": "eval:doc.schedule_type=='Harian'"},
+  {"fieldname": "anchor_date", "fieldtype": "Date", "label": "Tanggal Acuan", "depends_on": "eval:doc.schedule_type=='Harian'", "description": "Awal salah satu periode. Periode lain dihitung berurutan dari tanggal ini."},
+  {"fieldname": "cut_off_dates", "fieldtype": "Table", "label": "Tanggal Cut-off", "options": "HRIS Payroll Schedule Cutoff", "depends_on": "eval:doc.schedule_type=='Tanggal Tetap'", "description": "Contoh: 14 dan 28. Setiap tanggal adalah hari terakhir sebuah periode."},
+  {"fieldname": "audit_trail_tab", "fieldtype": "Tab Break", "label": "Audit Trail HRIS", "depends_on": "eval:!doc.__islocal"},
+  {"fieldname": "audit_trail_html", "fieldtype": "HTML", "label": "Audit Trail"}
+ ],
+ "field_order": [
+  "details_tab", "schedule_name", "company", "schedule_type", "is_active",
+  "column_break_1", "pay_date_offset_days", "sunday_rule", "description",
+  "params_section", "cut_off_day", "week_start_day", "period_days", "anchor_date", "cut_off_dates",
+  "audit_trail_tab", "audit_trail_html"
+ ],
+ "permissions": [
+  {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
+  {"create": 1, "export": 1, "read": 1, "report": 1, "role": "HRIS Payroll Admin", "write": 1},
+  {"read": 1, "report": 1, "role": "HRIS Payroll User"},
+  {"read": 1, "report": 1, "role": "HRIS HR Admin"},
+  {"read": 1, "report": 1, "role": "HRIS Manager"}
+ ]
+}
