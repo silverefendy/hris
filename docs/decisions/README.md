@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 3 November 2026
+Diperbarui: 4 November 2026
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -110,5 +110,7 @@ Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
 |---|---|
 | K-78 sampai K-88 | [keputusan-2026-11-01.md](keputusan-2026-11-01.md) |
 | K-89 sampai K-94 | [keputusan-2026-11-03.md](keputusan-2026-11-03.md) |
+| K-95 sampai K-99 | [keputusan-2026-11-03-payroll.md](keputusan-2026-11-03-payroll.md) |
+| K-100 sampai K-104 | [keputusan-2026-11-04.md](keputusan-2026-11-04.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
