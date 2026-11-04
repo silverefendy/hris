@@ -1,4 +1,4 @@
-# Keputusan 4 November 2026 (K-100 sampai K-112)
+# Keputusan 4 November 2026 (K-100 sampai K-114)
 
 Dasar: [payroll-rancangan.md](../business/payroll-rancangan.md). Kode pertama: HRIS Payroll Schedule (K-105).
 
@@ -17,6 +17,8 @@ Dasar: [payroll-rancangan.md](../business/payroll-rancangan.md). Kode pertama: H
 | K-110 | Akses data gaji hanya untuk role khusus gaji; role lain, termasuk HR biasa, tidak punya akses. Dua role bertingkat: Payroll Admin (karyawan harian dan mingguan, tidak boleh melihat gaji bulanan) dan Payroll Manager (melihat semua). Sementara Kepala HRD memakai role Payroll Admin; diatur ulang kemudian | 2026-11-04 | Disetujui; penegakan per baris perlu diuji di site uji |
 | K-111 | Slip gaji memiliki kolom Adjustment (koreksi). Alasan wajib diisi dan hanya Payroll Manager yang boleh mengisi. Divalidasi di server | 2026-11-04 | Disetujui; dibuat bersama `HRIS Payroll Slip` |
 | K-112 | Field `HRIS Employee` mengikuti profil aplikasi lama (identitas, kontak, kerja, bank, BPJS, status, foto). KTP dan rekening boleh dilihat role HRD dan payroll, role lain tidak. Foto disimpan. Nominal gaji tidak disimpan di `HRIS Employee`, hanya di `HRIS Employee Pay`. Melengkapi K-104; mekanisme enkripsi menunggu uji di site uji | 2026-11-04 | Disetujui; rincian field di sesi rancangan |
+| K-113 | KTP dan rekening bank tidak dienkripsi di database. Perlindungan lewat permlevel (hanya HRD dan payroll) dan audit trail. Backup dan site uji harus dijaga ketat. Merevisi sebagian K-104. Perlu ditinjau ulang bila aplikasi dijual atau ada masukan hukum (UU PDP) | 2026-11-04 | Disetujui |
+| K-114 | Rancangan `HRIS Employee`: kelompok identitas, kontak, kerja, absensi, keuangan, BPJS dan pajak (BPJS TK, BPJS Kesehatan, NPWP), status, foto, status sinkron. Field sensitif (KTP, bank, BPJS, NPWP) di permlevel 1. No KTP unik. Nama dokumen nomor otomatis, ID finger hanya field. Akun login opsional (tidak dibuat otomatis). Department dan Branch tetap master ERPNext; rencana jangka panjang pindah ke HRIS. Site uji bersifat sementara dan dihapus setelah migrasi aman | 2026-11-04 | Disetujui; pembuatan kode menunggu site uji |
 
 ## Belum diputuskan
 - Rancangan rinci HRIS Employee (field, hak akses, enkripsi, sinkron).
