@@ -1,4 +1,4 @@
-# Keputusan 4 November 2026 (K-100 sampai K-114)
+# Keputusan 4 November 2026 (K-100 sampai K-117)
 
 Dasar: [payroll-rancangan.md](../business/payroll-rancangan.md). Kode pertama: HRIS Payroll Schedule (K-105).
 
@@ -19,6 +19,9 @@ Dasar: [payroll-rancangan.md](../business/payroll-rancangan.md). Kode pertama: H
 | K-112 | Field `HRIS Employee` mengikuti profil aplikasi lama (identitas, kontak, kerja, bank, BPJS, status, foto). KTP dan rekening boleh dilihat role HRD dan payroll, role lain tidak. Foto disimpan. Nominal gaji tidak disimpan di `HRIS Employee`, hanya di `HRIS Employee Pay`. Melengkapi K-104; mekanisme enkripsi menunggu uji di site uji | 2026-11-04 | Disetujui; rincian field di sesi rancangan |
 | K-113 | KTP dan rekening bank tidak dienkripsi di database. Perlindungan lewat permlevel (hanya HRD dan payroll) dan audit trail. Backup dan site uji harus dijaga ketat. Merevisi sebagian K-104. Perlu ditinjau ulang bila aplikasi dijual atau ada masukan hukum (UU PDP) | 2026-11-04 | Disetujui |
 | K-114 | Rancangan `HRIS Employee`: kelompok identitas, kontak, kerja, absensi, keuangan, BPJS dan pajak (BPJS TK, BPJS Kesehatan, NPWP), status, foto, status sinkron. Field sensitif (KTP, bank, BPJS, NPWP) di permlevel 1. No KTP unik. Nama dokumen nomor otomatis, ID finger hanya field. Akun login opsional (tidak dibuat otomatis). Department dan Branch tetap master ERPNext; rencana jangka panjang pindah ke HRIS. Site uji bersifat sementara dan dihapus setelah migrasi aman | 2026-11-04 | Disetujui; pembuatan kode menunggu site uji |
+| K-115 | Fingerprint Method: Jari, Wajah, Kartu, Lainnya. Nama bank berupa teks bebas. Hari bayar dihitung hari kalender (sementara; konfirmasi HRD/keuangan). Role pada Payroll Schedule disesuaikan nanti bersama role gaji | 2026-11-04 | Disetujui |
+| K-116 | `HRIS Employee` dibuat di modul HRIS Employee Data (nama `HRE-#####`). Permlevel 0 dan 1; field sensitif (KTP, bank, BPJS, NPWP) di level 1; HR User hanya level 0. No KTP unik, 16 digit, kosong disimpan NULL. Role `HRIS Payroll Manager` dibuat | 2026-11-04 | Diterapkan di site uji; teruji skrip 13 pemeriksaan (0 gagal). Tampilan browser, sinkron ke Employee ERPNext, dan produksi belum |
+| K-117 | Site uji sementara berisi salinan produksi (scheduler dan email dimatikan) dipakai untuk uji struktur sebelum migrate produksi. Di-drop setelah migrasi aman | 2026-11-04 | Berjalan |
 
 ## Belum diputuskan
 - Rancangan rinci HRIS Employee (field, hak akses, enkripsi, sinkron).
