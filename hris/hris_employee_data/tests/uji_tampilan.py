@@ -70,3 +70,38 @@ def bersihkan():
     frappe.db.commit()
     print("dibersihkan")
     return "dibersihkan"
+
+
+def periksa_audit():
+    """Uji: audit trail tidak membocorkan nilai field permlevel 1."""
+    from hris.hris_attendance.services.audit_trail import get_audit_trail
+
+    nama = frappe.db.get_value("HRIS Employee", {"employee_name": DOC_NAMA}, "name")
+    if not nama:
+        print("BERHENTI: jalankan siapkan dulu")
+        return "berhenti"
+    d = frappe.get_doc("HRIS Employee", nama)
+    d.bank_account_number = "999888777" if d.bank_account_number != "999888777" else "000111222"
+    d.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    hasil = []
+    for user, boleh_lihat in ((USER_HR, False), (USER_PAY, True)):
+        frappe.set_user(user)
+        try:
+            baris = get_audit_trail("HRIS Employee", nama)
+        finally:
+            frappe.set_user("Administrator")
+        teks = " ".join("%s %s" % (r["old"], r["new"]) for r in baris)
+        ada_angka = "999888777" in teks or "000111222" in teks
+        hasil.append(("%s audit trail tidak kosong" % user, len(baris) > 1))
+        hasil.append(
+            ("%s %s nilai rekening di audit trail" % (user, "melihat" if boleh_lihat else "TIDAK melihat"), ada_angka == boleh_lihat)
+        )
+    gagal = 0
+    for n, ok in hasil:
+        print(("OK     " if ok else "GAGAL  ") + n)
+        gagal += 0 if ok else 1
+    ringkas = "TOTAL: %d OK, GAGAL %d" % (len(hasil) - gagal, gagal)
+    print(ringkas)
+    return ringkas
