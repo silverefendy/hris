@@ -111,12 +111,12 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 
 | Item | Status |
 |---|---|
-| `HRIS Payroll Schedule` (K-105, K-106) | Diterapkan di site uji; 34 pemeriksaan skrip OK |
+| `HRIS Payroll Schedule` (K-105, K-106) | Ada di site kerja dan site uji (dicek 5 Nov); 34 pemeriksaan skrip OK |
 | `HRIS Employee` (K-116, `HRE-#####`) | Diterapkan di site uji; 13 pemeriksaan skrip OK |
 | Tab Audit Trail dan menu Data Karyawan (K-118) | Site uji (124ec41) |
 | Audit Trail menyembunyikan nilai field ber-permlevel (K-119) | 1acccd5; teruji skrip dan browser |
 | Izin per peran, role `HRIS Direksi` dan `HRIS Employee Admin` (K-120) | 2a604e7; 31 pemeriksaan skrip OK di site uji. Matriks di [security/permissions.md](../security/permissions.md) |
-| Status di site kerja (`erp.ciptamebel.co.id`) | Perubahan Python kemungkinan sudah aktif (folder kode sama); perubahan JSON, izin, dan role menunggu `migrate`. Belum diverifikasi |
+| Status di site kerja (`erp.ciptamebel.co.id`), dicek 5 Nov | `HRIS Payroll Schedule` ada; `HRIS Employee` belum ada; role `HRIS Payroll Manager`, `HRIS Direksi`, `HRIS Employee Admin` belum ada (enam role lama ada); 1078 Employee ERPNext. Server `frappe serve` memuat ulang kode otomatis (`developer_mode` aktif), jadi perubahan Python kemungkinan sudah aktif; perubahan JSON, izin, dan role menunggu `migrate`. `pause_scheduler` aktif |
 
 ## Langkah berikutnya
 1. Periksa kondisi site kerja (DocType `HRIS Employee` dan `HRIS Payroll Schedule`, role HRIS, cara server berjalan), lalu jadwalkan `migrate`: cadangan, latihan di salinan segar, baru site kerja.
