@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 31 Oktober 2026 (malam)
+Diperbarui: 5 November 2026
 
 ## Kondisi terkini
 - App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`).
@@ -79,7 +79,7 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | Konfirmasi asumsi working hour | Lihat "Belum diputuskan" di `decisions/README.md` |
 | Report "HRIS Audit Trail" | Ditunda atas permintaan Efendy |
 | Pemetaan `verify_mode` | Menunggu data mesin nyata |
-| Role `HRIS Employee Admin` | Disetujui (K-27), belum dibuat |
+| Role `HRIS Employee Admin` | Dibuat di kode (K-120); di site kerja menunggu `migrate` |
 | CI | Pemicu `ci.yml` diubah ke `main` (K-15), belum diterapkan |
 | Lisensi final, pre-commit, judul app | `license.txt` placeholder (MIT sementara); hook pre-commit belum aktif; "HRIS CML" masih di README, `hooks.py`, `pyproject.toml` |
 | Navigasi | Sidebar modul dan Dock menunggu keputusan |
@@ -105,11 +105,24 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | Teks "Tidak ada Raw Log di mesin dan rentang ini" | Membingungkan; ganti ke "untuk mesin dan rentang ini" saat perapian |
 | Catatan penomoran | Counter Pull Run dipakai bersama (K-74); nomor mulai tidak dari 0001 karena percobaan uji |
 
+## Pembaruan 4 sampai 5 Nov 2026 (HRIS Employee, Payroll Schedule, izin role)
+
+Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke bagian ini; lihat [decisions/README.md](../decisions/README.md).
+
+| Item | Status |
+|---|---|
+| `HRIS Payroll Schedule` (K-105, K-106) | Diterapkan di site uji; 34 pemeriksaan skrip OK |
+| `HRIS Employee` (K-116, `HRE-#####`) | Diterapkan di site uji; 13 pemeriksaan skrip OK |
+| Tab Audit Trail dan menu Data Karyawan (K-118) | Site uji (124ec41) |
+| Audit Trail menyembunyikan nilai field ber-permlevel (K-119) | 1acccd5; teruji skrip dan browser |
+| Izin per peran, role `HRIS Direksi` dan `HRIS Employee Admin` (K-120) | 2a604e7; 31 pemeriksaan skrip OK di site uji. Matriks di [security/permissions.md](../security/permissions.md) |
+| Status di site kerja (`erp.ciptamebel.co.id`) | Perubahan Python kemungkinan sudah aktif (folder kode sama); perubahan JSON, izin, dan role menunggu `migrate`. Belum diverifikasi |
+
 ## Langkah berikutnya
-1. Laporkan hasil uji tampilan K-77 dan sisa Sesi C: klik nomor di tabel riwayat, "Lihat semua riwayat" (filter mesin), tabel dimuat ulang setelah tarikan baru, akun HRIS HR Admin.
-2. Tarik celah data (Konsol Mesin, PLTB 220, Rentang Tanggal, selalu Cek Dulu): 2 s/d 2 Okt (harapan Baru 535), 4 s/d 19 Okt, 21 s/d 23 Okt.
-3. Perbaikan kecil: docstring `punch_ingest.py`, teks "di mesin dan rentang ini", sinkronisasi `data-model.md` dan `api.md`.
-4. Rancangan input data Employee (`attendance_device_id`), lalu sesi "Cocokkan Ulang".
-5. Sesi 4: agen Windows untuk `WP 221` selesai (K-90 sampai K-93). Sisa: uji PC kedua, `allowed_ips`, rotasi token, mesin Solution lain.
-6. Setelah ada Employee: uji browser 5c-1 dan working hour dengan data nyata.
-7. Sebelum produksi: lihat daftar di agent-api.md.
+1. Periksa kondisi site kerja (DocType `HRIS Employee` dan `HRIS Payroll Schedule`, role HRIS, cara server berjalan), lalu jadwalkan `migrate`: cadangan, latihan di salinan segar, baru site kerja.
+2. Uji browser per peran (petugas tarik absensi, payroll, input karyawan, Kepala HRD, Direksi) dan tarikan nyata oleh Operator.
+3. Sesi 3c: sinkron `HRIS Employee` ke Employee ERPNext satu arah (K-101), lalu migrasi 1.077 Employee (K-102) diuji di site uji.
+4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
+5. `HRIS Employee Pay` dan `HRIS Payroll Period` (K-108, K-109), lalu Payroll Slip.
+6. Pembersihan site uji (hapus setelah migrasi aman, K-117) dan penghentian server dev port 8001 bila masih berjalan.
+7. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, rancangan data Employee, agen Windows, uji browser 5c-1) tetap berlaku.

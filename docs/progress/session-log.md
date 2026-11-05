@@ -158,3 +158,28 @@
   - Status cache (1 jam) dan riwayat database (permanen) adalah dua hal berbeda; tampilkan keduanya.
   - Skrip dengan anchor persis aman, tetapi anchor berisi tanda kutip dari catatan lama bisa gagal cocok; untuk dokumen lama pakai pencarian per awal baris.
 - Belum: tarik celah data (tarik ulang 2 Okt, lalu 4-19 dan 21-23 Okt), `data-model.md` dan `api.md`, agen Windows untuk mesin jalur agen, uji akun HRIS HR Admin pada status terkini (`pull_status` masih menuntut hak write Device), laporan uji tampilan `depends_on`.
+
+## 2026-11-04 (HRIS Payroll Schedule dan HRIS Employee)
+- Keputusan K-100 sampai K-117 dicatat ([keputusan-2026-11-04.md](../decisions/keputusan-2026-11-04.md)); rancangan payroll di [payroll-rancangan.md](../business/payroll-rancangan.md).
+- `HRIS Payroll Schedule` (K-105, K-106): empat jenis jadwal dan hari bayar; teruji 34 pemeriksaan skrip. Uji browser belum.
+- Site uji `hris-uji.local` (salinan site kerja, K-117) dipakai untuk struktur sebelum `migrate` ke site kerja.
+- `HRIS Employee` (K-116, modul Employee Data, nama `HRE-#####`): permlevel 0 dan 1; teruji 13 pemeriksaan skrip di site uji.
+- Catatan: sesi 1 sampai 3 November belum tercatat di log ini; lihat berkas keputusan K-78 sampai K-99.
+
+## 2026-11-05 (HRIS Employee: audit trail dan izin per peran)
+- K-118 (124ec41): tab Audit Trail dan menu "Data Karyawan" untuk `HRIS Employee`; `uji_tampilan.py` (6 pemeriksaan permlevel OK). Commit dibuat sebelum uji tampilan lulus.
+- Site uji dibuka di browser lewat `bench --site hris-uji.local serve --port 8001` (port 8000 menuju site kerja).
+- Uji browser menemukan kebocoran: tab Audit Trail menampilkan nomor rekening lama dan baru kepada pengguna tanpa hak level 1, walau field aslinya tersembunyi. Perbaikan K-119 (1acccd5): nilai tampil `(disembunyikan)`; `periksa_audit` 4 pemeriksaan OK.
+- K-120 (2a604e7): izin per peran, role `HRIS Direksi` dan `HRIS Employee Admin`, Operator boleh menarik log, Payroll Admin membaca absensi dan laporan, fungsi `after_migrate` di `hris/setup/izin.py`. `uji_izin.py`: 15 dan 16 pemeriksaan OK di site uji.
+- Matriks izin tiga lapis ditulis di [../security/permissions.md](../security/permissions.md) (c750c99); K-121: menu mengikuti izin DocType.
+- Kendala dan pelajaran:
+  - Uji skrip permlevel lulus tetapi Audit Trail tetap membocorkan nilai; celah terlihat lewat uji browser dan pembacaan `audit_trail.py`. Uji skrip dan uji tampilan saling melengkapi.
+  - Menu kosong pada pengguna dengan satu role: item menu hanya tampil bila role punya hak baca DocType-nya.
+  - Izin berlapis tiga: izin DocType sudah benar tetapi cek role di kode Python (set role di delapan berkas) masih menolak; ditemukan lewat `grep`, bukan lewat uji.
+  - `migrate` memperbarui role Page tetapi tidak role Report di database; solusinya fungsi `after_migrate`. Penyebab pasti belum diverifikasi.
+  - Role baru sudah ada sebelum `ensure_roles` berjalan (log "ada:"); dugaan: dibuat otomatis saat sinkronisasi izin DocType, belum diverifikasi.
+  - Placeholder harfiah (`PASSWORDUJI`, `NAMA_SITE_PRODUKSI`) dijalankan sebagai nilai sungguhan dan gagal; password lemah ditolak aturan kekuatan password Frappe.
+  - Server dev di port 8001 mengaktifkan debugger Werkzeug dan mendengar di semua alamat: hanya jaringan internal, dihentikan setelah uji.
+  - Perubahan role lewat UI tidak masuk repo; izin yang harus bertahan dibuat lewat kode.
+  - K-119 dan K-120 di-commit setelah uji lulus.
+- Belum: uji browser per peran, tarikan nyata oleh Operator, `migrate` ke site kerja, sinkron ke Employee ERPNext (3c), fitur Dokumen Karyawan, `HRIS Employee Pay` dan `HRIS Payroll Period`.

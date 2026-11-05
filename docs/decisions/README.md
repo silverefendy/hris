@@ -1,6 +1,6 @@
 # Daftar Keputusan
 
-Diperbarui: 4 November 2026
+Diperbarui: 5 November 2026
 
 ## Sudah diputuskan
 | No | Keputusan | Tanggal | Status |
@@ -31,7 +31,7 @@ Diperbarui: 4 November 2026
 | K-24 | Punch ganda otomatis: masuk = tempelan paling awal, pulang = paling akhir; log lain diabaikan otomatis (tetap tersimpan); batas hari kerja ditentukan modul working hour | 2026-10-28 | Diterapkan (K-36, K-43, K-44) |
 | K-25 | Data sumber log hanya boleh diubah HRIS HR Admin, HRIS Manager, atau System Manager dengan alasan baru setiap kali; audit trail dari Version, tab "Audit Trail HRIS" di form (report menyusul) | 2026-10-28 | Diterapkan |
 | K-26 | `HRIS Device` lengkap: mode koneksi (Pull IP / Push ADMS), IP, port (default 4370), model, firmware; serial wajib dan unik; Comm Key per mesin | 2026-10-28 | Diterapkan (disesuaikan K-47 sampai K-50) |
-| K-27 | Role tambahan untuk input data karyawan (nama usulan: `HRIS Employee Admin`) | 2026-10-28 | Disetujui, belum dibuat |
+| K-27 | Role tambahan untuk input data karyawan: `HRIS Employee Admin` | 2026-10-28 | Diterapkan di kode (K-120) |
 | K-28 | Zona waktu site kerja: Asia/Jakarta (WIB), agar audit trail berwaktu WIB | 2026-10-28 | Diterapkan |
 | K-29 | `Department` tetap master ERPNext (modul Setup), dipakai lewat `Employee.department`; HRIS tidak membuat Department sendiri; field `department` di HRIS Employee Group opsional. Audit tab dipasang di semua DocType HRIS (Raw Log tetap). HRIS Holiday punya centang "Berlaku untuk Semua Company" | 2026-10-28 | Diterapkan |
 | K-30 | Tidak ada penomoran hash di DocType HRIS; penomoran memuat YYMM dengan format `PREFIX-YYMM-NNNN`. Holiday `HOL-YYMM-NNNN` (4 digit), YYMM dari tanggal dibuat; data lama bernomor hash dihapus manual, tidak di-rename. Pengecualian: HRIS Raw Log (penamaan khusus, lihat K-57; semula nama = kunci anti-duplikat), DocType bernama dari field nama, tabel anak, dan HRIS Working Hour (K-40) | 2026-10-28 | Diterapkan (Holiday, 22126c0) |
@@ -112,5 +112,6 @@ Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
 | K-89 sampai K-94 | [keputusan-2026-11-03.md](keputusan-2026-11-03.md) |
 | K-95 sampai K-99 | [keputusan-2026-11-03-payroll.md](keputusan-2026-11-03-payroll.md) |
 | K-100 sampai K-117 | [keputusan-2026-11-04.md](keputusan-2026-11-04.md) |
+| K-118 sampai K-121 | [keputusan-2026-11-05.md](keputusan-2026-11-05.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
