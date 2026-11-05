@@ -16,6 +16,13 @@ class HRISEmployee(Document):
         self._cek_tanggal()
         self._cek_status()
 
+    def on_update(self):
+        if self.flags.skip_sync:
+            return
+        from hris.hris_employee_data.services.employee_sync import sinkron_dokumen
+
+        sinkron_dokumen(self)
+
     def _normalisasi(self):
         # Kosong disimpan sebagai NULL agar aturan unik tidak menganggap dua kosong sama.
         for fieldname in FIELD_SENSITIF:
