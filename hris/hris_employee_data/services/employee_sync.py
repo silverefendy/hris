@@ -10,6 +10,13 @@ from frappe.utils import cstr, now_datetime, strip_html
 
 SAVEPOINT = "sinkron_employee"
 
+ROLE_SINKRON_ULANG = {
+    "HRIS HR Admin",
+    "HRIS Employee Admin",
+    "HRIS Manager",
+    "System Manager",
+}
+
 GENDER = {
     "Laki-laki": "Male",
     "Perempuan": "Female",
@@ -120,6 +127,17 @@ def sinkron_dokumen(doc):
 
 def sinkron_employee(nama):
     return sinkron_dokumen(frappe.get_doc("HRIS Employee", nama))
+
+
+@frappe.whitelist()
+def sinkron_ulang(nama):
+    """Dipanggil tombol Sinkron Ulang. Hanya role tertentu (keputusan 4)."""
+    if not (set(frappe.get_roles()) & ROLE_SINKRON_ULANG):
+        frappe.throw(
+            _("Anda tidak berhak menjalankan Sinkron Ulang."), frappe.PermissionError
+        )
+    frappe.has_permission("HRIS Employee", "write", doc=nama, throw=True)
+    return sinkron_employee(nama)
 
 
 def periksa_pemetaan():

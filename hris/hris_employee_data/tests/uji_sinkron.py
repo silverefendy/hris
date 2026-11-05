@@ -171,7 +171,40 @@ def jalankan():
             "17. bendera skip_sync melewati sinkron",
             not _hris(f.name, "erpnext_employee") and not _hris(f.name, "sync_status"),
         )
+
+        def _user(email, role):
+            frappe.get_doc(
+                {
+                    "doctype": "User",
+                    "email": email,
+                    "first_name": "Uji",
+                    "send_welcome_email": 0,
+                    "roles": [{"role": role}],
+                }
+            ).insert(ignore_permissions=True)
+
+        _user("uji.hr@example.com", "HR User")
+        _user("uji.adm@example.com", "HRIS Employee Admin")
+        g = _buat(employee_name="Uji Sinkron G", skip_sync=True)
+
+        frappe.set_user("uji.hr@example.com")
+        try:
+            employee_sync.sinkron_ulang(g.name)
+            ditolak = False
+        except frappe.PermissionError:
+            ditolak = True
+        frappe.set_user("Administrator")
+        cek("18. HR User tidak boleh Sinkron Ulang", ditolak)
+
+        frappe.set_user("uji.adm@example.com")
+        hasil_adm = employee_sync.sinkron_ulang(g.name)
+        frappe.set_user("Administrator")
+        cek(
+            "19. Employee Admin boleh Sinkron Ulang",
+            not hasil_adm.startswith("Gagal") and _hris(g.name, "erpnext_employee"),
+        )
     finally:
+        frappe.set_user("Administrator")
         frappe.db.rollback()
 
     gagal = 0
