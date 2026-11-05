@@ -39,13 +39,15 @@
         {
             "fieldname": "birth_date",
             "fieldtype": "Date",
-            "label": "Tanggal Lahir"
+            "label": "Tanggal Lahir",
+            "reqd": 1
         },
         {
             "fieldname": "gender",
             "fieldtype": "Select",
             "label": "Jenis Kelamin",
-            "options": "\nLaki-laki\nPerempuan"
+            "options": "\nLaki-laki\nPerempuan\nTidak Disebutkan",
+            "reqd": 1
         },
         {
             "fieldname": "col_identitas",

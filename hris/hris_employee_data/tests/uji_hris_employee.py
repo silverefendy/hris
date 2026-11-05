@@ -11,6 +11,8 @@ def _buat(**kw):
         "employee_name": "Uji Karyawan",
         "company": _company(),
         "date_of_joining": "2026-01-01",
+        "gender": "Laki-laki",
+        "birth_date": "1990-01-01",
     }
     data.update(kw)
     doc = frappe.get_doc(data)
@@ -26,6 +28,16 @@ def _ditolak(fn):
     return False
 
 
+def _ditolak_wajib(fn):
+    try:
+        fn()
+    except frappe.MandatoryError:
+        return True
+    except Exception:
+        return False
+    return False
+
+
 def jalankan():
     hasil = []
 
@@ -34,7 +46,7 @@ def jalankan():
 
     try:
         d1 = _buat(employee_name="Uji A")
-        cek("1. simpan minimal, nama HRE-", d1.name.startswith("HRE-"))
+        cek("1. simpan dengan data wajib, nama HRE-", d1.name.startswith("HRE-"))
 
         d2 = _buat(employee_name="Uji B")
         d3 = _buat(employee_name="Uji C")
@@ -64,6 +76,16 @@ def jalankan():
         cek("11. HR User tidak punya izin level 1", "HR User" not in role_level1)
         cek("12. Payroll Admin dan Manager punya level 1", {"HRIS Payroll Admin", "HRIS Payroll Manager"} <= role_level1)
         cek("13. role Payroll Manager ada", frappe.db.exists("Role", "HRIS Payroll Manager"))
+        cek(
+            "14. gender kosong ditolak (wajib)",
+            _ditolak_wajib(lambda: _buat(employee_name="Uji J", gender="")),
+        )
+        cek(
+            "15. tanggal lahir kosong ditolak (wajib)",
+            _ditolak_wajib(lambda: _buat(employee_name="Uji K", birth_date="")),
+        )
+        d16 = _buat(employee_name="Uji L", gender="Tidak Disebutkan")
+        cek("16. gender Tidak Disebutkan diterima", d16.gender == "Tidak Disebutkan")
     finally:
         frappe.db.rollback()
 
