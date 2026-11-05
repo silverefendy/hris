@@ -2,7 +2,7 @@ import frappe
 from frappe import _
 from frappe.utils import date_diff, flt, getdate
 
-ALLOWED_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
+ALLOWED_ROLES = {"HRIS HR Admin", "HRIS Manager", "HRIS Payroll Admin", "HRIS Direksi", "System Manager"}
 MAX_DAYS = 93
 
 
@@ -15,7 +15,7 @@ def execute(filters=None):
 def _check(filters):
 	if not (ALLOWED_ROLES & set(frappe.get_roles())):
 		frappe.throw(
-			_("Hanya HRIS HR Admin, HRIS Manager, atau System Manager yang boleh membuka laporan ini."),
+			_("Anda tidak punya izin untuk membuka laporan ini."),
 			frappe.PermissionError,
 		)
 	if not filters.get("from_date") or not filters.get("to_date"):

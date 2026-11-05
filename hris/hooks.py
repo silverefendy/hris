@@ -267,7 +267,10 @@ app_license = "mit"
 required_apps = ["frappe", "erpnext", "hrms"]
 
 after_install = "hris.setup.install.after_install"
-after_migrate = ["hris.setup.install.after_migrate"]
+after_migrate = [
+    "hris.setup.install.after_migrate",
+    "hris.setup.izin.after_migrate",
+]
 
 doc_events = {
 	"Employee": {

@@ -25,7 +25,7 @@ CONNECT_TIMEOUT = 10
 COMMIT_EVERY = 200
 SAMPLE_SIZE = 5
 SAVEPOINT = "hris_pull_punch"
-PULL_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
+PULL_ROLES = {"HRIS HR Admin", "HRIS Manager", "HRIS Attendance Operator", "System Manager"}
 
 
 # ------------------------------------------------------------------ util
@@ -221,7 +221,7 @@ def _check_pull_access(device_name):
     frappe.has_permission("HRIS Device", "write", doc=device_name, throw=True)
     if not PULL_ROLES.intersection(frappe.get_roles()):
         frappe.throw(
-            _("Hanya HRIS HR Admin, HRIS Manager, atau System Manager yang boleh menarik log."),
+            _("Hanya HRIS HR Admin, HRIS Manager, HRIS Attendance Operator, atau System Manager yang boleh menarik log."),
             frappe.PermissionError,
         )
 

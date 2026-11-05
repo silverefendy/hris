@@ -388,6 +388,41 @@
             "role": "HRIS Payroll Manager",
             "permlevel": 1,
             "read": 1
+        },
+        {
+            "role": "HRIS Manager",
+            "permlevel": 0,
+            "read": 1,
+            "write": 1,
+            "create": 1
+        },
+        {
+            "role": "HRIS Manager",
+            "permlevel": 1,
+            "read": 1
+        },
+        {
+            "role": "HRIS Direksi",
+            "permlevel": 0,
+            "read": 1
+        },
+        {
+            "role": "HRIS Direksi",
+            "permlevel": 1,
+            "read": 1
+        },
+        {
+            "role": "HRIS Employee Admin",
+            "permlevel": 0,
+            "read": 1,
+            "write": 1,
+            "create": 1
+        },
+        {
+            "role": "HRIS Employee Admin",
+            "permlevel": 1,
+            "read": 1,
+            "write": 1
         }
     ]
 }

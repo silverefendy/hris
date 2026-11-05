@@ -173,6 +173,16 @@
   {
    "read": 1,
    "role": "HRIS Attendance Operator"
+  },
+  {
+   "role": "HRIS Payroll Admin",
+   "permlevel": 0,
+   "read": 1
+  },
+  {
+   "role": "HRIS Direksi",
+   "permlevel": 0,
+   "read": 1
   }
  ]
 }

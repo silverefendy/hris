@@ -3,6 +3,8 @@ import frappe
 ROLES_DIBUTUHKAN = [
     "HRIS Payroll Admin",
     "HRIS Payroll Manager",
+    "HRIS Direksi",
+    "HRIS Employee Admin",
 ]
 
 

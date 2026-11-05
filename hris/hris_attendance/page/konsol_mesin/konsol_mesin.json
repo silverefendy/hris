@@ -7,8 +7,17 @@
  "standard": "Yes",
  "system_page": 0,
  "roles": [
-  {"role": "HRIS HR Admin"},
-  {"role": "HRIS Manager"},
-  {"role": "System Manager"}
+  {
+   "role": "HRIS HR Admin"
+  },
+  {
+   "role": "HRIS Manager"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "HRIS Attendance Operator"
+  }
  ]
 }
