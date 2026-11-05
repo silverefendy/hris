@@ -12,6 +12,7 @@ class HRISEmployee(Document):
     def validate(self):
         self._normalisasi()
         self._cek_ktp()
+        self._cek_id_finger()
         self._cek_tanggal()
         self._cek_status()
 
@@ -33,6 +34,27 @@ class HRISEmployee(Document):
         )
         if ada:
             frappe.throw(_("No KTP sudah dipakai oleh dokumen {0}.").format(ada))
+
+    def _cek_id_finger(self):
+        nilai = (self.attendance_device_id or "").strip()
+        self.attendance_device_id = nilai or None
+        if not nilai or self.status != "Aktif":
+            return
+        ada = frappe.db.get_value(
+            "HRIS Employee",
+            {
+                "attendance_device_id": nilai,
+                "status": "Aktif",
+                "name": ["!=", self.name or ""],
+            },
+            "name",
+        )
+        if ada:
+            frappe.throw(
+                _("ID Finger {0} sudah dipakai oleh dokumen {1} yang masih Aktif.").format(
+                    nilai, ada
+                )
+            )
 
     def _cek_tanggal(self):
         if self.date_of_joining and self.contract_end_date:

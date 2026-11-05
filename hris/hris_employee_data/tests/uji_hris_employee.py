@@ -38,6 +38,14 @@ def _ditolak_wajib(fn):
     return False
 
 
+def _ditolak_pesan(fn, teks):
+    try:
+        fn()
+    except Exception as e:
+        return teks in str(e)
+    return False
+
+
 def jalankan():
     hasil = []
 
@@ -86,6 +94,44 @@ def jalankan():
         )
         d16 = _buat(employee_name="Uji L", gender="Tidak Disebutkan")
         cek("16. gender Tidak Disebutkan diterima", d16.gender == "Tidak Disebutkan")
+
+        a1 = _buat(employee_name="Uji M", attendance_device_id="ZZ-UJI-1")
+        cek("17. ID finger tersimpan", a1.attendance_device_id == "ZZ-UJI-1")
+        cek(
+            "18. ID finger sama pada karyawan Aktif ditolak",
+            _ditolak_pesan(
+                lambda: _buat(employee_name="Uji N", attendance_device_id="ZZ-UJI-1"),
+                "ID Finger",
+            ),
+        )
+        cek(
+            "19. ID finger sama dengan spasi tetap ditolak",
+            _ditolak_pesan(
+                lambda: _buat(employee_name="Uji O", attendance_device_id=" ZZ-UJI-1 "),
+                "ID Finger",
+            ),
+        )
+        r1 = _buat(
+            employee_name="Uji P",
+            attendance_device_id="ZZ-UJI-2",
+            status="Resign",
+            resign_date="2026-06-01",
+        )
+        r2 = _buat(employee_name="Uji Q", attendance_device_id="ZZ-UJI-2")
+        cek(
+            "20. ID finger sama dengan karyawan Resign diterima",
+            r1.status == "Resign" and r2.attendance_device_id == "ZZ-UJI-2",
+        )
+        a1.save(ignore_permissions=True)
+        cek(
+            "21. simpan ulang dokumen sendiri tidak dianggap ganda",
+            a1.attendance_device_id == "ZZ-UJI-1",
+        )
+        r1.status = "Aktif"
+        cek(
+            "22. mengaktifkan kembali dengan ID yang sudah dipakai ditolak",
+            _ditolak_pesan(lambda: r1.save(ignore_permissions=True), "ID Finger"),
+        )
     finally:
         frappe.db.rollback()
 
