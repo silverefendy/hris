@@ -57,7 +57,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Keputusan | Status | Catatan |
 |---|---|---|
 | Definisi go live, parallel run, fase (P1 sampai P16) | Selesai | Bagian 2 |
-| Aturan lembur lanjutan dan insentif | Sebagian | K-98: lembur x1,0 sebagai pengaturan; kepatuhan hukum perlu konfirmasi Kepala HRD. **Pembulatan durasi dikonfirmasi Efendy (7 Nov, ulang dari keputusan sebelumnya):** lembur dihitung dari jam selesai shift, per 30 menit dibulatkan ke bawah. Contoh shift selesai 17.00: 17.01 sampai 17.25 = 0 jam; 17.01 sampai 17.59 = 0,5 jam; 17.01 sampai 18.55 = 1,5 jam. Perlu dicocokkan dengan kode Working Hour dan dicatat di `decisions/` (nomor K belum ada) |
+| Aturan lembur lanjutan dan insentif | Sebagian | **Pembulatan durasi sudah diputuskan dan diterapkan (K-38):** minimal 30 menit, kelipatan 30 menit, dibulatkan ke bawah, dihitung dari jam selesai shift sampai paling lama `window_after_min`. Contoh shift selesai 17.00: 17.01 sampai 17.25 = 0; 17.01 sampai 17.59 = 30 menit; 17.01 sampai 18.55 = 90 menit. **Terverifikasi 7 Nov:** kode `services/working_hour.py` (`(min(over, window_after_min) // step) * step`) dan data produksi (delapan Shift: `overtime_min_minutes` = 30, `window_after_min` = 240). Belum diputuskan: pengali (K-98: x1,0 sebagai pengaturan; kepatuhan hukum perlu konfirmasi Kepala HRD), aturan hari libur, insentif. Catatan desain: satu field `overtime_min_minutes` berfungsi sebagai minimal sekaligus kelipatan; dipisah bila HRD menginginkan ambang dan langkah berbeda |
 | Komponen gaji spesifik (BPJS, PPh 21, THR, potongan lain) | Belum | Dikumpulkan dari HRD |
 | Cuti dan izin selain sakit | Belum | Pengaturan dibuat fleksibel |
 | Akuntansi gaji: jurnal otomatis atau laporan saja | Belum | "Posting" mungkin dipakai |
@@ -102,7 +102,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Uji dengan data nyata (shift Security lintas tengah malam, hari Libur, tumpang tindih jendela) | Belum | Menunggu Employee nyata |
 | Koreksi absensi | Sebagian | Penyesuaian jam dan edit sumber dengan alasan sudah ada (K-25, K-42); alur koreksi lupa scan dan mesin mati belum dirancang |
 | Cuti dan izin | Belum | Wajib |
-| Pengaturan lembur (pengali, hari libur, pembulatan 30 menit ke bawah) | Belum | P7; K-98; aturan pembulatan lihat Fase 0 |
+| Pengaturan lembur: pengali dan hari libur | Belum | P7; K-98. Durasi dan pembulatan 30 menit sudah selesai (K-38) |
 | Pinjam karyawan: berdasarkan Department peminjam | Belum | Saat ini field "Dipinjam untuk Grup" (K-32, K-39); `borrowed_for_department` mengubah DocType berjalan, perlu konfirmasi dan penjelasan risiko dulu |
 | Department Rule (aturan hitung per Department, tanggal berlaku) | Belum | P8; dirancang sebelum dibuat |
 | Ekspor (Excel) | Belum | Wajib |
@@ -172,7 +172,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Satu atau dua bench | Belum diputuskan | |
 | Scheduler dan email keluar aktif | Belum | `pause_scheduler` aktif; akun email keluar aktif = 0 |
 | Backup terjadwal dan uji restore | Belum | Uji pulih, bukan hanya backup. `cadangan` dan `pulihkan` ada di runbook; cabang produksi pada `restore` belum terbukti |
-| Prosedur update production (backup, pull, migrate, rollback) | Sebagian | Runbook ada di server (`/home/it/runbook_k102/`), lulus gladi resik di site uji; belum ada di repo; `P mulai` di produksi belum terbukti |
+| Prosedur update production (backup, pull, migrate, rollback) | Sebagian | Runbook ada di server (`/home/it/runbook_k102/`) dan diarsipkan di repo (`scripts/operations/k102/`, c7a0f52); lulus gladi resik di site uji; `P mulai` di produksi belum terbukti |
 | Rotasi token agen, `allowed_ips` | Belum | `architecture/agent-api.md` |
 | Hardening (HTTPS, akses LAN, hak akses data sensitif) | Belum | |
 | Site uji dibersihkan | Belum | K-117 |
@@ -225,7 +225,8 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Tanggal | Perubahan |
 |---|---|
 | 2026-11-06 | Dokumen dibuat. Checklist disusun dari `status.md` (5 Nov), `decisions/` (K-01 sampai K-121 menurut daftar), dan percakapan perencanaan 30 Okt |
-| 2026-11-07 | Disinkronkan dengan hasil 6 sampai 7 Nov: K-126 dan K-102 di-push dan teruji; gladi resik `produksi_k102.sh` lulus di `hris-uji.local`; kondisi produksi (diagnosa 05:52 WIB); aturan pembulatan lembur 30 menit ke bawah; risiko 7 ditambahkan; bagian 9 ditambahkan |
+| 2026-11-07 | Disinkronkan dengan hasil 6 sampai 7 Nov: K-126 dan K-102 di-push dan teruji; gladi resik `produksi_k102.sh` lulus di `hris-uji.local`; kondisi produksi (diagnosa 05:52 WIB); risiko 7 dan bagian 9 ditambahkan; runbook diarsipkan di repo (c7a0f52) |
+| 2026-11-07 | Aturan lembur dirujuk ke K-38 (sudah diputuskan dan diterapkan 29 Okt); terverifikasi lewat kode `working_hour.py` dan nilai delapan Shift produksi (30 dan 240) |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
