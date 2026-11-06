@@ -3,15 +3,16 @@
 ## Urutan baca
 1. overview/ — tujuan dan istilah
 2. progress/status.md — kondisi terkini
-3. decisions/ — keputusan
-4. requirements/ → architecture/ → business/ → security/
-5. operations/ dan development/
+3. progress/go-live.md — rencana dan checklist menuju go live
+4. decisions/ — keputusan
+5. requirements/ → architecture/ → business/ → security/
+6. operations/ dan development/
 
 ## Isi
 | Folder | Fungsi |
 |---|---|
 | overview | tujuan, ruang lingkup, glosarium |
-| progress | status, roadmap, log sesi |
+| progress | status, roadmap, rencana go live, log sesi |
 | decisions | catatan keputusan |
 | requirements | FR / NFR |
 | architecture | komponen, data model, batas platform, integrasi, API |
