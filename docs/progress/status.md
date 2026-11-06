@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 5 November 2026
+Diperbarui: 6 November 2026
 
 ## Kondisi terkini
 - App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`).
@@ -118,10 +118,24 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Izin per peran, role `HRIS Direksi` dan `HRIS Employee Admin` (K-120) | 2a604e7; 31 pemeriksaan skrip OK di site uji. Matriks di [security/permissions.md](../security/permissions.md) |
 | Status di site kerja (`erp.ciptamebel.co.id`), dicek 5 Nov | `HRIS Payroll Schedule` ada; `HRIS Employee` belum ada; role `HRIS Payroll Manager`, `HRIS Direksi`, `HRIS Employee Admin` belum ada (enam role lama ada); 1078 Employee ERPNext. Server `frappe serve` memuat ulang kode otomatis (`developer_mode` aktif), jadi perubahan Python kemungkinan sudah aktif; perubahan JSON, izin, dan role menunggu `migrate`. `pause_scheduler` aktif |
 
+## Pembaruan 6 Nov 2026 (K-126, K-102, runbook produksi)
+
+| Item | Status |
+|---|---|
+| K-126 validasi `HRIS Employee` (V1, V1b, V2, V3) | Di-push 8a16ade; teruji skrip dan browser |
+| K-102 migrasi Employee ke `HRIS Employee` | Di-push 7278bb7; teruji di `hris-uji.local` (dry_run, latih, gladi resik penuh, `jalankan`: 1078 dibuat, Berhasil 1078, tabel Employee tidak berubah). **Belum dijalankan di `erp.ciptamebel.co.id`** |
+| Runbook produksi | [operations/deployment.md](../operations/deployment.md); skrip di `/home/it/runbook_k102/` (belum di repo). `produksi_k102.sh` teruji di site uji |
+| Cadangan produksi `20261106_152714` | Tersalin ke PC; sha256 cocok |
+| Restart `erp` produksi | Ctrl+C lalu `bench start` lagi |
+| Jadwal produksi | Belum ada; kemungkinan saat lembur (di luar jam kerja HRD) |
+| Uji per peran | Setelah migrasi produksi, langsung di `erp.ciptamebel.co.id` |
+| Belum terbukti | Cabang produksi pada `restore` di `runbook_k102.sh`; kebutuhan password root MariaDB di produksi; diagnosa database produksi (`diag_erp_k102.sh` bagian `bench console` tidak mengeluarkan keluaran, perlu diperbaiki). Uji tampilan D1 sampai D4 lulus (D1 dan D2 dilaporkan 6 Nov 21:24 WIB pada HRE-00274 di `hris-uji.local`: bagian Kelengkapan Data tampil; perubahan status dan catatan tercatat di Audit Trail HRIS, lalu dikembalikan) |
+| Keputusan | [decisions/keputusan-2026-11-06.md](../decisions/keputusan-2026-11-06.md); catatan sesi [session-log-2026-11-06.md](session-log-2026-11-06.md) |
+
 ## Langkah berikutnya
-1. Periksa kondisi site kerja (DocType `HRIS Employee` dan `HRIS Payroll Schedule`, role HRIS, cara server berjalan), lalu jadwalkan `migrate`: cadangan, latihan di salinan segar, baru site kerja.
-2. Uji browser per peran (petugas tarik absensi, payroll, input karyawan, Kepala HRD, Direksi) dan tarikan nyata oleh Operator.
-3. Sesi 3c: sinkron `HRIS Employee` ke Employee ERPNext satu arah (K-101), lalu migrasi 1.077 Employee (K-102) diuji di site uji.
+1. Diagnosa baca-saja `erp.ciptamebel.co.id` (perbaiki `diag_erp_k102.sh`), lalu migrasi produksi K-102 lewat `produksi_k102.sh` (cadangan, `siap`, `mulai`; latihan sudah lulus di site uji), saat jadwal di luar jam kerja ditetapkan.
+2. Setelah migrasi produksi: uji browser per peran (petugas tarik absensi, payroll, input karyawan, Kepala HRD, Direksi) dan tarikan nyata oleh Operator.
+3. Sinkron `HRIS Employee` ke Employee ERPNext (K-101) dan migrasi K-102 sudah diuji di site uji (6 Nov); tinggal produksi (nomor 1).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
 5. `HRIS Employee Pay` dan `HRIS Payroll Period` (K-108, K-109), lalu Payroll Slip.
 6. Pembersihan site uji (hapus setelah migrasi aman, K-117) dan penghentian server dev port 8001 bila masih berjalan.
