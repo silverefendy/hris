@@ -1,6 +1,6 @@
 # Rencana Go Live dan Checklist
 
-Dibuat: 6 November 2026. Diperbarui terakhir: 6 November 2026.
+Dibuat: 6 November 2026. Diperbarui terakhir: 7 November 2026.
 
 Dokumen ini adalah **acuan utama menuju go live**. Roadmap (`roadmap.md`) hanya daftar tahap fitur dan sudah usang (terakhir 28 Okt); `status.md` memuat kondisi teknis. Setiap akhir sesi, checklist di bawah ini diperbarui (lihat "Cara memperbarui").
 
@@ -50,14 +50,14 @@ Catatan urutan: Fase 4 sebaiknya dimulai secepat mungkin. Fase 2 dan 3 dibuat ri
 
 ## 4. Checklist per fase
 
-Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `status.md` (5 Nov 2026) dan `decisions/`.
+Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `status.md` (5 Nov 2026), `decisions/`, dan hasil kerja 6 sampai 7 Nov 2026.
 
 ### Fase 0: Keputusan
 
 | Keputusan | Status | Catatan |
 |---|---|---|
 | Definisi go live, parallel run, fase (P1 sampai P16) | Selesai | Bagian 2 |
-| Aturan lembur lanjutan dan insentif | Belum | K-98: lembur x1,0 sebagai pengaturan; kepatuhan hukum perlu konfirmasi Kepala HRD |
+| Aturan lembur lanjutan dan insentif | Sebagian | K-98: lembur x1,0 sebagai pengaturan; kepatuhan hukum perlu konfirmasi Kepala HRD. **Pembulatan durasi dikonfirmasi Efendy (7 Nov, ulang dari keputusan sebelumnya):** lembur dihitung dari jam selesai shift, per 30 menit dibulatkan ke bawah. Contoh shift selesai 17.00: 17.01 sampai 17.25 = 0 jam; 17.01 sampai 17.59 = 0,5 jam; 17.01 sampai 18.55 = 1,5 jam. Perlu dicocokkan dengan kode Working Hour dan dicatat di `decisions/` (nomor K belum ada) |
 | Komponen gaji spesifik (BPJS, PPh 21, THR, potongan lain) | Belum | Dikumpulkan dari HRD |
 | Cuti dan izin selain sakit | Belum | Pengaturan dibuat fleksibel |
 | Akuntansi gaji: jurnal otomatis atau laporan saja | Belum | "Posting" mungkin dipakai |
@@ -81,7 +81,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Agen Windows (SDK) untuk mesin ber-Comm Key | Sebagian | Teruji di satu PC; sisa uji PC kedua, `allowed_ips`, rotasi token, mesin Solution lain |
 | Konsol Mesin, Pull Run, Hapus Raw Log | Selesai | K-67 sampai K-77 |
 | Autentikasi agen dan endpoint | Selesai | K-52, K-53 |
-| Karyawan Active dengan `attendance_device_id` | Perlu verifikasi | Status 5 Nov mencatat 1.078 Employee ERPNext di site kerja, tetapi sebelumnya belum ada yang Active; cek jumlah Active dan ID mesin |
+| Karyawan Active dengan `attendance_device_id` | Perlu verifikasi | Diagnosa produksi 7 Nov 05:52 WIB: 1.078 Employee, semuanya Active. Yang belum diverifikasi: jumlah yang punya `attendance_device_id`, dan selisih 1.078 dengan 1.077 yang tercatat di rencana migrasi (penyebab belum diketahui; periksa ulang lewat `diag_db_k102.sh` sebelum migrasi) |
 | "Cocokkan Ulang" (Raw Log Tidak Cocok ke Employee) | Belum | K-64; sesi tersendiri |
 | Tarik celah data (tanggal yang dihapus saat uji) | Belum | Status 31 Okt |
 | Mesin ketiga yang gagal via pyzk | Sebagian | Dijangkau lewat agen (K-72); uji lengkap menunggu |
@@ -96,13 +96,13 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Item | Status | Catatan |
 |---|---|---|
 | Shift, Employee Group, Rotation, Holiday, Shift Assignment | Selesai | K-31 sampai K-34 |
-| Working Hour (hitung per hari, potongan, lembur, status, tanda tinjauan) | Selesai | K-35 sampai K-44; teruji skrip |
+| Working Hour (hitung per hari, potongan, lembur, status, tanda tinjauan) | Selesai | K-35 sampai K-44; teruji skrip. Uji tampilan D1 sampai D4 lulus (6 sampai 7 Nov) |
 | Hitung ulang per cakupan (5c-1) | Sebagian | Teruji skrip; browser dan job background belum |
 | Warna list view dan Report ringkasan (5c-2) | Perlu verifikasi | Catatan sesi 29 Okt menyebut selesai (5406151), tetapi `status.md` masih menulis tertunda; sinkronkan |
 | Uji dengan data nyata (shift Security lintas tengah malam, hari Libur, tumpang tindih jendela) | Belum | Menunggu Employee nyata |
 | Koreksi absensi | Sebagian | Penyesuaian jam dan edit sumber dengan alasan sudah ada (K-25, K-42); alur koreksi lupa scan dan mesin mati belum dirancang |
 | Cuti dan izin | Belum | Wajib |
-| Pengaturan lembur (pengali, hari libur) | Belum | P7; K-98 |
+| Pengaturan lembur (pengali, hari libur, pembulatan 30 menit ke bawah) | Belum | P7; K-98; aturan pembulatan lihat Fase 0 |
 | Pinjam karyawan: berdasarkan Department peminjam | Belum | Saat ini field "Dipinjam untuk Grup" (K-32, K-39); `borrowed_for_department` mengubah DocType berjalan, perlu konfirmasi dan penjelasan risiko dulu |
 | Department Rule (aturan hitung per Department, tanggal berlaku) | Belum | P8; dirancang sebelum dibuat |
 | Ekspor (Excel) | Belum | Wajib |
@@ -110,7 +110,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Alur persetujuan (koreksi, cuti, lembur, pinjaman, Payroll Run) | Belum | Siapa membuat dan siapa menyetujui |
 | Penguncian periode | Belum | Menunggu `HRIS Payroll Period` |
 | Role HRIS: enam role lama | Selesai | K-11 |
-| Role `HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi` | Sebagian | Ada di kode dan site uji; di site kerja menunggu `migrate` (K-116, K-120) |
+| Role `HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi` | Sebagian | Ada di kode dan site uji. Di produksi (`erp.ciptamebel.co.id`) belum ada: role dibuat saat `migrate` produksi, bagian dari migrasi K-102 (K-116, K-120) |
 | Matriks hak akses per role dan per company | Sebagian | `security/permissions.md`; pembatasan per company belum |
 | Tab Audit Trail | Selesai | K-25, K-119 |
 | Report Audit Trail | Belum | Ditunda (P13) |
@@ -120,9 +120,9 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Item | Status | Catatan |
 |---|---|---|
 | `HRIS Payroll Schedule` | Selesai | K-105, K-106; ada di site kerja; 34 pemeriksaan skrip OK; uji browser belum |
-| `HRIS Employee` (data karyawan lengkap) | Sebagian | K-116; diterapkan di site uji; belum di site kerja |
+| `HRIS Employee` (data karyawan lengkap) | Sebagian | K-116, K-126 (validasi, 8a16ade). Kode teruji dan gladi resik lulus di `hris-uji.local`. Di produksi tabel `HRIS Employee` belum ada (diagnosa 7 Nov 05:52 WIB); dibuat saat `migrate` produksi |
 | Sinkron satu arah HRIS Employee ke Employee ERPNext (K-101) | Belum | Sesi 3c |
-| Migrasi 1.077 Employee (K-102) | Belum | Uji di site uji dulu |
+| Migrasi Employee ke HRIS Employee (K-102) | Sebagian | Kode di-push (7278bb7), teruji di site uji. Gladi resik `produksi_k102.sh` (`cadangan`, `siap`, `mulai`) lulus di `hris-uji.local`. Produksi belum dijalankan; menunggu waktu di luar jam kerja (lihat bagian 9) |
 | Dokumen karyawan (KTP, kontrak, foto) | Belum | Perlu uji lampiran dengan role baca saja |
 | `HRIS Employee Pay` (riwayat gaji, tanggal berlaku) | Belum | K-109 |
 | `HRIS Payroll Period` (periode, status Final) | Belum | K-108 |
@@ -155,7 +155,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 
 | Item | Status | Catatan |
 |---|---|---|
-| Uji browser per peran (tarik absensi, payroll, input karyawan, Kepala HRD, Direksi) | Belum | |
+| Uji browser per peran (tarik absensi, payroll, input karyawan, Kepala HRD, Direksi) | Belum | Dikerjakan setelah migrasi produksi, dengan akun uji khusus |
 | Dokumentasi pengguna HRD | Belum | Perlu menyebut merek final |
 | SOP bulanan (closing absensi dan gaji) dan SOP mesin mati | Belum | |
 | Pelatihan HRD | Belum | |
@@ -166,17 +166,17 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 
 | Item | Status | Catatan |
 |---|---|---|
-| `developer_mode` mati | Belum | Setelah itu perubahan DocType hanya lewat git dan migrate |
+| `developer_mode` mati | Belum | Saat ini bernilai 1 di produksi (diagnosa 7 Nov). Setelah dimatikan, perubahan DocType hanya lewat git dan migrate |
 | nginx dan HTTPS | Belum | K-56; estimasi singkat |
-| supervisor atau service pengganti `honcho` di terminal | Belum | |
+| supervisor atau service pengganti `honcho` di terminal | Belum | Restart sekarang manual: Ctrl+C lalu `bench start` |
 | Satu atau dua bench | Belum diputuskan | |
-| Scheduler dan email keluar aktif | Belum | `pause_scheduler` aktif |
-| Backup terjadwal dan uji restore | Belum | Uji pulih, bukan hanya backup |
-| Prosedur update production (backup, pull, migrate, rollback) | Belum | |
+| Scheduler dan email keluar aktif | Belum | `pause_scheduler` aktif; akun email keluar aktif = 0 |
+| Backup terjadwal dan uji restore | Belum | Uji pulih, bukan hanya backup. `cadangan` dan `pulihkan` ada di runbook; cabang produksi pada `restore` belum terbukti |
+| Prosedur update production (backup, pull, migrate, rollback) | Sebagian | Runbook ada di server (`/home/it/runbook_k102/`), lulus gladi resik di site uji; belum ada di repo; `P mulai` di produksi belum terbukti |
 | Rotasi token agen, `allowed_ips` | Belum | `architecture/agent-api.md` |
 | Hardening (HTTPS, akses LAN, hak akses data sensitif) | Belum | |
 | Site uji dibersihkan | Belum | K-117 |
-| `migrate` di site kerja (role dan DocType baru) | Belum | Cadangan, latihan di salinan, baru site kerja |
+| `migrate` di site kerja (role dan DocType baru) | Sebagian | Cadangan dan latihan di salinan (`hris-uji.local`) sudah lulus. Produksi belum; dijalankan lewat `produksi_k102.sh mulai` |
 | CI ke `main` (K-15), pre-commit, judul app | Belum | |
 | Lisensi final | Belum | P15 |
 | Cutover: aplikasi lama tidak dipakai | Belum | P2 |
@@ -210,6 +210,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 4. Uji otomatis dari slip lama: yang membuat "selisih nol" bisa dibuktikan.
 5. Jalur data mesin untuk mesin berbeda firmware dan Comm Key berperilaku berbeda.
 6. Data pribadi khusus (biometrik, KTP, rekening): aturan persetujuan dan retensi.
+7. Migrasi produksi K-102: dikerjakan di luar jam kerja setelah lembur, saat pelaksana lelah. Mitigasi: runbook dengan konfirmasi berlapis, cadangan wajib maksimal 6 jam, diagnosa ulang sebelum mulai, dan `P pulihkan` untuk rollback.
 
 ## 7. Cara memperbarui
 
@@ -224,3 +225,21 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Tanggal | Perubahan |
 |---|---|
 | 2026-11-06 | Dokumen dibuat. Checklist disusun dari `status.md` (5 Nov), `decisions/` (K-01 sampai K-121 menurut daftar), dan percakapan perencanaan 30 Okt |
+| 2026-11-07 | Disinkronkan dengan hasil 6 sampai 7 Nov: K-126 dan K-102 di-push dan teruji; gladi resik `produksi_k102.sh` lulus di `hris-uji.local`; kondisi produksi (diagnosa 05:52 WIB); aturan pembulatan lembur 30 menit ke bawah; risiko 7 ditambahkan; bagian 9 ditambahkan |
+
+## 9. Migrasi produksi K-102 (menunggu jadwal)
+
+Tidak ada tanggal tetap. Dikerjakan saat Efendy diminta masuk di luar jam kerja (dihitung lembur). Efendy memberi tahu Claude sebelum mulai. Rincian langkah ada di `operations/deployment.md`; berikut ringkasannya.
+
+| Langkah | Perintah atau tindakan (dari `/home/it/erp`, `P` = `bash /home/it/runbook_k102/produksi_k102.sh`) |
+|---|---|
+| 0 | Jalankan ulang diagnosa (`diag_db_k102.sh`); cocokkan jumlah Employee |
+| 1 | `P cadangan` (cadangan lama ditolak bila lebih dari 6 jam) |
+| 2 | Salin cadangan ke PC lewat PowerShell `scp`, verifikasi dengan `Get-FileHash` |
+| 3 | `P siap` |
+| 4 | `P mulai` (2 jawaban "ya", lalu ketik `MULAI PRODUKSI erp.ciptamebel.co.id`) |
+| 5 | Restart: Ctrl+C di terminal `bench start`, jalankan `bench start` lagi, tunggu situs hidup, baru Enter |
+| 6 | Uji asap (`deployment.md` bagian 9) |
+| Rollback | `P pulihkan` (perlu password root MariaDB lewat prompt tersembunyi) |
+
+Catatan: server mencetak waktu UTC (WIB = UTC+7). Tanpa `SITE_TARGET=hris-uji.local`, sasaran `produksi_k102.sh` adalah produksi.
