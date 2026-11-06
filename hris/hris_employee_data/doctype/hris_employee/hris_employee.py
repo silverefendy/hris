@@ -45,25 +45,54 @@ class HRISEmployee(Document):
     def _cek_id_finger(self):
         nilai = (self.attendance_device_id or "").strip()
         self.attendance_device_id = nilai or None
-        if not nilai or self.status != "Aktif":
+        if not nilai:
             return
-        ada = frappe.db.get_value(
-            "HRIS Employee",
-            {
-                "attendance_device_id": nilai,
-                "status": "Aktif",
-                "name": ["!=", self.name or ""],
-            },
-            "name",
-        )
-        if ada:
-            frappe.throw(
-                _("ID Finger {0} sudah dipakai oleh dokumen {1} yang masih Aktif.").format(
-                    nilai, ada
+
+        # 1) Antar HRIS Employee: aturan lama, hanya yang Aktif.
+        if self.status == "Aktif":
+            ada = frappe.db.get_value(
+                "HRIS Employee",
+                {
+                    "attendance_device_id": nilai,
+                    "status": "Aktif",
+                    "name": ["!=", self.name or ""],
+                },
+                "name",
+            )
+            if ada:
+                frappe.throw(
+                    _("ID Finger {0} sudah dipakai oleh dokumen {1} yang masih Aktif.").format(
+                        nilai, ada
+                    )
                 )
+
+        # 2) K-126 (V2): terhadap Employee ERPNext. Kolom attendance_device_id di sana
+        #    unik untuk SEMUA status (termasuk Left), jadi diperiksa tanpa melihat
+        #    status HRIS. Employee yang tertaut ke dokumen ini dikecualikan.
+        pemegang = frappe.db.get_value(
+            "Employee",
+            {"attendance_device_id": nilai, "name": ["!=", self.erpnext_employee or ""]},
+            ["name", "employee_name", "status"],
+            as_dict=True,
+        )
+        if pemegang:
+            frappe.throw(
+                _(
+                    "ID Finger {0} sudah dipakai Employee ERPNext {1} ({2}, status {3}). "
+                    "Gunakan ID lain."
+                ).format(nilai, pemegang.name, pemegang.employee_name, pemegang.status)
             )
 
     def _cek_tanggal(self):
+        # K-126 (V1): aturan yang sama dengan Employee ERPNext, ditolak di sumbernya.
+        if self.birth_date and self.date_of_joining:
+            if getdate(self.birth_date) >= getdate(self.date_of_joining):
+                frappe.throw(_("Tanggal Bergabung harus setelah Tanggal Lahir."))
+        # K-126 (V1b): hanya untuk status Resign, karena status Aktif mengosongkan
+        # resign_date di _cek_status yang berjalan sesudah fungsi ini.
+        if self.status == "Resign" and self.resign_date and self.date_of_joining:
+            if getdate(self.resign_date) < getdate(self.date_of_joining):
+                frappe.throw(_("Tanggal Resign tidak boleh sebelum Tanggal Bergabung."))
         if self.date_of_joining and self.contract_end_date:
             if getdate(self.contract_end_date) < getdate(self.date_of_joining):
                 frappe.throw(_("Akhir perjanjian kerja tidak boleh sebelum tanggal bergabung."))
