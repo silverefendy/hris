@@ -31,14 +31,15 @@ Lokasi: `/home/it/runbook_k102/`. Log tiap perintah tersimpan di folder yang sam
 | | `jalankan <site>` | `migrasi`, `verifikasi`, `verifikasi terapkan=1`, bandingkan tabel Employee | **Ya** |
 | `gladi_k102.sh` | `fase1`, `fase2` | Gladi resik di site uji (langkah 1 sampai 5, lalu rollback) | Hanya site uji |
 | `produksi_k102.sh` | `cadangan`, `siap`, `mulai`, `pulihkan` | Urutan produksi (bagian 4) | `mulai` dan `pulihkan` menulis |
+| `diag_erp_k102.sh` | (tanpa perintah) | Diagnosa baca-saja kondisi site sebelum migrasi | Tidak |
 
 Pengaman bawaan:
 - Perintah yang menulis meminta ketikan persis, misalnya `RESET hris-uji.local`, `MIGRASI <site>`, `MIGRATE <site>`, `PULIHKAN <site> DARI CADANGAN`, `MULAI PRODUKSI <site>`. Salah ketik (misalnya titik di tempat strip) membatalkan perintah tanpa menulis apa pun.
 - `restore` ke site selain uji lebih dulu membuat cadangan pengaman dan berhenti bila itu gagal.
 - Password root MariaDB diminta lewat prompt tersembunyi dan tidak ditulis ke berkas atau log.
-- `SITE_TARGET=hris-uji.local` pada `produksi_k102.sh` mengganti site sasaran, sehingga urutan produksi bisa dilatih di site uji.
+- `SITE_TARGET=hris-uji.local` pada `produksi_k102.sh` mengganti site sasaran, sehingga urutan produksi bisa dilatih di site uji. Tanpa variabel itu, sasarannya `erp.ciptamebel.co.id`.
 
-Status: `runbook_k102.sh` dan `gladi_k102.sh` sudah dijalankan penuh di site uji (bagian 10). `produksi_k102.sh` baru lolos pemeriksaan sintaks (`bash -n`); uji urutannya lewat `SITE_TARGET` menyusul. Perbarui baris ini setelah uji.
+Status: `runbook_k102.sh` dan `gladi_k102.sh` sudah dijalankan penuh di site uji (bagian 10). `produksi_k102.sh` diuji 6 Nov di `hris-uji.local` lewat `SITE_TARGET`: `cadangan`, `siap`, dan `mulai` lulus penuh. `pulihkan` hanya sampai sha256 dan prompt konfirmasi (dibatalkan); restore itu sendiri terbukti di gladi. `diag_erp_k102.sh` dijalankan di produksi 6 Nov 22:47 WIB: bagian git, versi, dan disk berfungsi; bagian database lewat `bench console` tidak mengeluarkan keluaran dan perlu diperbaiki.
 
 ## 3. Prasyarat
 
@@ -47,11 +48,11 @@ Status: `runbook_k102.sh` dan `gladi_k102.sh` sudah dijalankan penuh di site uji
 | 1 | K-126 dan K-102 sudah di `origin main` (kini 7278bb7) | `git -C /home/it/erp/apps/hris log --oneline -3` |
 | 2 | Gladi resik lulus di site uji, termasuk restore | Bagian 10 |
 | 3 | Cadangan produksi baru, disalin ke mesin lain, sha256 cocok | Bagian 4 dan 7 |
-| 4 | Di luar jam kerja HRD dan HRD sudah diberi tahu | Konfirmasi manual |
+| 4 | Di luar jam kerja HRD (belum ada jadwal tetap; kemungkinan saat lembur) dan HRD sudah diberi tahu | Konfirmasi manual |
 | 5 | Tabel Employee produksi sama dengan saat cadangan (jumlah dan `MAX(modified)`) | Otomatis di `produksi_k102.sh siap` |
-| 6 | Cara me-restart `erp` diketahui | Belum tertulis (bagian 11) |
+| 6 | Cara me-restart `erp` diketahui | Ya (6 Nov): Ctrl+C di terminal tempat `bench start` berjalan, lalu `bench start` lagi |
 | 7 | Ruang disk minimal 5 GB | Otomatis di `siap` (per 6 Nov: 28 GB tersisa dari 48 GB) |
-| 8 | Uji per peran selesai | Status.md, langkah berikutnya nomor 2 |
+| 8 | Uji per peran | Dikerjakan setelah migrasi produksi, langsung di `erp.ciptamebel.co.id` (keputusan Efendy 6 Nov); bukan syarat sebelum produksi |
 
 ## 4. Prosedur produksi (disarankan)
 
@@ -98,6 +99,7 @@ Ganti `rb` dengan `bash /home/it/runbook_k102/runbook_k102.sh`, dan `S` dengan `
 - `bench migrate` memigrasi **semua** app yang terpasang di site, termasuk `wms` pada branch `feat/wms-bag-transfer-partial-receipt` yang sedang aktif di disk. Hal yang sama terjadi di site uji (salinan produksi) dan lolos, tetapi perlu disadari.
 - Server dev (`frappe serve`, `developer_mode`) memuat ulang kode Python otomatis, sehingga perubahan Python bisa aktif sebelum `migrate`.
 - Setelah migrasi, Simpan pertama pada karyawan memicu sinkron ke Employee. Hanya satu Employee (`HR-EMP-01078`) yang namanya terpecah ulang (nama lengkap ke `first_name`); `employee_name` tetap sama.
+- `migrate` membuat role `HRIS Payroll Manager`, `HRIS Direksi`, dan `HRIS Employee Admin` (lewat `after_migrate`). Uji per peran baru bisa dilakukan setelah itu; pakai akun uji khusus, karena menyimpan HRIS Employee memicu sinkron ke Employee ERPNext.
 
 ## 7. Salin cadangan ke mesin lain (dari PC Windows)
 
@@ -138,13 +140,15 @@ Hash harus sama dengan sha256 yang dicetak `cadangan`. Terbukti 6 November 2026:
 | Cek browser | Data benar, Audit Trail bersih |
 | Rollback (restore berkas yang sama) | HRIS Employee kembali 0 |
 | Salin cadangan ke PC | Utuh, sha256 cocok |
+| Uji tampilan D1 sampai D4 | Lulus (bagian Kelengkapan Data tampil, perubahan tercatat di Audit Trail HRIS, filter daftar tampil) |
 
 ## 11. Belum diketahui atau belum terbukti
 
 | Hal | Kondisi |
 |---|---|
-| Cara me-restart `erp` produksi | Belum tertulis; `produksi_k102.sh` berhenti dan menunggu restart manual |
+| Cara me-restart `erp` produksi | Ctrl+C lalu `bench start` (dari Efendy, 6 Nov); belum pernah dijalankan dalam urutan produksi. `produksi_k102.sh` menunggu Enter setelah restart manual |
 | Kebutuhan password root MariaDB untuk `restore` | Diketik di prompt saat gladi. Skrip meneruskannya lewat argumen `--db-root-password`, sehingga sesaat terlihat di daftar proses (`ps`) bagi pengguna lain di server. Risiko kecil di server dengan satu admin; verifikasi opsi `bench restore` di dokumentasi Frappe |
 | Jalur restore produksi di `runbook_k102.sh` | Hanya cabang site uji yang sudah dijalankan. Cabang produksi (cadangan pengaman, konfirmasi panjang) belum pernah dijalankan |
-| `produksi_k102.sh` | Lolos sintaks; urutan penuh belum dijalankan (lihat bagian 2) |
+| `produksi_k102.sh` pada produksi | Teruji di site uji; belum pernah menyasar `erp.ciptamebel.co.id` |
+| Diagnosa database produksi | `diag_erp_k102.sh` belum berhasil membaca database lewat `bench console`; perlu pendekatan lain |
 | Skrip di repo | Skrip hanya ada di `/home/it/runbook_k102/` |

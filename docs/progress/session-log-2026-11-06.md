@@ -28,10 +28,14 @@ Catatan: dipisah dari `session-log.md`, mengikuti pola `session-log-2026-11-01.m
 - Tabel "Langkah Berikutnya" dari sisi Claude sempat menuliskan peran terbalik (Anda membuat skrip); perannya: Claude membuat skrip, Efendy menjalankan.
 - Hasil Langkah 6 (cek browser) baru dilaporkan setelahnya; dicatat apa adanya.
 
+## Tambahan malam (21:24 sampai 22:47 WIB)
+- D1 dan D2 lulus pada HRE-00274 di `hris-uji.local`: bagian Kelengkapan Data tampil; perubahan Status dan Catatan Kelengkapan Data tercatat di Audit Trail HRIS (pengguna, waktu WIB, nilai lama dan baru) dan dikembalikan. D1 sampai D4 semua lulus.
+- `produksi_k102.sh` (`cadangan`, `siap`, `mulai`) lulus penuh di `hris-uji.local` lewat `SITE_TARGET`.
+- Cara restart `erp` produksi: Ctrl+C lalu `bench start`. Uji per peran setelah migrasi produksi. Jadwal: saat lembur, belum pasti.
+- Diagnosa baca-saja produksi (`diag_erp_k102.sh`, 22:47 WIB): hris `main` 47bfc12, tanpa commit belum di-push dan tanpa perubahan lokal; disk terpakai 18G, sisa 28G (39%); 12 berkas di `/home/it/cadangan_k102`. Bagian yang membaca database lewat `bench console` tidak mengeluarkan keluaran (pendekatan stdin tidak berfungsi), jadi kondisi tabel dan role produksi belum dikonfirmasi.
+
 ## Belum
-- D1 dan D2 belum dilaporkan eksplisit (D3 dan D4 terbukti).
-- Uji `produksi_k102.sh` di site uji (`SITE_TARGET=hris-uji.local`).
-- Cara me-restart `erp` produksi, jadwal produksi, uji per peran.
 - Cabang produksi pada `restore` di `runbook_k102.sh` belum pernah dijalankan.
+- Kondisi database produksi (tabel `HRIS Employee`, role HRIS, jumlah dan `MAX(modified)` Employee) belum didiagnosa ulang; skrip diagnosa perlu perbaikan.
+- Jadwal produksi (saat lembur), lalu uji per peran setelah migrasi.
 - Memasukkan skrip runbook ke repo (belum diputuskan).
-- Sinkronkan `status.md` dan tabel README keputusan (K-126 dan keputusan 6 Nov) bila disetujui.
