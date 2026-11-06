@@ -1,0 +1,4 @@
+# Keluaran hasil menjalankan skrip: jangan masuk repo
+*.txt
+*.path
+__pycache__/
