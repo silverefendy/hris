@@ -120,7 +120,24 @@ class HRISPayrollSchedule(Document):
         if not frappe.db.exists("DocType", doctype):
             return
         meta = frappe.get_meta(doctype)
-        if not (meta.has_field("payroll_schedule") and meta.has_field("is_active")):
+        if not (meta.has_field("payroll_schedule") and meta.has_field("effective_to")):
             return
-        if frappe.db.exists(doctype, {"payroll_schedule": self.name, "is_active": 1}):
-            frappe.throw(_("Jadwal {0} masih dipakai karyawan aktif. Pindahkan karyawannya dulu.").format(self.name))
+        # Baris gaji yang sedang berlaku (effective_to kosong) milik karyawan Aktif.
+        # Query langsung agar tidak terhalang izin user.
+        jumlah = frappe.db.sql(
+            """
+            select count(*)
+            from `tabHRIS Employee Pay` p
+            inner join `tabHRIS Employee` e on e.name = p.employee
+            where p.payroll_schedule = %s
+              and p.effective_to is null
+              and e.status = 'Aktif'
+            """,
+            self.name,
+        )[0][0]
+        if jumlah:
+            frappe.throw(
+                _("Jadwal {0} masih dipakai {1} karyawan aktif. Pindahkan karyawannya dulu.").format(
+                    self.name, jumlah
+                )
+            )
