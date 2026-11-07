@@ -12,7 +12,7 @@ Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 - Tab "Audit Trail HRIS" ada di semua DocType HRIS.
 - Arah arsitektur: HRIS mandiri; dari HRMS/ERPNext hanya `Employee` dan `Company` (K-18). Bridge hanya arah HRIS ke ERPNext, ditunda (K-19).
 - Zona waktu site kerja: Asia/Jakarta (K-28). Jam OS server dan `logs/hris_agent.log` tampaknya UTC.
-- Cara server berjalan: `bench start` (honcho) di terminal, `frappe serve --port 8000`, `developer_mode` menyala, tanpa nginx dan HTTPS (hanya LAN). Worker antrean aktif (1 worker, terbukti 31 Okt). Scheduler tidak aktif (`pause_scheduler` di konfigurasi).
+- Cara server berjalan: `bench start` (honcho) di terminal, `frappe serve --port 8000`, `developer_mode` menyala, tanpa nginx dan HTTPS (hanya LAN). Worker antrean aktif (1 worker, terbukti 31 Okt). Scheduler tidak aktif (`pause_scheduler` di konfigurasi). Site uji `hris-uji.local` dan produksi berbagi satu bench dan satu folder app.
 - **Data nyata pertama:** 2.306 Raw Log `PLTB 220` untuk 25 sampai 31 Okt 2026 (sumber `Pull pyzk`, semua berstatus `Tidak Cocok`). Catatan lama "belum ada Employee Active" sudah usang untuk Employee ERPNext: per 7 Nov 2026 produksi memiliki 1078 Employee Active (lihat Pembaruan 7 Nov). Belum ada working hour nyata; semua uji working hour memakai karyawan sementara yang di-rollback. Sejak itu isi Raw Log berubah karena uji tarik dan hapus (31 Okt); lihat "Celah data tarikan" pada bagian Pembaruan 31 Okt.
 - Data di site: 1 Company, 8 HRIS Shift aktif (Kantor, Lapangan, Security Pagi dan Malam; lihat `data-model.md`), grup nyata `Lapangan Harian` (jadwal mingguan Senin sampai Sabtu), sebagian sisa uji lama (lihat Tertunda).
 
@@ -134,7 +134,7 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Belum terbukti | Cabang produksi pada `restore` di `runbook_k102.sh`; kebutuhan password root MariaDB di produksi. Uji tampilan D1 sampai D4 lulus (D1 dan D2 dilaporkan 6 Nov 21:24 WIB pada HRE-00274 di `hris-uji.local`: bagian Kelengkapan Data tampil; perubahan status dan catatan tercatat di Audit Trail HRIS, lalu dikembalikan) |
 | Keputusan | [decisions/keputusan-2026-11-06.md](../decisions/keputusan-2026-11-06.md); catatan sesi [session-log-2026-11-06.md](session-log-2026-11-06.md) |
 
-## Pembaruan 7 Nov 2026 (diagnosa produksi, arsip runbook, aturan lembur)
+## Pembaruan 7 Nov 2026 (diagnosa produksi, arsip runbook, aturan lembur, HRIS Employee Pay)
 
 | Item | Status |
 |---|---|
@@ -142,14 +142,17 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Jumlah Employee produksi | 1078 Employee, semuanya Active, `attendance_device_id` terisi dan unik pada semuanya. 1077 dibuat pada impor 1 Nov 2026, satu lagi (`HR-EMP-01078`) pada 2 Nov 2026. Efendy mengonfirmasi 1078 adalah karyawan sungguhan; impor pertama sempat tanpa nama dan sudah diperbaiki. Selisih dengan angka rencana (1.077) tuntas: rencana belum memuat karyawan tambahan itu |
 | Arsip skrip runbook di repo | `scripts/operations/k102/` (c7a0f52, oleh Efendy): enam skrip, `README.md`, `.gitignore`. Pemeriksaan: tidak ada rahasia tertanam; password root dibaca lewat `read -s`. Skrip yang dipakai tetap yang di `/home/it/runbook_k102/`; salinan di repo hanya arsip |
 | Aturan lembur | Sudah diputuskan: K-38 (29 Okt). Terverifikasi di kode (`working_hour.py`) dan data produksi: delapan Shift semuanya `overtime_min_minutes` = 30 dan `window_after_min` = 240, yaitu lembur maksimal 4 jam per hari; punch di luar batas ditandai untuk HRD (K-36). Menaikkan `window_after_min` bila ada lembur di atas 4 jam adalah keputusan Efendy dan HRD |
-| `go-live.md` | Disinkronkan (84e4325, 039a518) |
+| `go-live.md` dan checklist malam migrasi | Disinkronkan; checklist satu halaman: [operations/migrasi-k102-checklist.md](../operations/migrasi-k102-checklist.md) |
+| `HRIS Employee Pay` (K-127) | **Dibuat dan teruji di `hris-uji.local`** (701fc76, deb04ae): `pay_type` Bulanan atau Harian, baris gaji dikunci dan baris lama ditutup otomatis, izin per baris (Payroll Admin hanya Harian), tab Audit Trail. Uji skrip OK 30 + OK 4 + OK 5, GAGAL 0; uji browser lulus. Rancangan: [decisions/keputusan-2026-11-07.md](../decisions/keputusan-2026-11-07.md). Belum ada di produksi; tabelnya (kosong) terbentuk saat `migrate` produksi |
+| Perbaikan penjaga jadwal gaji (K-105) | `validate_deactivation` di `HRIS Payroll Schedule` dulu tidak pernah aktif karena memeriksa field `is_active` yang tidak ada di Employee Pay; kini menghitung baris gaji berlaku milik karyawan Aktif (deb04ae) |
+| Pelajaran teknis | Frappe 16.53: hook `has_permission` harus mengembalikan `True` bila tidak menolak; `None` dianggap menolak |
 | Migrasi produksi K-102 | **Belum dijalankan.** `HRIS Employee` dan role `HRIS Payroll Manager`, `HRIS Direksi`, `HRIS Employee Admin` belum ada di produksi karena dibuat oleh `bench migrate`; menu HRIS Employee belum muncul karena itu, bukan karena galat. Langkah migrasi: [go-live.md](go-live.md) bagian 9 |
 
 ## Langkah berikutnya
-1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah.
+1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay`.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
-4. `HRIS Employee Pay` dan `HRIS Payroll Period` (K-108, K-109), lalu Payroll Slip.
-5. Pembersihan site uji (hapus setelah migrasi aman, K-117) dan penghentian server dev port 8001 bila masih berjalan.
+3. `HRIS Payroll Period` (K-108): dimulai dari diskusi rancangan, lalu Payroll Slip.
+4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
+5. Pembersihan site uji (hapus setelah migrasi aman, K-117; site uji kini memuat data gaji uji dengan nama karyawan sungguhan) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.
 7. Permintaan ke HRD yang belum dikirim: slip contoh, format bank, daftar laporan, aturan cut-off, potongan, cuti, saldo awal; konfirmasi Kepala HRD soal lembur x1,0 (K-98).
