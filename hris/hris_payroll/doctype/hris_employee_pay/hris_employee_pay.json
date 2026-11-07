@@ -1,0 +1,179 @@
+{
+ "creation": "2026-11-07 09:00:00.000000",
+ "modified": "2026-11-07 09:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Payroll",
+ "engine": "InnoDB",
+ "custom": 0,
+ "index_web_pages_for_search": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "HRIS Employee Pay",
+ "autoname": "format:HEP-{#####}",
+ "allow_rename": 0,
+ "track_changes": 1,
+ "title_field": "employee_name",
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Karyawan",
+   "options": "HRIS Employee",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Nama Karyawan",
+   "fetch_from": "employee.employee_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "fetch_from": "employee.company",
+   "read_only": 1,
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pay_type",
+   "fieldtype": "Select",
+   "label": "Jenis Gaji",
+   "options": "Bulanan\nHarian",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "description": "Karyawan mingguan memakai Harian dengan Jadwal Gaji bertipe Mingguan."
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Nominal",
+   "reqd": 1,
+   "in_list_view": 1,
+   "description": "Bulanan = gaji per bulan. Harian = upah per hari."
+  },
+  {
+   "fieldname": "payroll_schedule",
+   "fieldtype": "Link",
+   "label": "Jadwal Gaji",
+   "options": "HRIS Payroll Schedule",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "masa_section",
+   "fieldtype": "Section Break",
+   "label": "Masa Berlaku"
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Date",
+   "label": "Berlaku Dari",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "effective_to",
+   "fieldtype": "Date",
+   "label": "Berlaku Sampai",
+   "read_only": 1,
+   "in_list_view": 1,
+   "description": "Diisi otomatis saat ada baris baru. Kosong = baris yang sedang berlaku."
+  },
+  {
+   "fieldname": "alasan_section",
+   "fieldtype": "Section Break",
+   "label": "Alasan"
+  },
+  {
+   "fieldname": "change_reason",
+   "fieldtype": "Small Text",
+   "label": "Alasan Perubahan",
+   "description": "Wajib bila karyawan ini sudah punya baris gaji sebelumnya."
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS",
+   "depends_on": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "field_order": [
+  "details_tab",
+  "employee",
+  "employee_name",
+  "company",
+  "column_break_1",
+  "pay_type",
+  "amount",
+  "payroll_schedule",
+  "masa_section",
+  "effective_from",
+  "column_break_2",
+  "effective_to",
+  "alasan_section",
+  "change_reason",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Payroll Manager",
+   "read": 1,
+   "create": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Payroll Admin",
+   "read": 1,
+   "create": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Direksi",
+   "permlevel": 0,
+   "read": 1,
+   "report": 1
+  }
+ ]
+}
