@@ -101,6 +101,15 @@ def _employees(params):
 
 
 def _protected(employees, start, end):
+	"""Baris yang tidak boleh dihitung ulang: ditinjau, disesuaikan, atau di periode gaji Final (K-128)."""
+	from hris.hris_payroll.services.period_lock import locked_pairs
+
+	dasar = _protected_dasar(employees, start, end)
+	terkunci = locked_pairs([e["name"] for e in employees], start, end)
+	return dasar | terkunci
+
+
+def _protected_dasar(employees, start, end):
 	if not employees:
 		return set()
 	rows = frappe.get_all(

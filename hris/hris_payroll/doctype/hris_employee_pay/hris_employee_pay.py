@@ -23,6 +23,22 @@ def _peran(user):
     return set(frappe.get_roles(user))
 
 
+def periode_final_sejak(jadwal, tanggal):
+    """Nama periode Final milik salah satu jadwal yang berakhir pada atau setelah tanggal. None bila tidak ada."""
+    daftar = tuple(j for j in jadwal if j)
+    if not daftar or not frappe.db.table_exists("HRIS Payroll Period"):
+        return None
+    baris = frappe.db.sql(
+        """
+        select name from `tabHRIS Payroll Period`
+        where status = 'Final' and payroll_schedule in %(jadwal)s and period_end >= %(tanggal)s
+        limit 1
+        """,
+        {"jadwal": daftar, "tanggal": getdate(tanggal)},
+    )
+    return baris[0][0] if baris else None
+
+
 def _akses_penuh(user):
     return user == "Administrator" or bool(_peran(user) & AKSES_PENUH)
 
@@ -91,6 +107,7 @@ class HRISEmployeePay(Document):
         self.validate_jadwal()
         self.validate_hak()
         self.validate_urutan()
+        self.validate_periode_final()
 
     def validate_jadwal(self):
         jadwal = frappe.db.get_value(
@@ -129,6 +146,17 @@ class HRISEmployeePay(Document):
                 _("Berlaku Dari harus setelah {0} (baris gaji terakhir karyawan ini).").format(
                     frappe.format(batas, {"fieldtype": "Date"})
                 )
+            )
+
+    def validate_periode_final(self):
+        jadwal = {self.payroll_schedule}
+        terbuka = self._baris_terbuka()
+        if terbuka:
+            jadwal.add(frappe.db.get_value(TABEL, terbuka.name, "payroll_schedule"))
+        final = periode_final_sejak(jadwal, self.effective_from)
+        if final:
+            frappe.throw(
+                _("Berlaku Dari jatuh pada atau sebelum akhir periode gaji yang sudah Final ({0}). Buka kembali periodenya (Payroll Manager) atau pilih tanggal setelahnya.").format(final)
             )
 
     def _baris_terbuka(self, selain=None):
@@ -186,6 +214,9 @@ class HRISEmployeePay(Document):
             lama.save(ignore_permissions=True)
 
     def on_trash(self):
+        final = periode_final_sejak({self.payroll_schedule}, self.effective_from)
+        if final:
+            frappe.throw(_("Baris gaji ini berada pada atau sebelum periode gaji yang sudah Final ({0}); tidak boleh dihapus.").format(final))
         if self.effective_to:
             frappe.throw(_("Baris yang sudah ditutup tidak boleh dihapus. Hapus dulu baris yang lebih baru."))
         sebelumnya = frappe.get_all(

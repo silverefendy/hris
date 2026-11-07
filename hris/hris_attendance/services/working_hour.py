@@ -214,6 +214,10 @@ def _signature(doc):
 
 def calculate_working_hour(employee, work_date):
 	day = getdate(work_date)
+	from hris.hris_payroll.services.period_lock import is_locked
+
+	if is_locked(employee, day):
+		frappe.throw(_("Periode gaji untuk {0} tanggal {1} sudah Final; hitung ulang ditolak.").format(employee, day))
 	sched = get_schedule_for_date(employee, day)
 	emp = frappe.db.get_value("Employee", employee, ["company", "department"], as_dict=True)
 	if not emp:

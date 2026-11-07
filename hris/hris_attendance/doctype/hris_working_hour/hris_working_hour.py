@@ -45,6 +45,7 @@ class HRISWorkingHour(Document):
 
 	def validate(self):
 		self.guard_edits()
+		self.check_period_lock()
 		self.validate_punch()
 		self.validate_numbers()
 		self.apply_adjustment()
@@ -81,6 +82,17 @@ class HRISWorkingHour(Document):
 				_("Hanya HRIS HR Admin, HRIS Manager, atau System Manager yang boleh mengubah tinjauan dan penyesuaian."),
 				frappe.PermissionError,
 			)
+
+	def check_period_lock(self):
+		"""Tolak edit manual bila tanggal kerja ada di periode gaji Final (K-128)."""
+		if self.is_new() or self.flags.from_calculation:
+			return
+		if not any(self.has_value_changed(f) for f in EDITABLE):
+			return
+		from hris.hris_payroll.services.period_lock import is_locked
+
+		if is_locked(self.employee, self.work_date):
+			frappe.throw(_("Tanggal kerja ini berada di periode gaji yang sudah Final. Minta Payroll Manager membuka kembali periodenya bila perlu koreksi."))
 
 	def validate_punch(self):
 		if self.check_in and self.check_out and get_datetime(self.check_out) < get_datetime(self.check_in):
