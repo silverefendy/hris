@@ -33,6 +33,7 @@ Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`
 - Tanpa `SITE_TARGET=hris-uji.local`, sasaran `produksi_k102.sh` adalah **produksi**. Untuk latihan, selalu isi `SITE_TARGET`.
 - Cadangan 6 Nov 2026 hanya untuk gladi resik; migrasi memerlukan cadangan baru.
 - Durasi tiap langkah di produksi belum diketahui (log gladi resik: `/home/it/runbook_k102/jalankan_*.txt`).
+- `migrate` produksi juga membuat tabel `HRIS Employee Pay` (K-127, kosong) karena kodenya sudah ada di folder app yang sama. Ini tambahan murni; gladi resik K-102 dilakukan sebelum DocType ini ada. Setelah migrasi, role dan tabel baru ada di produksi.
 - Bila ragu di tengah jalan, berhenti dan simpan keluaran terminal.
 
 ## Setelah migrasi
