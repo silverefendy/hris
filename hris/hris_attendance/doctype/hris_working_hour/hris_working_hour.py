@@ -6,9 +6,16 @@ from frappe.utils import flt, get_datetime, getdate, now_datetime
 
 EDIT_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
 # Hanya ini yang boleh diubah manusia (K-42). Sisanya hasil layanan hitung.
-EDITABLE = {"review_status", "review_note", "adjustment_hours", "adjustment_reason"}
+EDITABLE = {
+	"review_status", "review_note", "adjustment_hours", "adjustment_reason",
+	"absence_class", "has_doctor_note", "has_supervisor_instruction", "annual_leave_exhausted",
+	"absence_deducted", "absence_note",
+}
 # Diisi controller sendiri.
-DERIVED = {"final_effective_hours", "reviewed_by", "reviewed_on", "employee_name", "company"}
+DERIVED = {
+	"final_effective_hours", "reviewed_by", "reviewed_on", "employee_name", "company",
+	"classified_by", "classified_on",
+}
 LOCKED = ("employee", "work_date")
 LAYOUT = ("Section Break", "Column Break", "Tab Break", "HTML", "Button")
 NON_NEGATIVE = (
@@ -49,6 +56,7 @@ class HRISWorkingHour(Document):
 		self.validate_punch()
 		self.validate_numbers()
 		self.apply_adjustment()
+		self.classify_absence()
 		self.stamp_review()
 
 	def guard_edits(self):
@@ -108,6 +116,43 @@ class HRISWorkingHour(Document):
 		if adjustment and not (self.adjustment_reason or "").strip():
 			frappe.throw(_("Alasan Penyesuaian wajib diisi bila ada penyesuaian jam."))
 		self.final_effective_hours = max(0.0, flt(self.effective_hours) + adjustment)
+
+	def classify_absence(self):
+		"""Klasifikasi absen oleh HRD (K-131): menentukan apakah hari Tidak Hadir memotong gaji."""
+		from hris.hris_attendance.services.absence_rule import FIELD_CEK, FIELD_TEKS, dipotong
+
+		if self.status != "Tidak Hadir":
+			if self.absence_class and not self.flags.from_calculation:
+				frappe.throw(_("Klasifikasi Absen hanya untuk hari berstatus Tidak Hadir."))
+			for fieldname in FIELD_CEK:
+				self.set(fieldname, 0)
+			for fieldname in FIELD_TEKS:
+				self.set(fieldname, None)
+			self.classified_by = None
+			self.classified_on = None
+			return
+
+		if not self.absence_class:
+			if self.review_status == "Sudah Ditinjau" and not self.flags.from_calculation:
+				frappe.throw(_("Klasifikasi Absen wajib diisi sebelum tinjauan ditandai Sudah Ditinjau."))
+			self.absence_deducted = 0
+			return
+
+		if self.absence_class == "Lainnya" and not (self.absence_note or "").strip() and not self.flags.from_calculation:
+			frappe.throw(_("Catatan Klasifikasi wajib diisi untuk klasifikasi Lainnya."))
+
+		self.absence_deducted = dipotong(
+			self.absence_class,
+			ada_surat_dokter=self.has_doctor_note,
+			ada_instruksi_atasan=self.has_supervisor_instruction,
+			cuti_tahunan_habis=self.annual_leave_exhausted,
+			manual=self.absence_deducted,
+		)
+		if self.is_new() or self.has_value_changed("absence_class"):
+			self.classified_by = frappe.session.user
+			self.classified_on = now_datetime()
+		if self.review_status == "Menunggu":
+			self.review_status = "Sudah Ditinjau"
 
 	def stamp_review(self):
 		if self.is_new() or not self.has_value_changed("review_status"):

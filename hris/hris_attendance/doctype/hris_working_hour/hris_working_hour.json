@@ -66,6 +66,16 @@
   "review_note",
   "reviewed_by",
   "reviewed_on",
+  "absence_section",
+  "absence_class",
+  "has_doctor_note",
+  "has_supervisor_instruction",
+  "annual_leave_exhausted",
+  "absence_break",
+  "absence_deducted",
+  "absence_note",
+  "classified_by",
+  "classified_on",
   "adjust_section",
   "adjustment_hours",
   "adjustment_reason",
@@ -456,6 +466,68 @@
    "read_only": 1
   },
   {
+   "depends_on": "eval:doc.status=='Tidak Hadir'",
+   "fieldname": "absence_section",
+   "fieldtype": "Section Break",
+   "label": "Klasifikasi Absen (HRD)"
+  },
+  {
+   "description": "Diisi HRD untuk hari Tidak Hadir. Menentukan apakah hari itu memotong gaji Bulanan.",
+   "fieldname": "absence_class",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Klasifikasi Absen",
+   "options": "\nMangkir\nCuti\nSakit\nIzin\nLainnya"
+  },
+  {
+   "depends_on": "eval:doc.absence_class=='Sakit'",
+   "fieldname": "has_doctor_note",
+   "fieldtype": "Check",
+   "label": "Ada Surat Dokter"
+  },
+  {
+   "depends_on": "eval:doc.absence_class=='Izin'",
+   "fieldname": "has_supervisor_instruction",
+   "fieldtype": "Check",
+   "label": "Ada Instruksi Atasan (tidak dipotong)"
+  },
+  {
+   "depends_on": "eval:doc.absence_class=='Cuti'",
+   "fieldname": "annual_leave_exhausted",
+   "fieldtype": "Check",
+   "label": "Cuti Tahunan Habis (dipotong)"
+  },
+  {
+   "fieldname": "absence_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Otomatis dari aturan. Hanya klasifikasi Lainnya yang dipilih manual.",
+   "fieldname": "absence_deducted",
+   "fieldtype": "Check",
+   "label": "Dipotong Gaji",
+   "read_only_depends_on": "eval:doc.absence_class!='Lainnya'"
+  },
+  {
+   "description": "Wajib untuk klasifikasi Lainnya.",
+   "fieldname": "absence_note",
+   "fieldtype": "Small Text",
+   "label": "Catatan Klasifikasi"
+  },
+  {
+   "fieldname": "classified_by",
+   "fieldtype": "Link",
+   "label": "Diklasifikasi Oleh",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "classified_on",
+   "fieldtype": "Datetime",
+   "label": "Diklasifikasi Pada",
+   "read_only": 1
+  },
+  {
    "fieldname": "adjust_section",
    "fieldtype": "Section Break",
    "label": "Penyesuaian HRD"
@@ -518,7 +590,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-29 07:04:19.127474",
+ "modified": "2026-11-09 08:25:08.080204",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Working Hour",
@@ -563,14 +635,14 @@
    "role": "HRIS Attendance Operator"
   },
   {
-   "role": "HRIS Payroll Admin",
    "permlevel": 0,
-   "read": 1
+   "read": 1,
+   "role": "HRIS Payroll Admin"
   },
   {
-   "role": "HRIS Direksi",
    "permlevel": 0,
-   "read": 1
+   "read": 1,
+   "role": "HRIS Direksi"
   }
  ],
  "row_format": "Dynamic",
