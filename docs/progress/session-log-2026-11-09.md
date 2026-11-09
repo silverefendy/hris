@@ -30,3 +30,33 @@
 1. Satu fitur per sesi, dimulai dari diskusi rancangan: `HRIS Payroll Slip`, `Department Rule` (P8), lalu BPJS dan PPh 21.
 2. Migrasi produksi K-102 sesuai checklist.
 3. Keputusan siapa HRIS Payroll Manager.
+
+---
+
+# Tambahan: HRIS Payroll Slip (sesi malam, sampai 22:50 WIB)
+
+## Selesai
+| Item | Hasil |
+|---|---|
+| `HRIS Payroll Slip` (K-130) | Kode di `2f483dc`; perbaikan tampilan dan penomoran di `b11d89c` |
+| Uji skrip | `uji_payroll_slip.py`: OK 77, GAGAL 0 (sebelumnya 72; ditambah cek nomor baris, urutan komponen, dan kolom Alasan) |
+| Uji browser (hris-uji.local, Administrator) | Lulus: Buat Slip dan Buat Slip kedua kali (memperbarui, tidak menggandakan); Gaji Pokok 3.000.000 dan tarif per jam 61.855,67 (3.000.000 / 48,50 jam); kolom otomatis tidak bisa diedit; komponen Manual tanpa alasan ditolak; komponen Manual menambah Gaji Bersih dan tetap ada setelah Hitung Ulang; Tinjau dan Kembalikan ke Draft; Periode yang punya slip tidak bisa dihapus; slip Ditinjau tidak bisa diubah |
+| Uji potongan absen | 1 hari diklasifikasi Mangkir menghasilkan Potongan Absen Rp 500.000 (3.000.000 / 6 hari kerja x 1 hari); diubah ke Sakit dengan surat dokter, potongan hilang; hari Tidak Hadir yang belum diklasifikasi tidak dipotong dan dicatat di Catatan Perhitungan |
+| Audit Trail | Perubahan komponen dan total tercatat dengan waktu (WIB), pengguna, nilai lama dan baru |
+
+## Temuan dan perbaikan
+- Kolom Alasan tidak tampil di tabel Komponen. Perbaikan: `in_list_view` pada field `reason` dan `modified` JSON dinaikkan, karena `migrate` mengabaikan perubahan JSON bila `modified` tidak lebih baru.
+- Nomor baris ganda setelah Hitung Ulang (baris Manual mempertahankan nomor lama). Perbaikan: urutkan Otomatis dulu, lalu nomori ulang 1..n sebelum simpan.
+
+## Perilaku yang disengaja
+- Menu Buat Slip hanya aktif saat Periode berstatus Draft.
+- Finalkan Periode ditolak selama ada karyawan Hadir tanpa baris gaji (aturan kesiapan K-128 berlaku global). Di site uji ditemukan 285 karyawan; tidak dipaksa lolos.
+
+## Tertunda
+| Item | Catatan |
+|---|---|
+| Catatan Audit Hitung Ulang | Mencatat "baris dihapus lalu ditambah" untuk komponen yang nilainya sama; hanya bising, prioritas rendah |
+| Pembersihan data uji slip | Skrip `p15` (mode COBA, lalu `--terapkan`); klasifikasi absen Working Hour uji dibiarkan |
+| Indeks `decisions/README.md` | Belum memuat K-127 sampai K-129; rapikan terpisah |
+| Pembuatan slip massal, per kelompok, dan per departemen | Rancangan disetujui (K-130), implementasi menyusul |
+| BPJS dan PPh 21, Department Rule (P8) | Fitur berikutnya, mulai dari diskusi rancangan |
