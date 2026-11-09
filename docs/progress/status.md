@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 7 November 2026
+Diperbarui: 9 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
@@ -148,11 +148,22 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Pelajaran teknis | Frappe 16.53: hook `has_permission` harus mengembalikan `True` bila tidak menolak; `None` dianggap menolak |
 | Migrasi produksi K-102 | **Belum dijalankan.** `HRIS Employee` dan role `HRIS Payroll Manager`, `HRIS Direksi`, `HRIS Employee Admin` belum ada di produksi karena dibuat oleh `bench migrate`; menu HRIS Employee belum muncul karena itu, bukan karena galat. Langkah migrasi: [go-live.md](go-live.md) bagian 9 |
 
+## Pembaruan 9 Nov 2026 (HRIS Payroll Period K-128, hak akses K-129)
+
+| Item | Status |
+|---|---|
+| `HRIS Payroll Period` (K-128) | Dibuat dan teruji di `hris-uji.local` (9c0648a, 0ebc487, 913268f, 4807cba): alur Draft, Ditinjau, Final; penguncian Working Hour dan baris Employee Pay setelah Final; notifikasi in-app; dialog Periksa Kesiapan menampilkan semua kekurangan dengan nama. Uji skrip kesiapan OK 18, Period OK 28, regresi Working Hour OK 4, Employee Pay OK 30/4/5, GAGAL 0; uji browser per peran lulus. Belum ada di produksi |
+| Hak akses (K-129) | Payroll Manager: baca, tulis, buat Jadwal Gaji (tanpa hapus; hapus hanya System Manager). Payroll Manager dan Payroll Admin: `write` pada Employee Pay. Payroll Admin hanya melihat Jenis Gaji Harian di form baru. Teruji skrip (K13 sampai K16) dan browser |
+| Pembersihan data uji K-128 | Dua periode, empat baris gaji, tiga jadwal uji, dua user uji, dan notifikasinya dihapus (9 Nov); cadangan site uji diambil sebelumnya |
+| Dokumen | [decisions/keputusan-2026-11-09.md](../decisions/keputusan-2026-11-09.md); catatan sesi [session-log-2026-11-09.md](session-log-2026-11-09.md) |
+| Pelajaran | Uji browser per peran wajib sebelum produksi: uji skrip yang hanya memeriksa izin `create` meloloskan form kosong |
+| Belum diputuskan | Siapa HRIS Payroll Manager; kombinasi Jenis Gaji dan tipe jadwal belum diperiksa; indeks `decisions/README.md` belum memuat K-127 sampai K-129 |
+
 ## Langkah berikutnya
-1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay`.
+1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. `HRIS Payroll Period` (K-108): dimulai dari diskusi rancangan, lalu Payroll Slip.
+3. `HRIS Payroll Slip`, `Department Rule` (P8), lalu BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
-5. Pembersihan site uji (hapus setelah migrasi aman, K-117; site uji kini memuat data gaji uji dengan nama karyawan sungguhan) dan penghentian server dev port 8001 bila masih berjalan.
+5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.
 7. Permintaan ke HRD yang belum dikirim: slip contoh, format bank, daftar laporan, aturan cut-off, potongan, cuti, saldo awal; konfirmasi Kepala HRD soal lembur x1,0 (K-98).

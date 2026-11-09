@@ -1,6 +1,6 @@
 # Rencana Go Live dan Checklist
 
-Dibuat: 6 November 2026. Diperbarui terakhir: 7 November 2026.
+Dibuat: 6 November 2026. Diperbarui terakhir: 9 November 2026.
 
 Dokumen ini adalah **acuan utama menuju go live**. Roadmap (`roadmap.md`) hanya daftar tahap fitur dan sudah usang (terakhir 28 Okt); `status.md` memuat kondisi teknis. Setiap akhir sesi, checklist di bawah ini diperbarui (lihat "Cara memperbarui").
 
@@ -107,8 +107,8 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Department Rule (aturan hitung per Department, tanggal berlaku) | Belum | P8; dirancang sebelum dibuat |
 | Ekspor (Excel) | Belum | Wajib |
 | Impor karyawan dari file | Belum | Wajib; terkait migrasi K-102 |
-| Alur persetujuan (koreksi, cuti, lembur, pinjaman, Payroll Run) | Belum | Siapa membuat dan siapa menyetujui |
-| Penguncian periode | Belum | Menunggu `HRIS Payroll Period` |
+| Alur persetujuan (koreksi, cuti, lembur, pinjaman, Payroll Run) | Sebagian | Periode gaji sudah ada alurnya (K-128: Tinjau oleh Payroll Admin atau Manager, Final dan buka kembali hanya Payroll Manager). Sisanya belum; siapa Payroll Manager belum diputuskan |
+| Penguncian periode | Sebagian | K-128: periode Final mengunci edit dan hitung ulang `HRIS Working Hour` serta baris `HRIS Employee Pay` berlaku mundur; teruji di site uji (9 Nov). Belum di produksi |
 | Role HRIS: enam role lama | Selesai | K-11 |
 | Role `HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi` | Sebagian | Ada di kode dan site uji. Di produksi (`erp.ciptamebel.co.id`) belum ada: role dibuat saat `migrate` produksi, bagian dari migrasi K-102 (K-116, K-120) |
 | Matriks hak akses per role dan per company | Sebagian | `security/permissions.md`; pembatasan per company belum |
@@ -124,8 +124,8 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Sinkron satu arah HRIS Employee ke Employee ERPNext (K-101) | Belum | Sesi 3c |
 | Migrasi Employee ke HRIS Employee (K-102) | Sebagian | Kode di-push (7278bb7), teruji di site uji. Gladi resik `produksi_k102.sh` (`cadangan`, `siap`, `mulai`) lulus di `hris-uji.local`. Produksi belum dijalankan; menunggu waktu di luar jam kerja (lihat bagian 9) |
 | Dokumen karyawan (KTP, kontrak, foto) | Belum | Perlu uji lampiran dengan role baca saja |
-| `HRIS Employee Pay` (riwayat gaji, tanggal berlaku) | Sebagian | K-109, K-127. Dibuat dan teruji di `hris-uji.local` (701fc76, deb04ae): uji skrip OK 30 + OK 4 + OK 5, GAGAL 0; uji browser (form terkunci, tab Audit Trail, alasan wajib) lulus. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: uji dengan akun peran asli setelah migrasi |
-| `HRIS Payroll Period` (periode, status Final) | Belum | K-108; berikutnya, dimulai dari diskusi rancangan |
+| `HRIS Employee Pay` (riwayat gaji, tanggal berlaku) | Sebagian | K-109, K-127. Dibuat dan teruji di `hris-uji.local` (701fc76, deb04ae): uji skrip OK 30 + OK 4 + OK 5, GAGAL 0; uji browser (form terkunci, tab Audit Trail, alasan wajib) lulus. K-129 (9 Nov, 913268f dan 4807cba): `write` untuk Payroll Manager dan Payroll Admin, Payroll Admin hanya melihat Jenis Gaji Harian di form baru; uji browser per peran lulus di site uji. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: uji dengan akun peran asli setelah migrasi |
+| `HRIS Payroll Period` (periode, status Final) | Sebagian | K-108, K-128. Dibuat dan teruji di `hris-uji.local` (9c0648a, 0ebc487, 913268f, 4807cba): Draft, Ditinjau, Final, buka kembali dengan alasan, notifikasi in-app, dialog kesiapan lengkap; uji skrip kesiapan OK 18, Period OK 28, regresi OK 4; uji browser per peran lulus. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: orang yang menjadi HRIS Payroll Manager belum ditetapkan; syarat Department Rule (P10) dan `HRIS Absence` menyusul |
 | Komponen gaji (dapat ditambah user) dan formula aman | Belum | P6; formula wajib dijalankan di lingkungan terbatas, bukan `eval` bebas (verifikasi dokumentasi Frappe) |
 | `HRIS Payroll Slip` (termasuk Adjustment, K-111) | Belum | |
 | Aturan hitung bulanan, mingguan, harian (K-96, K-97, K-99, K-107) | Disetujui, belum dibuat | Dasar: `business/payroll-rancangan.md` |
@@ -175,8 +175,8 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Prosedur update production (backup, pull, migrate, rollback) | Sebagian | Runbook ada di server (`/home/it/runbook_k102/`) dan diarsipkan di repo (`scripts/operations/k102/`, c7a0f52); checklist malam migrasi di `operations/migrasi-k102-checklist.md`; lulus gladi resik di site uji; `P mulai` di produksi belum terbukti |
 | Rotasi token agen, `allowed_ips` | Belum | `architecture/agent-api.md` |
 | Hardening (HTTPS, akses LAN, hak akses data sensitif) | Belum | |
-| Site uji dibersihkan | Belum | K-117; site uji kini memuat data gaji uji dengan nama karyawan sungguhan |
-| `migrate` di site kerja (role dan DocType baru) | Sebagian | Cadangan dan latihan di salinan (`hris-uji.local`) sudah lulus. Produksi belum; dijalankan lewat `produksi_k102.sh mulai`. Migrasi juga membuat tabel `HRIS Employee Pay` (kosong) |
+| Site uji dibersihkan | Sebagian | K-117; data uji K-128 (periode, baris gaji, jadwal, dua user uji) dibersihkan 9 Nov; sisa site uji menunggu setelah migrasi aman |
+| `migrate` di site kerja (role dan DocType baru) | Sebagian | Cadangan dan latihan di salinan (`hris-uji.local`) sudah lulus. Produksi belum; dijalankan lewat `produksi_k102.sh mulai`. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong), serta memperbarui izin `HRIS Payroll Schedule` (K-129; verifikasi hasilnya) |
 | CI ke `main` (K-15), pre-commit, judul app | Belum | |
 | Lisensi final | Belum | P15 |
 | Cutover: aplikasi lama tidak dipakai | Belum | P2 |
@@ -228,6 +228,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-07 | Disinkronkan dengan hasil 6 sampai 7 Nov: K-126 dan K-102 di-push dan teruji; gladi resik `produksi_k102.sh` lulus di `hris-uji.local`; kondisi produksi (diagnosa 05:52 WIB); risiko 7 dan bagian 9 ditambahkan; runbook diarsipkan di repo (c7a0f52) |
 | 2026-11-07 | Aturan lembur dirujuk ke K-38 (sudah diputuskan dan diterapkan 29 Okt); terverifikasi lewat kode `working_hour.py` dan nilai delapan Shift produksi (30 dan 240) |
 | 2026-11-07 | `HRIS Employee Pay` (K-127) dibuat dan teruji di site uji (701fc76, deb04ae); penjaga penonaktifan jadwal gaji diperbaiki; selisih 1.078 vs 1.077 Employee tuntas; checklist malam migrasi ditambahkan; catatan bahwa `migrate` produksi ikut membuat tabel `HRIS Employee Pay` |
+| 2026-11-09 | `HRIS Payroll Period` (K-128) dan hak akses K-129 dibuat dan teruji di site uji (9c0648a, 0ebc487, 913268f, 4807cba); data uji dibersihkan; keputusan di [keputusan-2026-11-09.md](../decisions/keputusan-2026-11-09.md) |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
