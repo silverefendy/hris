@@ -5,7 +5,7 @@ Diperbarui: 9 November 2026
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
 ## Kondisi terkini
-- App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`). Pembaruan setelahnya: lihat bagian 4 sampai 7 November di bawah.
+- App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`). Pembaruan setelahnya: lihat bagian 4 sampai 9 November di bawah.
 - Modul HRIS Attendance berisi DocType terpasang: `HRIS Device`, `HRIS Raw Log`, `HRIS Shift`, `HRIS Employee Group` (+ tabel anak), `HRIS Holiday`, `HRIS Shift Rotation` (+ tabel anak), `HRIS Shift Assignment`, `HRIS Working Hour`, `HRIS Pull Run`, dan `HRIS Attendance Settings` (Single), serta Page `Konsol Mesin`. Custom Field dan hook validasi di `Employee` untuk grup karyawan (`hris_employee_group`).
 - Service: `shift_schedule.py` (K-33), `working_hour.py` (K-35 sampai K-44), `working_hour_batch.py` (K-45), `audit_trail.py`, `employee_group.py`; jalur data mesin: `punch_ingest.py`, `agent_auth.py`, `pull_device.py`, `delete_raw_log.py`, `pull_run_log.py`, `raw_log_naming.py`; endpoint `integrations/agent_api.py` ([agent-api.md](../architecture/agent-api.md)).
 - **Jalur data mesin (K-46 sampai K-77, [0003](../decisions/0003-jalur-data-mesin.md), [0004](../decisions/0004-pull-pyzk-dan-penamaan-raw-log.md)):** jalur agen (`push_punches`) teruji; jalur Pull pyzk sudah berjalan untuk mesin `PLTB 220`. Form Device dan Konsol Mesin memiliki dialog Tarik Log (Otomatis atau Rentang Tanggal, dengan Cek Dulu), Status (polling) dengan riwayat 10 terakhir, dan Hapus Raw Log. Tombol "Ambil Info dari Mesin" ada di form Device. Agen Windows sudah dibuat sebagai jendela manual dan teruji di satu PC (K-90 sampai K-93, [agen-windows.md](../development/agen-windows.md)).
@@ -159,10 +159,20 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Pelajaran | Uji browser per peran wajib sebelum produksi: uji skrip yang hanya memeriksa izin `create` meloloskan form kosong |
 | Belum diputuskan | Siapa HRIS Payroll Manager; kombinasi Jenis Gaji dan tipe jadwal belum diperiksa; indeks `decisions/README.md` belum memuat K-127 sampai K-129 |
 
+## Pembaruan 9 Nov 2026, sore (K-130 rancangan Payroll Slip, K-131 klasifikasi absen)
+
+| Item | Status |
+|---|---|
+| Rancangan `HRIS Payroll Slip` (K-130) | Disetujui Efendy, **belum ada kode**. Pembuatan slip massal, per kelompok atau departemen, dan satu per satu memakai satu layanan hitung yang sama; hitung ulang hanya untuk slip Draft; slip Final terkunci dan koreksi lewat buka kembali periode (K-128). Struktur field `HRIS Working Hour`, `HRIS Employee Pay`, `HRIS Payroll Schedule`, `HRIS Payroll Period` dan `period_lock.py` sudah dibaca untuk menyusun DocType. Dokumen: [decisions/keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
+| Klasifikasi Absen di `HRIS Working Hour` (K-131) | Di-push 097a946. Teruji skrip (OK 33, GAGAL 0) dan browser di `hris-uji.local`, termasuk langkah 6b (Lainnya dengan catatan, Dipotong Gaji manual; 9 Nov 16:45 WIB). Hari Tidak Hadir karyawan Bulanan kini ditandai Perlu Tinjauan dan menghalangi Final sampai diklasifikasi (K-128). Belum ada di produksi |
+| Aturan karyawan Harian (K-131) | Tidak Hadir karyawan Harian tidak ditandai dan tidak menghalangi Final; Tidak Lengkap tetap ditandai. Jenis gaji dibaca dari `HRIS Employee Pay` lewat `services/pay_type.py` (`pay_type_on`). Di-push 89f0c63; uji skrip OK 11, regresi klasifikasi OK 33, GAGAL 0. **Uji browser belum**: site uji belum punya baris gaji karyawan. Tanpa baris gaji, karyawan diperlakukan seperti Bulanan (ditandai) |
+| Dokumen | [decisions/keputusan-2026-11-09-absen.md](../decisions/keputusan-2026-11-09-absen.md) |
+| Belum diputuskan | K-132 (usul): memindahkan tautan Working Hour, Raw Log, dan Shift Assignment ke `HRIS Employee`; rancangan `HRIS Absence`; perlakuan hari Tidak Lengkap pada gaji Bulanan; pemetaan `HRIS Employee` ke `Employee` pada slip |
+
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. `HRIS Payroll Slip`, `Department Rule` (P8), lalu BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
+3. `HRIS Payroll Slip` (K-130 disetujui; berikutnya skrip DocType `HRIS Payroll Slip` dan `HRIS Payroll Slip Item`, tanpa BPJS dan PPh 21), lalu `Department Rule` (P8), BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
 5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.
