@@ -32,16 +32,17 @@ Dasar: [keputusan-2026-11-09-payroll-slip.md](keputusan-2026-11-09-payroll-slip.
 ## Status (9 Nov 2026)
 | Item | Hasil |
 |---|---|
-| Uji skrip di `hris-uji.local` | **OK 33, GAGAL 0**: delapan field, sepuluh aturan murni, lima belas perilaku database (selalu rollback, data uji nol) |
+| Uji skrip klasifikasi di `hris-uji.local` | **OK 33, GAGAL 0**: delapan field, sepuluh aturan murni, lima belas perilaku database (selalu rollback, data uji nol) |
 | Commit dan push kode klasifikasi | `097a946` |
-| Uji browser (baris Zaskia Aulia, 17-10-2026) | Lulus: hitung ulang menandai Tidak Hadir; klasifikasi Sakit dengan surat dokter (tidak dipotong) dan Izin (dipotong); status tinjauan otomatis Sudah Ditinjau; pelaku dan waktu tercatat; hitung ulang mempertahankan klasifikasi; penolakan Lainnya tanpa catatan dan Sudah Ditinjau tanpa klasifikasi. Belum dilaporkan: Lainnya dengan catatan dan pilihan Dipotong Gaji manual |
-| Aturan karyawan Harian | Dibuat sebagai patch tersendiri; menunggu uji |
+| Uji browser klasifikasi (baris Zaskia Aulia, 17-10-2026) | **Lulus penuh.** Hitung ulang menandai Tidak Hadir; Sakit dengan surat dokter (tidak dipotong) dan Izin tanpa instruksi atasan (dipotong); status tinjauan otomatis Sudah Ditinjau; pelaku dan waktu tercatat; hitung ulang mempertahankan klasifikasi; penolakan Lainnya tanpa catatan dan Sudah Ditinjau tanpa klasifikasi. Langkah 6b (dilaporkan 9 Nov 2026, 16:45 WIB): Lainnya dengan catatan tersimpan dan waktu klasifikasi diperbarui; Dipotong Gaji terbuka dan bisa dicentang atau dihilangkan hanya untuk Lainnya; kembali ke Izin tanpa instruksi atasan otomatis tercentang dan terkunci lagi; tab Audit Trail mencatat setiap perubahan dengan waktu dan pengubahnya |
+| Aturan karyawan Harian (`pay_type.py`, patch `p12`) | Uji skrip **OK 11, GAGAL 0** (tanpa baris gaji tetap ditandai; Harian tidak ditandai; Bulanan ditandai; sebelum dan sesudah masa berlaku gaji tidak dikenali). Regresi klasifikasi **OK 33, GAGAL 0**; sisa data uji nol. Commit `89f0c63`. **Uji browser aturan Harian belum dilakukan**: site uji belum punya baris `HRIS Employee Pay` karyawan, jadi aturan ini baru terbukti lewat skrip |
 | Regresi Working Hour lama (R1 sampai R4) | Tidak ada di repo dan tidak ditemukan di server |
 | Produksi | Belum; perubahan JSON ikut terbentuk di produksi saat `migrate` K-102 karena folder app dipakai bersama |
 
 ## Pelajaran
 - Uji database untuk dokumen `HRIS Working Hour` harus memuat ulang dokumen dari database setelah `insert` dan setelah penolakan yang disengaja. Tanpa itu, penjaga K-42 dan pemeriksaan cap waktu Frappe memberi galat palsu.
 - Sebelum go-live, aturan karyawan Harian hanya berlaku bila karyawan sudah punya baris `HRIS Employee Pay`. Tanpa baris gaji, semua hari Tidak Hadir ditandai.
+- Saat Dipotong Gaji dibuka untuk Lainnya, nilai awalnya terbawa dari klasifikasi sebelumnya (misalnya Izin tanpa instruksi = tercentang). HRD perlu memeriksanya saat memilih Lainnya.
 
 ## Belum diputuskan
 - **K-132 (usul):** memindahkan tautan `HRIS Working Hour`, `HRIS Raw Log`, dan `HRIS Shift Assignment` dari `Employee` ERPNext ke `HRIS Employee`, sesuai arah bahwa HRIS Employee adalah sumber utama. Perubahan struktur besar; butuh penjelasan risiko dan konfirmasi sebelum dikerjakan.
