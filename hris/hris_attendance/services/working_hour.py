@@ -314,15 +314,20 @@ def calculate_working_hour(employee, work_date):
 			if luar:
 				reasons.append("{0} punch di luar jendela hari kerja (dicatat, tidak dihitung)".format(luar))
 
+	perlu_klasifikasi = False
 	if doc.status == "Tidak Hadir":
-		reasons.append("Tidak hadir tanpa keterangan: HRD perlu menentukan Klasifikasi Absen")
+		from hris.hris_payroll.services.pay_type import pay_type_on
+
+		if pay_type_on(employee, day) != "Harian":
+			reasons.append("Tidak hadir tanpa keterangan: HRD perlu menentukan Klasifikasi Absen")
+			perlu_klasifikasi = True
 	doc.needs_review = 1 if reasons else 0
 	doc.review_reason = "; ".join(reasons) if reasons else None
 	if doc.needs_review:
 		keep = (
 			previous_review == "Sudah Ditinjau"
 			and previous_sig == _signature(doc)
-			and not (doc.status == "Tidak Hadir" and not doc.absence_class)
+			and not (perlu_klasifikasi and not doc.absence_class)
 		)
 		doc.review_status = "Sudah Ditinjau" if keep else "Menunggu"
 	else:

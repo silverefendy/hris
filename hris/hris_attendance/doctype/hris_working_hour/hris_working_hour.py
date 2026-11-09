@@ -133,7 +133,7 @@ class HRISWorkingHour(Document):
 			return
 
 		if not self.absence_class:
-			if self.review_status == "Sudah Ditinjau" and not self.flags.from_calculation:
+			if self.needs_review and self.review_status == "Sudah Ditinjau" and not self.flags.from_calculation:
 				frappe.throw(_("Klasifikasi Absen wajib diisi sebelum tinjauan ditandai Sudah Ditinjau."))
 			self.absence_deducted = 0
 			return
