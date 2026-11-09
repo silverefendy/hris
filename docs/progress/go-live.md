@@ -97,6 +97,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 |---|---|---|
 | Shift, Employee Group, Rotation, Holiday, Shift Assignment | Selesai | K-31 sampai K-34 |
 | Working Hour (hitung per hari, potongan, lembur, status, tanda tinjauan) | Selesai | K-35 sampai K-44; teruji skrip. Uji tampilan D1 sampai D4 lulus (6 sampai 7 Nov) |
+| Klasifikasi absen hari Tidak Hadir (K-131) | Sebagian | Field klasifikasi di `HRIS Working Hour` (097a946): teruji skrip (OK 33) dan browser di site uji, termasuk Lainnya dengan catatan dan Dipotong Gaji manual (9 Nov). Aturan karyawan Harian (89f0c63): Tidak Hadir Harian tidak ditandai dan tidak menghalangi Final; uji skrip OK 11, uji browser belum (site uji belum punya baris gaji karyawan). Belum di produksi. `HRIS Absence` menggantikan field ini kelak; belum dirancang |
 | Hitung ulang per cakupan (5c-1) | Sebagian | Teruji skrip; browser dan job background belum |
 | Warna list view dan Report ringkasan (5c-2) | Perlu verifikasi | Catatan sesi 29 Okt menyebut selesai (5406151), tetapi `status.md` masih menulis tertunda; sinkronkan |
 | Uji dengan data nyata (shift Security lintas tengah malam, hari Libur, tumpang tindih jendela) | Belum | Menunggu Employee nyata |
@@ -127,8 +128,8 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | `HRIS Employee Pay` (riwayat gaji, tanggal berlaku) | Sebagian | K-109, K-127. Dibuat dan teruji di `hris-uji.local` (701fc76, deb04ae): uji skrip OK 30 + OK 4 + OK 5, GAGAL 0; uji browser (form terkunci, tab Audit Trail, alasan wajib) lulus. K-129 (9 Nov, 913268f dan 4807cba): `write` untuk Payroll Manager dan Payroll Admin, Payroll Admin hanya melihat Jenis Gaji Harian di form baru; uji browser per peran lulus di site uji. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: uji dengan akun peran asli setelah migrasi |
 | `HRIS Payroll Period` (periode, status Final) | Sebagian | K-108, K-128. Dibuat dan teruji di `hris-uji.local` (9c0648a, 0ebc487, 913268f, 4807cba): Draft, Ditinjau, Final, buka kembali dengan alasan, notifikasi in-app, dialog kesiapan lengkap; uji skrip kesiapan OK 18, Period OK 28, regresi OK 4; uji browser per peran lulus. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: orang yang menjadi HRIS Payroll Manager belum ditetapkan; syarat Department Rule (P10) dan `HRIS Absence` menyusul |
 | Komponen gaji (dapat ditambah user) dan formula aman | Belum | P6; formula wajib dijalankan di lingkungan terbatas, bukan `eval` bebas (verifikasi dokumentasi Frappe) |
-| `HRIS Payroll Slip` (termasuk Adjustment, K-111) | Belum | |
-| Aturan hitung bulanan, mingguan, harian (K-96, K-97, K-99, K-107) | Disetujui, belum dibuat | Dasar: `business/payroll-rancangan.md` |
+| `HRIS Payroll Slip` (termasuk Adjustment, K-111) | Belum | K-130 (9 Nov): rancangan disetujui, belum ada kode. Pembuatan massal, per kelompok atau departemen, dan satu per satu; hitung ulang hanya slip Draft; Final terkunci. Tahap pertama tanpa BPJS dan PPh 21 |
+| Aturan hitung bulanan, mingguan, harian (K-96, K-97, K-99, K-107) | Disetujui, belum dibuat | Dasar: `business/payroll-rancangan.md`; rumus tahap pertama di K-130 |
 | Readiness Check sebelum Payroll Run (P10) | Belum | |
 | Pro-rata (masuk/keluar di tengah periode), mutasi, final pay | Belum | Muncul tiap bulan |
 | Pinjaman karyawan | Belum | P11 |
@@ -229,6 +230,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-07 | Aturan lembur dirujuk ke K-38 (sudah diputuskan dan diterapkan 29 Okt); terverifikasi lewat kode `working_hour.py` dan nilai delapan Shift produksi (30 dan 240) |
 | 2026-11-07 | `HRIS Employee Pay` (K-127) dibuat dan teruji di site uji (701fc76, deb04ae); penjaga penonaktifan jadwal gaji diperbaiki; selisih 1.078 vs 1.077 Employee tuntas; checklist malam migrasi ditambahkan; catatan bahwa `migrate` produksi ikut membuat tabel `HRIS Employee Pay` |
 | 2026-11-09 | `HRIS Payroll Period` (K-128) dan hak akses K-129 dibuat dan teruji di site uji (9c0648a, 0ebc487, 913268f, 4807cba); data uji dibersihkan; keputusan di [keputusan-2026-11-09.md](../decisions/keputusan-2026-11-09.md) |
+| 2026-11-09 | Rancangan `HRIS Payroll Slip` disetujui (K-130, belum ada kode); klasifikasi absen (K-131, 097a946) teruji skrip dan browser; aturan karyawan Harian (89f0c63) teruji skrip, browser menunggu baris gaji karyawan; keputusan di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) dan [keputusan-2026-11-09-absen.md](../decisions/keputusan-2026-11-09-absen.md) |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
