@@ -198,6 +198,9 @@ def satu(tipe, nominal, company):
     nama_manual = [r.component for r in doc.components if r.source == "Manual"]
     cek(t + "D4 hitung ulang mempertahankan komponen Manual", nama_manual == ["Tunjangan Uji"], nama_manual)
     cek(t + "D4 hitung ulang menghasilkan gaji bersih yang sama", abs(flt(doc.net_pay) - net_manual) < 0.01, (doc.net_pay, net_manual))
+    urut = [(r.idx, r.source) for r in doc.components]
+    cek(t + "D4 nomor baris berurutan 1..n tanpa ganda", [i for i, _s in urut] == list(range(1, len(urut) + 1)), urut)
+    cek(t + "D4 komponen Otomatis tampil sebelum Manual", [s for _i, s in urut] == sorted([s for _i, s in urut], key=lambda x: 0 if x == "Otomatis" else 1), urut)
     h2 = ps.buat_slip(period.name, "Karyawan", employee=he)
     cek(t + "D4 Buat Slip kedua kali memperbarui, bukan menggandakan", h2.get("diperbarui") == 1 and h2.get("dibuat") == 0, h2)
     cek(t + "D4 tetap satu slip untuk periode ini", frappe.db.count("HRIS Payroll Slip", {"payroll_period": period.name}) == 1)
@@ -229,6 +232,7 @@ def uji_db():
             satu(tipe, nominal, company)
         finally:
             frappe.db.rollback()
+    cek("A1 kolom Alasan tampil di tabel Komponen", bool(frappe.get_meta("HRIS Payroll Slip Item").get_field("reason").in_list_view))
     cek("Z1 tidak ada sisa slip uji", frappe.db.count("HRIS Payroll Slip") == n_awal)
     cek("Z1 tidak ada sisa jadwal uji", not frappe.db.exists("HRIS Payroll Schedule", "ZZ Uji Slip"))
 

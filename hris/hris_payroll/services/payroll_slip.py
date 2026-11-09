@@ -259,6 +259,10 @@ def proses_karyawan(period, he_name):
             "component": k["nama"], "component_type": k["tipe"], "amount": k["jumlah"],
             "basis": k["dasar"], "source": "Otomatis", "reason": "",
         })
+    baris_urut = sorted(doc.components, key=lambda r: 0 if r.source == "Otomatis" else 1)
+    for nomor, r in enumerate(baris_urut, 1):
+        r.idx = nomor
+    doc.components = baris_urut
     doc.flags.dari_layanan = True
     if jenis == "dibuat":
         doc.insert(ignore_permissions=True)
