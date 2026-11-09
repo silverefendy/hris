@@ -1,0 +1,397 @@
+{
+ "creation": "2026-11-09 17:00:00.000000",
+ "modified": "2026-11-09 17:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Payroll",
+ "engine": "InnoDB",
+ "custom": 0,
+ "index_web_pages_for_search": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "HRIS Payroll Slip",
+ "allow_rename": 0,
+ "track_changes": 1,
+ "title_field": "employee_name",
+ "search_fields": "employee_name,payroll_period",
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "payroll_period",
+   "fieldtype": "Link",
+   "label": "Periode Gaji",
+   "options": "HRIS Payroll Period",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Karyawan",
+   "options": "HRIS Employee",
+   "reqd": 1,
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Nama Karyawan",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "erpnext_employee",
+   "fieldtype": "Link",
+   "label": "Employee ERPNext",
+   "options": "Employee",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nDitinjau\nFinal",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "payroll_schedule",
+   "fieldtype": "Link",
+   "label": "Jadwal Gaji",
+   "options": "HRIS Payroll Schedule",
+   "read_only": 1
+  },
+  {
+   "fieldname": "period_start",
+   "fieldtype": "Date",
+   "label": "Awal Periode",
+   "read_only": 1
+  },
+  {
+   "fieldname": "period_end",
+   "fieldtype": "Date",
+   "label": "Akhir Periode",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pay_date",
+   "fieldtype": "Date",
+   "label": "Hari Bayar",
+   "read_only": 1
+  },
+  {
+   "fieldname": "snapshot_section",
+   "fieldtype": "Section Break",
+   "label": "Salinan Gaji Saat Dihitung"
+  },
+  {
+   "fieldname": "pay_type",
+   "fieldtype": "Select",
+   "label": "Jenis Gaji",
+   "options": "Bulanan\nHarian",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "base_amount",
+   "fieldtype": "Currency",
+   "label": "Nominal Dasar",
+   "read_only": 1,
+   "precision": "0"
+  },
+  {
+   "fieldname": "hourly_rate",
+   "fieldtype": "Currency",
+   "label": "Tarif per Jam (Bulanan)",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "overtime_multiplier",
+   "fieldtype": "Float",
+   "label": "Pengali Lembur",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_pay",
+   "fieldtype": "Link",
+   "label": "Baris Gaji",
+   "options": "HRIS Employee Pay",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee_group",
+   "fieldtype": "Link",
+   "label": "Grup Karyawan",
+   "options": "HRIS Employee Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "summary_section",
+   "fieldtype": "Section Break",
+   "label": "Ringkasan Hari dan Jam"
+  },
+  {
+   "fieldname": "working_days",
+   "fieldtype": "Int",
+   "label": "Hari Kerja Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "present_days",
+   "fieldtype": "Int",
+   "label": "Hari Hadir",
+   "read_only": 1
+  },
+  {
+   "fieldname": "absent_days",
+   "fieldtype": "Int",
+   "label": "Hari Tidak Hadir",
+   "read_only": 1
+  },
+  {
+   "fieldname": "absent_deducted_days",
+   "fieldtype": "Int",
+   "label": "Hari Absen Dipotong",
+   "read_only": 1
+  },
+  {
+   "fieldname": "incomplete_days",
+   "fieldtype": "Int",
+   "label": "Hari Tidak Lengkap",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unclassified_absent_days",
+   "fieldtype": "Int",
+   "label": "Tidak Hadir Belum Diklasifikasi",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "scheduled_hours_total",
+   "fieldtype": "Float",
+   "label": "Jam Terjadwal",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "late_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Jam Potongan Telat",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "early_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Jam Potongan Pulang Cepat",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "overtime_hours",
+   "fieldtype": "Float",
+   "label": "Jam Lembur",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "components_section",
+   "fieldtype": "Section Break",
+   "label": "Komponen"
+  },
+  {
+   "fieldname": "components",
+   "fieldtype": "Table",
+   "label": "Komponen",
+   "options": "HRIS Payroll Slip Item"
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break",
+   "label": "Total"
+  },
+  {
+   "fieldname": "total_earning",
+   "fieldtype": "Currency",
+   "label": "Total Pendapatan",
+   "read_only": 1,
+   "precision": "0"
+  },
+  {
+   "fieldname": "total_deduction",
+   "fieldtype": "Currency",
+   "label": "Total Potongan",
+   "read_only": 1,
+   "precision": "0"
+  },
+  {
+   "fieldname": "net_pay",
+   "fieldtype": "Currency",
+   "label": "Gaji Bersih",
+   "read_only": 1,
+   "precision": "0",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "calc_notes",
+   "fieldtype": "Small Text",
+   "label": "Catatan Perhitungan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "calculated_on",
+   "fieldtype": "Datetime",
+   "label": "Dihitung Pada",
+   "read_only": 1
+  },
+  {
+   "fieldname": "calculated_by",
+   "fieldtype": "Link",
+   "label": "Dihitung Oleh",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "unique_key",
+   "fieldtype": "Data",
+   "label": "Kunci Unik",
+   "read_only": 1,
+   "hidden": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS",
+   "depends_on": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "field_order": [
+  "details_tab",
+  "payroll_period",
+  "employee",
+  "employee_name",
+  "erpnext_employee",
+  "company",
+  "column_break_1",
+  "status",
+  "payroll_schedule",
+  "period_start",
+  "period_end",
+  "pay_date",
+  "snapshot_section",
+  "pay_type",
+  "base_amount",
+  "hourly_rate",
+  "overtime_multiplier",
+  "column_break_2",
+  "employee_pay",
+  "employee_group",
+  "department",
+  "summary_section",
+  "working_days",
+  "present_days",
+  "absent_days",
+  "absent_deducted_days",
+  "incomplete_days",
+  "unclassified_absent_days",
+  "column_break_3",
+  "scheduled_hours_total",
+  "late_deduction_hours",
+  "early_deduction_hours",
+  "overtime_hours",
+  "components_section",
+  "components",
+  "totals_section",
+  "total_earning",
+  "total_deduction",
+  "net_pay",
+  "column_break_4",
+  "calc_notes",
+  "calculated_on",
+  "calculated_by",
+  "unique_key",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "delete": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Payroll Manager",
+   "read": 1,
+   "write": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Payroll Admin",
+   "read": 1,
+   "write": 1,
+   "export": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Direksi",
+   "permlevel": 0,
+   "read": 1,
+   "report": 1
+  }
+ ]
+}

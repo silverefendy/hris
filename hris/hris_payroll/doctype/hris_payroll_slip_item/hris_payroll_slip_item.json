@@ -1,0 +1,65 @@
+{
+ "creation": "2026-11-09 17:00:00.000000",
+ "modified": "2026-11-09 17:00:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Payroll",
+ "engine": "InnoDB",
+ "custom": 0,
+ "istable": 1,
+ "editable_grid": 1,
+ "name": "HRIS Payroll Slip Item",
+ "fields": [
+  {
+   "fieldname": "component",
+   "fieldtype": "Data",
+   "label": "Komponen",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "component_type",
+   "fieldtype": "Select",
+   "label": "Jenis",
+   "options": "Pendapatan\nPotongan",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Jumlah",
+   "reqd": 1,
+   "in_list_view": 1,
+   "precision": "0"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "label": "Sumber",
+   "options": "Otomatis\nManual",
+   "default": "Manual",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "basis",
+   "fieldtype": "Small Text",
+   "label": "Dasar Hitung"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Alasan (wajib untuk Manual)"
+  }
+ ],
+ "field_order": [
+  "component",
+  "component_type",
+  "amount",
+  "source",
+  "basis",
+  "reason"
+ ],
+ "permissions": []
+}

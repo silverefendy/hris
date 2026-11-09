@@ -71,6 +71,88 @@ function hppTampilkanKesiapan(frm) {
     });
 }
 
+const HPS_SVC = "hris.hris_payroll.services.payroll_slip.";
+
+function hppHasilSlip(h) {
+    const esc = frappe.utils.escape_html;
+    if (h.state === "Gagal" || h.state === "Tidak Ada") {
+        frappe.msgprint({ title: __("Proses slip gagal"), message: esc(h.message || __("Proses berhenti. Lihat Error Log.")), indicator: "red" });
+        return;
+    }
+    let html = "<div>" + __("Dibuat: {0}, diperbarui: {1}, dilewati: {2}, gagal: {3}.", [h.dibuat || 0, h.diperbarui || 0, h.dilewati || 0, h.gagal || 0]) + "</div>";
+    if (h.message) {
+        html += "<div class='text-muted'>" + esc(h.message) + "</div>";
+    }
+    const alasan = h.alasan || {};
+    const kunci = Object.keys(alasan);
+    if (kunci.length) {
+        html += "<div style='margin-top:10px'><b>" + __("Dilewati, beserta penyebabnya") + "</b></div>";
+        html += "<table class='table table-bordered table-sm'><tbody>";
+        kunci.forEach((k) => {
+            html += "<tr><td>" + alasan[k].jumlah + "</td><td>" + esc(k) + "</td><td class='text-muted'>" + esc((alasan[k].contoh || []).join(", ")) + "</td></tr>";
+        });
+        html += "</tbody></table>";
+    }
+    if ((h.errors || []).length) {
+        html += "<div style='margin-top:10px'><b>" + __("Galat") + "</b></div><div class='text-muted'>" + esc(h.errors.join("; ")) + "</div>";
+    }
+    frappe.msgprint({ title: __("Hasil Buat Slip"), message: html, indicator: h.gagal ? "orange" : "green" });
+}
+
+function hppPantauSlip(frm, runId) {
+    const tick = () => {
+        frappe.call({
+            method: HPS_SVC + "get_status",
+            args: { run_id: runId },
+            callback(r) {
+                const s = r.message || {};
+                if (s.state === "Selesai" || s.state === "Gagal" || s.state === "Tidak Ada") {
+                    frappe.hide_progress();
+                    hppHasilSlip(s);
+                    frm.reload_doc();
+                    return;
+                }
+                frappe.show_progress(__("Menghitung slip"), s.done || 0, s.total || 1, s.warning || "");
+                setTimeout(tick, 2500);
+            },
+        });
+    };
+    tick();
+}
+
+function hppBuatSlip(frm) {
+    const dlg = new frappe.ui.Dialog({
+        title: __("Buat Slip Gaji"),
+        fields: [
+            { fieldname: "cakupan", label: __("Cakupan"), fieldtype: "Select", options: "Semua\nKaryawan\nDepartment\nGrup", default: "Semua", reqd: 1 },
+            { fieldname: "employee", label: __("Karyawan"), fieldtype: "Link", options: "HRIS Employee", depends_on: "eval:doc.cakupan=='Karyawan'", mandatory_depends_on: "eval:doc.cakupan=='Karyawan'" },
+            { fieldname: "department", label: __("Department"), fieldtype: "Link", options: "Department", depends_on: "eval:doc.cakupan=='Department'", mandatory_depends_on: "eval:doc.cakupan=='Department'" },
+            { fieldname: "employee_group", label: __("Grup Karyawan"), fieldtype: "Link", options: "HRIS Employee Group", depends_on: "eval:doc.cakupan=='Grup'", mandatory_depends_on: "eval:doc.cakupan=='Grup'" },
+            { fieldtype: "HTML", fieldname: "info", options: "<div class='text-muted'>" + __("Slip yang sudah ada dihitung ulang (komponen Manual tetap). Karyawan yang belum bisa dihitung dilewati dan dijelaskan di hasil.") + "</div>" },
+        ],
+        primary_action_label: __("Buat"),
+        primary_action(v) {
+            dlg.hide();
+            frappe.call({
+                method: HPS_SVC + "buat_slip",
+                args: { periode: frm.doc.name, cakupan: v.cakupan, employee: v.employee, department: v.department, employee_group: v.employee_group },
+                freeze: true,
+                freeze_message: __("Menghitung slip..."),
+                callback(r) {
+                    const h = r.message || {};
+                    if (h.mode === "background") {
+                        frappe.show_alert({ message: __("{0} karyawan diproses di background.", [h.total]), indicator: "blue" });
+                        hppPantauSlip(frm, h.run_id);
+                    } else {
+                        hppHasilSlip(h);
+                    }
+                },
+            });
+        },
+    });
+    dlg.show();
+}
+
 frappe.ui.form.on("HRIS Payroll Period", {
     setup(frm) {
         frm.set_query("payroll_schedule", () => ({ filters: { is_active: 1 } }));
@@ -100,6 +182,10 @@ frappe.ui.form.on("HRIS Payroll Period", {
         frm.set_intro(pesan[frm.doc.status] || "", frm.doc.status === "Final" ? "green" : "blue");
 
         frm.add_custom_button(__("Periksa Kesiapan"), () => hppTampilkanKesiapan(frm));
+        frm.add_custom_button(__("Lihat Slip"), () => frappe.set_route("List", "HRIS Payroll Slip", { payroll_period: frm.doc.name }));
+        if (frm.doc.status === "Draft" && adalah("HRIS Payroll Admin", "HRIS Payroll Manager")) {
+            frm.add_custom_button(__("Buat Slip"), () => hppBuatSlip(frm), __("Aksi"));
+        }
         if (frm.doc.status === "Draft" && adalah("HRIS Payroll Admin", "HRIS Payroll Manager")) {
             frm.add_custom_button(__("Tinjau"), () => panggil("tinjau"), __("Aksi"));
         }

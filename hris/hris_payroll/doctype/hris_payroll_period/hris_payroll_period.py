@@ -94,6 +94,17 @@ class HRISPayrollPeriod(Document):
     def on_trash(self):
         if self.status != "Draft":
             frappe.throw(_("Hanya periode berstatus Draft yang boleh dihapus."))
+        if frappe.db.table_exists("HRIS Payroll Slip") and frappe.db.exists("HRIS Payroll Slip", {"payroll_period": self.name}):
+            frappe.throw(_("Periode ini sudah memiliki slip gaji; hapus slipnya dulu."))
+
+
+def _sinkron_status_slip(doc):
+    """Status slip mengikuti status periode (K-130). Aman bila tabel slip belum ada."""
+    if frappe.db.table_exists("HRIS Payroll Slip"):
+        frappe.db.sql(
+            "update `tabHRIS Payroll Slip` set status = %s where payroll_period = %s",
+            (doc.status, doc.name),
+        )
 
 
 def _pindah(doc, baru, **jejak):
@@ -102,6 +113,7 @@ def _pindah(doc, baru, **jejak):
     for fieldname, nilai in jejak.items():
         doc.set(fieldname, nilai)
     doc.save(ignore_permissions=True)
+    _sinkron_status_slip(doc)
     return doc.status
 
 
