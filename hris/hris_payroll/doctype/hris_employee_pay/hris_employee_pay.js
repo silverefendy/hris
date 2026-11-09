@@ -25,6 +25,10 @@ frappe.ui.form.on("HRIS Employee Pay", {
             );
         }
         if (!frm.is_new()) {
+            const df = frm.get_docfield("pay_type");
+            if (df && (df.description || "").indexOf("Anda hanya dapat") === 0) {
+                frm.set_df_property("pay_type", "description", "");
+            }
             frm.disable_form();
             frm.set_intro(
                 __("Baris gaji tidak dapat diubah. Untuk perubahan, buat baris baru dengan Berlaku Dari yang baru."),

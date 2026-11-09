@@ -152,10 +152,14 @@ def _jalankan(perusahaan):
         izin("HRIS Employee Pay", "write", u_m) and izin("HRIS Employee Pay", "write", u_a),
     )
     _catat(
-        "K14 Payroll Manager murni boleh membaca Payroll Schedule tetapi tidak menulis",
-        izin("HRIS Payroll Schedule", "read", u_m) and not izin("HRIS Payroll Schedule", "write", u_m),
+        "K14 Payroll Manager murni boleh membaca, menulis, dan membuat Payroll Schedule, tetapi tidak menghapus",
+        izin("HRIS Payroll Schedule", "read", u_m)
+        and izin("HRIS Payroll Schedule", "write", u_m)
+        and izin("HRIS Payroll Schedule", "create", u_m)
+        and not izin("HRIS Payroll Schedule", "delete", u_m),
     )
     _catat("K15 Payroll Admin tetap boleh menulis Payroll Schedule", izin("HRIS Payroll Schedule", "write", u_a))
+    _catat("K16 Payroll Admin tidak boleh menghapus Payroll Schedule", not izin("HRIS Payroll Schedule", "delete", u_a))
     print("INFO   Email Queue: %d sebelum, %d sesudah (tidak dinilai)" % (antre_awal, frappe.db.count("Email Queue")))
 
 

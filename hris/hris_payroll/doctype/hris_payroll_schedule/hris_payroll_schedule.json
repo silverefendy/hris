@@ -1,6 +1,6 @@
 {
  "creation": "2026-11-04 09:00:00.000000",
- "modified": "2026-11-09 04:06:02.347100",
+ "modified": "2026-11-09 06:17:20.827730",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "doctype": "DocType",
@@ -197,7 +197,10 @@
   {
    "read": 1,
    "report": 1,
-   "role": "HRIS Payroll Manager"
+   "role": "HRIS Payroll Manager",
+   "create": 1,
+   "write": 1,
+   "export": 1
   }
  ]
 }
