@@ -43,7 +43,7 @@ function hppTampilkanKesiapan(frm) {
                     });
                     html += "</tbody></table></div>";
                     if (item.terpotong) {
-                        html += "<div class='text-muted'>" + __("Menampilkan {0} dari {1}. Gunakan tautan 'Lihat semua' untuk sisanya.", [item.daftar.length, item.jumlah]) + "</div>";
+                        html += "<div class='text-muted'>" + __("Menampilkan {0} dari {1}. Selesaikan sebagian, lalu periksa kesiapan lagi untuk melihat sisanya.", [item.daftar.length, item.jumlah]) + "</div>";
                     }
                 }
                 html += "</div>";

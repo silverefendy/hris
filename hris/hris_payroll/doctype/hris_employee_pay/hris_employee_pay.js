@@ -10,6 +10,20 @@ frappe.ui.form.on("HRIS Employee Pay", {
     },
     refresh(frm) {
         hris.audit.render(frm);
+        const peran = frappe.user_roles || [];
+        const bolehSemua =
+            frappe.session.user === "Administrator" || peran.includes("HRIS Payroll Manager") || peran.includes("System Manager");
+        if (frm.is_new() && !bolehSemua) {
+            frm.set_df_property("pay_type", "options", "Harian");
+            if (frm.doc.pay_type !== "Harian") {
+                frm.set_value("pay_type", "Harian");
+            }
+            frm.set_df_property(
+                "pay_type",
+                "description",
+                __("Anda hanya dapat membuat upah Harian. Jenis Bulanan hanya untuk HRIS Payroll Manager.")
+            );
+        }
         if (!frm.is_new()) {
             frm.disable_form();
             frm.set_intro(

@@ -1,6 +1,6 @@
 {
  "creation": "2026-11-04 09:00:00.000000",
- "modified": "2026-11-04 09:00:00.000000",
+ "modified": "2026-11-09 04:06:02.347100",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "doctype": "DocType",
@@ -193,6 +193,11 @@
    "role": "HRIS Direksi",
    "permlevel": 0,
    "read": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Manager"
   }
  ]
 }

@@ -105,7 +105,7 @@ def _pindah(doc, baru, **jejak):
     return doc.status
 
 
-MAKS_DAFTAR = 200
+MAKS_DAFTAR = 1500
 
 
 def _penerima(peran):
@@ -168,7 +168,7 @@ def hitung_kesiapan(doc):
 
     belum = frappe.db.sql(
         """
-        select wh.name, wh.work_date, wh.status, wh.review_status
+        select wh.name, wh.work_date, wh.status, wh.review_status, wh.employee_name
         from `tabHRIS Working Hour` wh
         inner join `tabHRIS Employee` he on he.erpnext_employee = wh.employee
         inner join `tabHRIS Employee Pay` ep on ep.employee = he.name
@@ -197,7 +197,7 @@ def hitung_kesiapan(doc):
                         "doctype": "HRIS Working Hour",
                         "name": r.name,
                         "label": r.name,
-                        "info": "{0} - {1} - {2}".format(r.work_date, r.status, r.review_status or "-"),
+                        "info": "{0} - {1} - {2} - {3}".format(r.employee_name or "-", r.work_date, r.status, r.review_status or "-"),
                     }
                     for r in belum[:MAKS_DAFTAR]
                 ],
@@ -231,7 +231,7 @@ def hitung_kesiapan(doc):
 
     tanpa = frappe.db.sql(
         """
-        select wh.employee, he.name as he_name, count(*) as hari, min(wh.work_date) as pertama
+        select wh.employee, he.name as he_name, max(wh.employee_name) as nama, count(*) as hari, min(wh.work_date) as pertama
         from `tabHRIS Working Hour` wh
         left join `tabHRIS Employee` he on he.erpnext_employee = wh.employee
         left join `tabHRIS Employee Pay` ep on ep.employee = he.name
@@ -257,8 +257,8 @@ def hitung_kesiapan(doc):
                     {
                         "doctype": "HRIS Employee" if r.he_name else None,
                         "name": r.he_name,
-                        "label": r.employee,
-                        "info": _("{0} hari Hadir, mulai {1}").format(r.hari, r.pertama),
+                        "label": r.nama or r.employee,
+                        "info": _("{0} - {1} hari Hadir, mulai {2}").format(r.employee, r.hari, r.pertama),
                         "aksi": "buat_gaji" if r.he_name else None,
                     }
                     for r in tanpa[:MAKS_DAFTAR]

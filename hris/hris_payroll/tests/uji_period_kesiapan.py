@@ -89,7 +89,7 @@ def _jalankan(perusahaan):
     tanpa = item.get("tanpa_gaji") or {}
     _catat(
         "K8 karyawan Hadir tanpa gaji masuk daftar dengan tautan buat gaji",
-        any(e.get("label") == erp2 and e.get("name") == he2 and e.get("aksi") == "buat_gaji" for e in tanpa.get("daftar", [])),
+        any(erp2 in (e.get("info") or "") and e.get("name") == he2 and e.get("aksi") == "buat_gaji" for e in tanpa.get("daftar", [])),
     )
 
     asli = P.MAKS_DAFTAR
@@ -144,6 +144,18 @@ def _jalankan(perusahaan):
         galat is None and frappe.db.get_value(P.TABEL, per.name, "status") == "Ditinjau",
         repr(galat) if galat else "",
     )
+    def izin(dt, p, u):
+        return bool(frappe.has_permission(dt, p, user=u))
+
+    _catat(
+        "K13 Payroll Manager dan Payroll Admin punya izin write Employee Pay (dari JSON)",
+        izin("HRIS Employee Pay", "write", u_m) and izin("HRIS Employee Pay", "write", u_a),
+    )
+    _catat(
+        "K14 Payroll Manager murni boleh membaca Payroll Schedule tetapi tidak menulis",
+        izin("HRIS Payroll Schedule", "read", u_m) and not izin("HRIS Payroll Schedule", "write", u_m),
+    )
+    _catat("K15 Payroll Admin tetap boleh menulis Payroll Schedule", izin("HRIS Payroll Schedule", "write", u_a))
     print("INFO   Email Queue: %d sebelum, %d sesudah (tidak dinilai)" % (antre_awal, frappe.db.count("Email Queue")))
 
 
