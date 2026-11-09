@@ -58,5 +58,5 @@
 | Catatan Audit Hitung Ulang | Mencatat "baris dihapus lalu ditambah" untuk komponen yang nilainya sama; hanya bising, prioritas rendah |
 | Pembersihan data uji slip | Skrip `p15` (mode COBA, lalu `--terapkan`); klasifikasi absen Working Hour uji dibiarkan |
 | Indeks `decisions/README.md` | Belum memuat K-127 sampai K-129; rapikan terpisah |
-| Pembuatan slip massal, per kelompok, dan per departemen | Rancangan disetujui (K-130), implementasi menyusul |
+| Pembuatan slip massal, per kelompok, dan per departemen | Kode sudah ada di `buat_slip` (cakupan Semua, Karyawan, Department, Grup; di atas 150 karyawan lewat antrean). Uji massal di browser belum dilaporkan; uji browser baru satu karyawan |
 | BPJS dan PPh 21, Department Rule (P8) | Fitur berikutnya, mulai dari diskusi rancangan |
