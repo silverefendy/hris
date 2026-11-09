@@ -1,6 +1,6 @@
 # Rencana Go Live dan Checklist
 
-Dibuat: 6 November 2026. Diperbarui terakhir: 9 November 2026.
+Dibuat: 6 November 2026. Diperbarui terakhir: 10 November 2026.
 
 Dokumen ini adalah **acuan utama menuju go live**. Roadmap (`roadmap.md`) hanya daftar tahap fitur dan sudah usang (terakhir 28 Okt); `status.md` memuat kondisi teknis. Setiap akhir sesi, checklist di bawah ini diperbarui (lihat "Cara memperbarui").
 
@@ -128,7 +128,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | `HRIS Employee Pay` (riwayat gaji, tanggal berlaku) | Sebagian | K-109, K-127. Dibuat dan teruji di `hris-uji.local` (701fc76, deb04ae): uji skrip OK 30 + OK 4 + OK 5, GAGAL 0; uji browser (form terkunci, tab Audit Trail, alasan wajib) lulus. K-129 (9 Nov, 913268f dan 4807cba): `write` untuk Payroll Manager dan Payroll Admin, Payroll Admin hanya melihat Jenis Gaji Harian di form baru; uji browser per peran lulus di site uji. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: uji dengan akun peran asli setelah migrasi |
 | `HRIS Payroll Period` (periode, status Final) | Sebagian | K-108, K-128. Dibuat dan teruji di `hris-uji.local` (9c0648a, 0ebc487, 913268f, 4807cba): Draft, Ditinjau, Final, buka kembali dengan alasan, notifikasi in-app, dialog kesiapan lengkap; uji skrip kesiapan OK 18, Period OK 28, regresi OK 4; uji browser per peran lulus. Belum ada di produksi: tabel terbentuk saat `migrate` produksi. Sisa: orang yang menjadi HRIS Payroll Manager belum ditetapkan; syarat Department Rule (P10) dan `HRIS Absence` menyusul |
 | Komponen gaji (dapat ditambah user) dan formula aman | Belum | P6; formula wajib dijalankan di lingkungan terbatas, bukan `eval` bebas (verifikasi dokumentasi Frappe) |
-| `HRIS Payroll Slip` (termasuk Adjustment, K-111) | Belum | K-130 (9 Nov): rancangan disetujui, belum ada kode. Pembuatan massal, per kelompok atau departemen, dan satu per satu; hitung ulang hanya slip Draft; Final terkunci. Tahap pertama tanpa BPJS dan PPh 21 |
+| `HRIS Payroll Slip` (termasuk Adjustment, K-111) | Sebagian | K-130: tahap pertama (DocType, layanan hitung, tombol Buat Slip, potongan absen dari klasifikasi K-131) di 2f483dc dan b11d89c; uji skrip OK 77 dan uji browser lulus di site uji (9 Nov); belum di produksi. Finalkan Periode tetap ditolak selama karyawan Hadir belum punya baris gaji (aturan K-128). Rancangan K-130: Pembuatan massal, per kelompok atau departemen, dan satu per satu; hitung ulang hanya slip Draft; Final terkunci. Tahap pertama tanpa BPJS dan PPh 21 |
 | Aturan hitung bulanan, mingguan, harian (K-96, K-97, K-99, K-107) | Disetujui, belum dibuat | Dasar: `business/payroll-rancangan.md`; rumus tahap pertama di K-130 |
 | Readiness Check sebelum Payroll Run (P10) | Belum | |
 | Pro-rata (masuk/keluar di tengah periode), mutasi, final pay | Belum | Muncul tiap bulan |
@@ -139,7 +139,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Laporan gaji dan laporan wajib | Belum | Daftar menunggu dari HRD |
 | Posting ke akuntansi ERPNext | Belum | Opsional; K-19 |
 | Uji otomatis rumus dari slip lama | Belum | Slip lama jadi kasus uji |
-| Akses data gaji hanya role khusus (K-110) | Sebagian | Penegakan per baris sudah teruji untuk `HRIS Employee Pay` di site uji (izin, daftar, Audit Trail, `Version`; Payroll Admin tidak melihat gaji Bulanan). Belum diuji dengan akun asli di produksi, dan belum ada untuk `HRIS Payroll Slip` karena DocType-nya belum dibuat |
+| Akses data gaji hanya role khusus (K-110) | Sebagian | Penegakan per baris sudah teruji untuk `HRIS Employee Pay` di site uji (izin, daftar, Audit Trail, `Version`; Payroll Admin tidak melihat gaji Bulanan). Belum diuji dengan akun asli di produksi, dan untuk `HRIS Payroll Slip` teruji skrip di site uji (I1 sampai I3: Payroll Admin hanya melihat slip Harian, Payroll Manager semua, peran lain tidak); uji browser per peran belum |
 
 ### Fase 4: Parallel run (3 bulan)
 
@@ -231,6 +231,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-07 | `HRIS Employee Pay` (K-127) dibuat dan teruji di site uji (701fc76, deb04ae); penjaga penonaktifan jadwal gaji diperbaiki; selisih 1.078 vs 1.077 Employee tuntas; checklist malam migrasi ditambahkan; catatan bahwa `migrate` produksi ikut membuat tabel `HRIS Employee Pay` |
 | 2026-11-09 | `HRIS Payroll Period` (K-128) dan hak akses K-129 dibuat dan teruji di site uji (9c0648a, 0ebc487, 913268f, 4807cba); data uji dibersihkan; keputusan di [keputusan-2026-11-09.md](../decisions/keputusan-2026-11-09.md) |
 | 2026-11-09 | Rancangan `HRIS Payroll Slip` disetujui (K-130, belum ada kode); klasifikasi absen (K-131, 097a946) teruji skrip dan browser; aturan karyawan Harian (89f0c63) teruji skrip, browser menunggu baris gaji karyawan; keputusan di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) dan [keputusan-2026-11-09-absen.md](../decisions/keputusan-2026-11-09-absen.md) |
+| 2026-11-10 | `HRIS Payroll Slip` tahap pertama dibuat dan teruji di site uji (2f483dc, b11d89c): uji skrip OK 77, uji browser lulus termasuk potongan absen Mangkir dan Sakit; slip uji dibersihkan; keputusan tetap di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 

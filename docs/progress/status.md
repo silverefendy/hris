@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 9 November 2026
+Diperbarui: 10 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
@@ -163,16 +163,27 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 
 | Item | Status |
 |---|---|
-| Rancangan `HRIS Payroll Slip` (K-130) | Disetujui Efendy, **belum ada kode**. Pembuatan slip massal, per kelompok atau departemen, dan satu per satu memakai satu layanan hitung yang sama; hitung ulang hanya untuk slip Draft; slip Final terkunci dan koreksi lewat buka kembali periode (K-128). Struktur field `HRIS Working Hour`, `HRIS Employee Pay`, `HRIS Payroll Schedule`, `HRIS Payroll Period` dan `period_lock.py` sudah dibaca untuk menyusun DocType. Dokumen: [decisions/keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
+| Rancangan `HRIS Payroll Slip` (K-130) | Disetujui Efendy; tahap pertama kode sudah ada (lihat Pembaruan 9 Nov malam). Pembuatan slip massal, per kelompok atau departemen, dan satu per satu memakai satu layanan hitung yang sama; hitung ulang hanya untuk slip Draft; slip Final terkunci dan koreksi lewat buka kembali periode (K-128). Struktur field `HRIS Working Hour`, `HRIS Employee Pay`, `HRIS Payroll Schedule`, `HRIS Payroll Period` dan `period_lock.py` sudah dibaca untuk menyusun DocType. Dokumen: [decisions/keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
 | Klasifikasi Absen di `HRIS Working Hour` (K-131) | Di-push 097a946. Teruji skrip (OK 33, GAGAL 0) dan browser di `hris-uji.local`, termasuk langkah 6b (Lainnya dengan catatan, Dipotong Gaji manual; 9 Nov 16:45 WIB). Hari Tidak Hadir karyawan Bulanan kini ditandai Perlu Tinjauan dan menghalangi Final sampai diklasifikasi (K-128). Belum ada di produksi |
 | Aturan karyawan Harian (K-131) | Tidak Hadir karyawan Harian tidak ditandai dan tidak menghalangi Final; Tidak Lengkap tetap ditandai. Jenis gaji dibaca dari `HRIS Employee Pay` lewat `services/pay_type.py` (`pay_type_on`). Di-push 89f0c63; uji skrip OK 11, regresi klasifikasi OK 33, GAGAL 0. **Uji browser belum**: site uji belum punya baris gaji karyawan. Tanpa baris gaji, karyawan diperlakukan seperti Bulanan (ditandai) |
 | Dokumen | [decisions/keputusan-2026-11-09-absen.md](../decisions/keputusan-2026-11-09-absen.md) |
 | Belum diputuskan | K-132 (usul): memindahkan tautan Working Hour, Raw Log, dan Shift Assignment ke `HRIS Employee`; rancangan `HRIS Absence`; perlakuan hari Tidak Lengkap pada gaji Bulanan; pemetaan `HRIS Employee` ke `Employee` pada slip |
 
+## Pembaruan 9 Nov 2026, malam (HRIS Payroll Slip tahap pertama)
+
+| Item | Status |
+|---|---|
+| `HRIS Payroll Slip` dan `HRIS Payroll Slip Item` (K-130) | Kode di `2f483dc` (DocType, layanan hitung, tombol Buat Slip); perbaikan di `b11d89c` (kolom Alasan tampil di grid; komponen Otomatis diurutkan dulu lalu baris dinomori ulang 1..n). Uji skrip `uji_payroll_slip.py`: OK 77, GAGAL 0. Belum di produksi |
+| Uji browser di `hris-uji.local` (Administrator) | Lulus: Buat Slip dua kali memperbarui, tidak menggandakan; Gaji Pokok 3.000.000 dan tarif per jam 61.855,67; kolom otomatis tidak bisa diedit; komponen Manual wajib beralasan, menambah Gaji Bersih, dan bertahan setelah Hitung Ulang; Tinjau dan Kembalikan ke Draft; slip Ditinjau terkunci; Periode yang punya slip tidak bisa dihapus |
+| Potongan absen (K-131 ke slip) | Terbukti di browser: 1 hari Mangkir menghasilkan Potongan Absen Rp 500.000 (3.000.000 / 6 hari kerja x 1 hari); diubah ke Sakit dengan surat dokter, potongan hilang; hari Tidak Hadir yang belum diklasifikasi tidak dipotong dan dicatat di Catatan Perhitungan |
+| Perilaku yang disengaja | Buat Slip hanya saat Periode Draft. Finalkan Periode ditolak selama ada karyawan Hadir tanpa baris gaji (aturan kesiapan K-128 berlaku global; di site uji 285 karyawan) |
+| Pembersihan data uji | Slip uji dihapus lewat skrip sekali pakai (mode COBA lalu TERAPKAN, slip tersisa 0); klasifikasi absen Working Hour uji dibiarkan di site uji |
+| Belum | Cakupan pembuatan slip massal, per kelompok, dan per departemen belum diuji; uji browser per peran untuk slip belum; Catatan Audit Hitung Ulang masih mencatat "baris dihapus lalu ditambah" untuk komponen yang nilainya sama (hanya bising); BPJS dan PPh 21 menyusul. Catatan sesi: [session-log-2026-11-09.md](session-log-2026-11-09.md) |
+
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. `HRIS Payroll Slip` (K-130 disetujui; berikutnya skrip DocType `HRIS Payroll Slip` dan `HRIS Payroll Slip Item`, tanpa BPJS dan PPh 21), lalu `Department Rule` (P8), BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
+3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); berikutnya pembuatan slip massal, per kelompok, dan per departemen, lalu `Department Rule` (P8), BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
 5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.
