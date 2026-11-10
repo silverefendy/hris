@@ -1,7 +1,3 @@
-// Kolom tabel Komponen yang dikunci pada baris Otomatis (K-130).
-// Kolom "source" dikunci di SEMUA baris: baris baru otomatis Manual, dan Manual tidak boleh diubah menjadi Otomatis.
-const KOLOM_KOMPONEN = ["component", "component_type", "amount", "source", "basis", "reason"];
-
 function kunci_komponen(frm) {
     const grid = frm.fields_dict.components && frm.fields_dict.components.grid;
     if (!grid || !grid.grid_rows) {
@@ -13,16 +9,15 @@ function kunci_komponen(frm) {
     if (!draft) {
         return;
     }
+    // Centang header (pilih semua) dinonaktifkan agar baris Otomatis tidak ikut terpilih.
+    grid.wrapper.find(".grid-heading-row .grid-row-check").prop("disabled", true);
     grid.grid_rows.forEach((grid_row) => {
         const baris = grid_row.doc;
         if (!baris) {
             return;
         }
         const otomatis = baris.source === "Otomatis";
-        KOLOM_KOMPONEN.forEach((fieldname) => {
-            const bisa_diedit = fieldname === "source" ? false : !otomatis;
-            grid_row.toggle_editable(fieldname, bisa_diedit);
-        });
+        // Kolom baris Otomatis dikunci oleh read_only_depends_on di DocType HRIS Payroll Slip Item.
         // Baris Otomatis tidak boleh dipilih untuk dihapus.
         grid_row.wrapper.find(".grid-row-check").prop("disabled", otomatis);
     });

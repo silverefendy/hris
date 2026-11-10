@@ -87,7 +87,7 @@ class HRISPayrollSlip(Document):
     def validate_komponen(self, lama):
         def otomatis(doc):
             return sorted(
-                (cstr(r.component), cstr(r.component_type), int(round(flt(r.amount))), cstr(r.basis))
+                (cstr(r.component), cstr(r.component_type), int(round(flt(r.amount))), cstr(r.basis), cstr(r.reason).strip())
                 for r in doc.components
                 if r.source == "Otomatis"
             )
