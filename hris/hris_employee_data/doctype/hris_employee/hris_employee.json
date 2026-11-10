@@ -327,6 +327,16 @@
             "permlevel": 1
         },
         {
+            "fieldname": "ptkp_status",
+            "fieldtype": "Select",
+            "label": "Status PTKP",
+            "options": "\nTK/0\nTK/1\nTK/2\nTK/3\nK/0\nK/1\nK/2\nK/3",
+            "depends_on": "eval:doc.pph21_enrolled",
+            "mandatory_depends_on": "eval:doc.pph21_enrolled",
+            "description": "Menentukan kategori tarif TER (lihat HRIS PPh21 Settings). Wajib bila Peserta PPh 21 dicentang.",
+            "permlevel": 1
+        },
+        {
             "fieldname": "col_bpjs_peserta",
             "fieldtype": "Column Break",
             "permlevel": 1
@@ -595,5 +605,5 @@
             "write": 1
         }
     ],
-    "modified": "2026-11-10 12:00:00.000000"
+    "modified": "2026-11-10 16:45:00.000000"
 }

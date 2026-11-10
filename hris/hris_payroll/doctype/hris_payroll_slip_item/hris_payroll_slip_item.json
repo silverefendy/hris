@@ -1,6 +1,6 @@
 {
  "creation": "2026-11-09 17:00:00.000000",
- "modified": "2026-11-10 14:30:00.000000",
+ "modified": "2026-11-10 17:00:00.000000",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "doctype": "DocType",
@@ -58,6 +58,16 @@
    "label": "Alasan (wajib untuk Manual)",
    "in_list_view": 1,
    "read_only_depends_on": "eval:doc.source=='Otomatis'"
+  },
+  {
+   "fieldname": "taxable",
+   "fieldtype": "Check",
+   "label": "Kena Pajak",
+   "default": "1",
+   "read_only_depends_on": "eval:doc.source=='Otomatis'",
+   "description": "Dipakai PPh 21 untuk komponen Pendapatan Manual. Komponen Otomatis ditentukan sistem.",
+   "in_list_view": 1,
+   "columns": 1
   }
  ],
  "field_order": [
@@ -66,7 +76,8 @@
   "amount",
   "source",
   "basis",
-  "reason"
+  "reason",
+  "taxable"
  ],
  "permissions": []
 }
