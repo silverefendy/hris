@@ -162,3 +162,22 @@ Temuan:
 Risiko operasional: bila slip terakhir bulan bayar dilewati karena Working Hour belum dihitung, tidak ada slip yang memotong PPh 21 untuk karyawan itu pada bulan tersebut. Urutan kerja HRD: hitung Working Hour, lalu buat slip. Perlu masuk panduan HRD.
 
 Belum teruji: jadwal Harian multi-slip pada data nyata; izin per peran untuk field PTKP dan Ikut PPh 21; rumus TER dan tarif resmi (menunggu HRD atau konsultan pajak).
+
+## 13. Uji izin per peran (11 Nov 2026)
+
+`uji_izin_pph21.py` dijalankan di `hris-uji.local`: OK 30, GAGAL 0; semua perubahan di-rollback dan user uji tidak tersisa.
+
+| Objek | Izin yang terpasang dan teruji |
+|---|---|
+| Field Status PTKP dan Ikut PPh 21 di `HRIS Employee` (`permlevel` 1) | HR Admin menulis; Payroll Admin, Payroll Manager, dan Direksi membaca saja, simpan ditolak |
+| `HRIS PPh21 Settings` | HR Admin membaca dan menulis; peran lain membaca |
+| `HRIS PPh21 TER Rate` | HR Admin membaca, menulis, membuat; peran lain membaca; tidak ada yang menghapus |
+| Pengaman | Tidak ada Custom DocPerm atau Property Setter HRIS yang menimpa izin |
+
+Keputusan: **izin tidak diubah.** Alasan:
+
+- Tarif TER berasal dari peraturan dan bukan rahasia; yang sensitif adalah Status PTKP per karyawan.
+- PTKP satu `permlevel` dengan NPWP dan field BPJS. Memberi Payroll Admin hak tulis PTKP berarti memberinya hak tulis NPWP dan BPJS, bertentangan dengan K-133 (diisi HRD saja).
+- Bila kebutuhan berubah, opsinya memisahkan field PTKP ke `permlevel` tersendiri; itu mengubah DocType berjalan dan memerlukan persetujuan baru.
+
+Belum teruji: tampilan di browser per peran (menunggu migrasi produksi K-102); peran HR Manager, HRIS Manager, dan Employee Admin.
