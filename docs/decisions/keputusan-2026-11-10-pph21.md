@@ -1,6 +1,6 @@
 # Keputusan 10 November 2026: PPh 21 pada HRIS Payroll Slip (K-134, disetujui)
 
-Status: **disetujui 10 Nov 2026 (tiga keputusan awal dan empat keputusan rancangan teknis langkah 1); kode langkah 1 sedang dibuat dan diuji.** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
+Status: **disetujui 10 Nov 2026; langkah 1 sampai 4 selesai, lulus uji skrip dan uji browser di site uji (commit 84b093c dan 9ad4fcf). Verifikasi tarif, NPWP, dan aturan harian atau mingguan oleh HRD atau konsultan pajak masih tertunda.** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
 
 **Peringatan:** dokumen ini tidak memuat tarif, kategori, atau aturan pajak resmi. Semua angka dan aturan wajib diverifikasi HRD atau konsultan pajak dari peraturan resmi (DJP atau PMK tentang PPh 21 dengan tarif efektif rata-rata, TER). Bagian yang berasal dari pemahaman Claude dan belum terverifikasi ditandai "verifikasi".
 
@@ -98,3 +98,47 @@ Contoh dengan angka fiktif (bukan tarif resmi): bruto bulan itu Rp 5.700.000, ta
 | Aktif | Bawaan mati sampai HRD selesai mengisi dan memverifikasi tarif |
 | Kode | `services/pph21_rate.py` (`find_rate`, `pesan`); tidak ada fungsi `@frappe.whitelist()` |
 | Uji | `tests/uji_pph21_rate.py` dengan tarif fiktif; tarif resmi hanya diisi HRD di produksi setelah diverifikasi |
+
+## 9. Rancangan teknis langkah 4: PPh 21 pada slip (disetujui 10 Nov 2026)
+
+Enam keputusan, semua disetujui sesuai usul:
+
+| # | Keputusan |
+|---|---|
+| 1 | Rincian (bruto, jumlah slip, kategori, tarif, pengali) hanya di Catatan Perhitungan; tidak ada tabel rincian baru seperti BPJS |
+| 2 | Slip lain bulan itu belum lengkap: dihitung dari slip yang ada, dengan peringatan "N dari M slip" (M dari jadwal gaji); tidak menolak |
+| 3 | Data kurang (PTKP kosong atau belum dipetakan): slip dilewati dengan pesan Masalah, Penyebab, Tindakan, Berwenang pada **semua** slip bulan itu; tarif tidak ketemu hanya diperiksa di slip terakhir |
+| 4 | Pengaturan mati tetapi karyawan dicentang: tidak dipotong, catatan menyebutnya jelas |
+| 5 | Validasi server di `HRIS Employee`: bila Ikut PPh 21 dicentang, Status PTKP wajib (sebelumnya hanya validasi form di browser, sehingga data bisa tersimpan lewat API atau impor) |
+| 6 | Keterbatasan diterima sampai tahap 2b: karyawan yang tidak punya slip terakhir di bulan itu (misalnya berhenti di tengah bulan) tidak terpotong |
+
+Perilaku yang diterapkan:
+
+| Hal | Isi |
+|---|---|
+| Berkas | `services/payroll_pph21.py` (baru, fungsi `hitung_pph21_slip`), patch kecil `payroll_slip.py` (dipanggil setelah BPJS), metode `_cek_pph21` di controller `HRIS Employee`, `tests/uji_pph21_slip.py` |
+| Struktur DocType | Tidak ada perubahan JSON atau DocType pada langkah ini |
+| Bruto | Komponen Otomatis kena pajak (kecuali daftar bebas pajak, tidak peka huruf besar-kecil) ditambah baris Manual yang tercentang Kena Pajak, ditambah slip lain karyawan itu di bulan yang sama |
+| Slip bukan terakhir | Tanpa potongan; catatan menyebut pajak dipotong pada slip terakhir. Bila slip terakhir sudah memuat PPh 21, slip ini diberi peringatan agar slip terakhir dihitung ulang |
+| Tarif 0% | Tidak membuat baris potongan; tertulis di catatan |
+| Peringatan lain | Jumlah slip kurang dari jadwal; gaji bersih negatif |
+
+## 10. Hasil pengujian (10 Nov 2026, site uji)
+
+| Uji | Hasil |
+|---|---|
+| `uji_pph21_slip.py` (tarif fiktif) | OK 22, GAGAL 0 (U1 sampai U14, deteksi slip terakhir pada Periode yang ada, E1 sampai E3 validasi server) |
+| Regresi | `uji_payroll_slip.py` OK 77, `uji_bpjs_slip.py` OK 68, `uji_pph21_field.py` OK 13, `uji_pph21_rate.py` OK 32 (GAGAL 0) |
+| Browser: Hitung Ulang | PPh 21 tampil sebagai Potongan Otomatis; bruto 3.625.000 dengan tarif fiktif 1% menghasilkan 36.250 dan gaji bersih 3.588.750 |
+| Browser: Kena Pajak | Mematikan centang Kena Pajak pada satu baris Manual menurunkan bruto menjadi 3.300.000 dan pajak 33.000; menyalakannya kembali mengembalikan 36.250 |
+| Browser: PTKP kosong | Hitung Ulang menampilkan dialog Message berisi Masalah, Penyebab, Tindakan, Berwenang; slip tidak berubah |
+| Browser: PTKP dipulihkan | Hitung Ulang kembali menghasilkan 36.250 |
+| Audit Trail HRIS | Semua perubahan baris komponen, catatan, total, dan gaji bersih tercatat |
+
+**Keterbatasan pengujian:** deteksi slip terakhir baru diuji pada satu Periode nyata (jadwal Bulanan, satu slip per bulan). Jadwal Harian atau Mingguan dengan banyak slip belum diuji pada data nyata; uji skrip memakai data pengganti.
+
+## 11. Tertunda
+
+- Uji izin per peran untuk field PTKP dan Ikut PPh 21 (seperti K-133).
+- Verifikasi HRD atau konsultan pajak: rumus TER (bruto x tarif, dasar bruto penuh; ini pemahaman Claude), tarif resmi, pemetaan PTKP, pengaruh NPWP, aturan harian atau mingguan.
+- Tahap 2b (rekonsiliasi, THR, pengurang BPJS per program) dan migrasi produksi K-102.
