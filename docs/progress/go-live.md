@@ -133,7 +133,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Readiness Check sebelum Payroll Run (P10) | Belum | |
 | Pro-rata (masuk/keluar di tengah periode), mutasi, final pay | Belum | Muncul tiap bulan |
 | Pinjaman karyawan | Belum | P11 |
-| Potongan dan pajak (BPJS, PPh 21, THR) | Sebagian | BPJS (K-133): angka tetap per program, Ketenagakerjaan satu angka atau rincian, dipotong sekali sebulan; kode `f6f837b`, teruji di site uji (skrip OK 68 dan OK 77, browser, izin per peran `aa87b66` OK 16); belum di produksi; dua butir menunggu konfirmasi HRD (keputusan-2026-11-10-bpjs.md bagian 8). PPh 21 (K-134, TER bulanan): rancangan disetujui 10 Nov, belum ada kode; tarif resmi, PTKP, dan NPWP menunggu HRD atau konsultan pajak. THR belum. Angka resmi diverifikasi HRD atau konsultan pajak |
+| Potongan dan pajak (BPJS, PPh 21, THR) | Sebagian | BPJS (K-133): angka tetap per program, Ketenagakerjaan satu angka atau rincian, dipotong sekali sebulan; kode `f6f837b`, teruji di site uji (skrip OK 68 dan OK 77, browser, izin per peran `aa87b66` OK 16); belum di produksi; dua butir menunggu konfirmasi HRD (keputusan-2026-11-10-bpjs.md bagian 8). PPh 21 (K-134, TER bulanan): kode teruji di site uji dengan tarif fiktif (`84b093c`, `9ad4fcf`: skrip OK 22, browser lulus, validasi server PTKP wajib); belum di produksi. Sisa: uji izin per peran, jadwal Harian atau Mingguan pada data nyata, serta tarif resmi, PTKP, dan NPWP yang menunggu HRD atau konsultan pajak. THR belum. Angka resmi diverifikasi HRD atau konsultan pajak |
 | Slip gaji cetak (PDF) | Belum | Format perlu konfirmasi atasan |
 | File transfer bank | Belum | Format menunggu dari HRD |
 | Laporan gaji dan laporan wajib | Belum | Daftar menunggu dari HRD |
@@ -234,6 +234,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-10 | `HRIS Payroll Slip` tahap pertama dibuat dan teruji di site uji (2f483dc, b11d89c): uji skrip OK 77, uji browser lulus termasuk potongan absen Mangkir dan Sakit; slip uji dibersihkan; keputusan tetap di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
 | 2026-11-10 | BPJS pada Payroll Slip (K-133, angka tetap) dibuat dan teruji di site uji (`f6f837b`, uji izin `aa87b66`): skrip OK 68, OK 77, izin OK 16, browser lulus; dokumen di [keputusan-2026-11-10-bpjs.md](../decisions/keputusan-2026-11-10-bpjs.md) |
 | 2026-11-10 | Komponen Otomatis slip terkunci per baris (`f9a6601`, skrip OK 77, browser lulus); rancangan PPh 21 tahap 2a disetujui (K-134, belum ada kode), dokumen di [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) |
+| 2026-11-10 | PPh 21 TER pada Payroll Slip (K-134 langkah 1 sampai 4) dibuat dan teruji di site uji (`84b093c`, `9ad4fcf`): skrip OK 22, regresi OK 77, OK 68, OK 13, OK 32, browser lulus (potongan, Kena Pajak, pesan PTKP kosong); data uji dibersihkan; dokumen di [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) bagian 9 sampai 11 |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
