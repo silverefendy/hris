@@ -1,6 +1,6 @@
 # Catatan Sesi 10 November 2026
 
-Fokus: BPJS pada `HRIS Payroll Slip` (K-133), implementasi angka tetap, uji browser, uji izin per peran, perbaikan tampilan komponen Otomatis (lanjutan K-130), dan awal rancangan PPh 21 (K-134). Semua uji di `hris-uji.local`; belum ada di produksi.
+Fokus: BPJS pada `HRIS Payroll Slip` (K-133), implementasi angka tetap, uji browser, uji izin per peran, perbaikan tampilan komponen Otomatis (lanjutan K-130), dan PPh 21 pada slip (K-134, langkah 1 sampai 4). Semua uji di `hris-uji.local`; belum ada di produksi.
 
 ## 1. Yang dikerjakan
 
@@ -35,13 +35,26 @@ Fokus: BPJS pada `HRIS Payroll Slip` (K-133), implementasi angka tetap, uji brow
 | Ketenagakerjaan | Dua cara bisa dipilih per karyawan: satu angka atau rincian JHT, JP, JKK, JKM; tidak boleh keduanya |
 | Slip pembawa potongan BPJS | Sementara mengikuti implementasi berjalan (slip pertama yang tanggal bayarnya jatuh di bulan itu) sampai ada perubahan; rancangan awal menyebut slip terakhir |
 | Tampilan komponen Otomatis | Efendy mengikuti usulan (13:11 sampai 14:20 WIB): baris Otomatis abu-abu dan tidak bisa dicentang hapus, Manual tetap bisa diedit |
-| PPh 21 tahap 2a | Lihat [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) (K-134, rancangan) |
+| PPh 21 tahap 2a | Lihat [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) (K-134). Enam keputusan langkah 4 disetujui sesuai usul (bagian 5 di bawah) |
 
 ## 4. Belum dikerjakan atau belum terbukti
 
 - Hitung Ulang slip Bulanan dan pindah total ke rincian di browser (terbukti unit test K40 sampai K42).
 - Konfirmasi HRD atas dua butir sementara BPJS.
 - Kunci tombol hapus di form baris (opsional).
-- PPh 21 (K-134): persetujuan rancangan, lalu implementasi bertahap; jembatan ke ERPNext (tahap 3).
+- PPh 21 (K-134): uji izin per peran, verifikasi HRD atau pajak, tahap 2b, dan jembatan ke ERPNext (tahap 3); rincian di bagian 5.
 - Merapikan sisa field rincian lama pada `validate_bpjs` (belum dicek DocType anak BPJS).
 - Migrasi produksi K-102 tetap menunggu jadwal.
+
+## 5. PPh 21 pada slip (K-134)
+
+| Item | Hasil |
+|---|---|
+| Langkah 2 dan 3 | Commit `84b093c`: field PTKP dan Ikut PPh 21 di `HRIS Employee`, DocType tarif TER dan pengaturan. `uji_pph21_field.py` OK 13, `uji_pph21_rate.py` OK 32. Temuan: server tidak menegakkan wajib PTKP (validasi "Missing Fields" hanya di form) |
+| Keputusan langkah 4 | Enam butir disetujui sesuai usul: rincian di Catatan Perhitungan; slip tidak lengkap dihitung dengan peringatan "N dari M slip"; data kurang melewati slip dengan pesan Masalah, Penyebab, Tindakan, Berwenang; pengaturan mati tanpa potongan dan dicatat; validasi server PTKP di `HRIS Employee`; karyawan tanpa slip terakhir di bulan itu belum terpotong (sampai tahap 2b) |
+| Kode | Commit `9ad4fcf` (4 berkas, 465 tambah, 1 hapus): `services/payroll_pph21.py` (baru), patch `payroll_slip.py` (dipanggil setelah BPJS), `_cek_pph21` di controller `HRIS Employee`, `tests/uji_pph21_slip.py`. Tidak ada perubahan DocType |
+| Uji skrip | `uji_pph21_slip.py` OK 22, GAGAL 0; regresi `uji_payroll_slip.py` OK 77, `uji_bpjs_slip.py` OK 68, `uji_pph21_field.py` OK 13, `uji_pph21_rate.py` OK 32 |
+| Uji browser (16:39 sampai 16:42 WIB, tarif fiktif) | Hitung Ulang: PPh 21 36.250 (bruto 3.625.000, tarif 1%), gaji bersih 3.588.750. Kena Pajak satu baris Manual dimatikan: 33.000; dinyalakan lagi: 36.250. PTKP kosong: dialog Message berisi Masalah, Penyebab, Tindakan, Berwenang, slip tidak berubah. PTKP dipulihkan: 36.250. Audit Trail HRIS mencatat semua perubahan |
+| Pembersihan | `bersihkan` dijalankan; setelah Hitung Ulang Slip, baris PPh 21 hilang dan angka kembali seperti sebelum uji |
+| Belum terbukti | Jadwal Harian atau Mingguan dengan banyak slip pada data nyata (deteksi slip terakhir baru diuji pada satu Periode Bulanan); uji izin per peran untuk field PTKP dan Ikut PPh 21 |
+| Verifikasi HRD atau pajak | Rumus TER (bruto x tarif; pemahaman Claude), tarif resmi, pemetaan PTKP, pengaruh NPWP, aturan harian atau mingguan |
