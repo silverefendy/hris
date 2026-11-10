@@ -47,6 +47,17 @@ Cara pakai: HRD mengisi kolom "Jawaban HRD", lalu mengembalikan dokumen ini. Kol
 | D2 | Siapa yang menjadi HRIS Payroll Manager (yang boleh Finalkan dan Buka Kembali periode) | Hak akses K-128 | |
 | D3 | Urutan kerja HRD tiap periode: hitung Working Hour lebih dulu, baru buat slip. Apakah HRD menyetujui urutan ini | Bila slip terakhir bulan bayar dilewati, PPh 21 bulan itu tidak terpotong | |
 
+## E. Aturan per Department (Department Rule, P8)
+
+| # | Pertanyaan | Mengapa dibutuhkan | Fitur tertahan | Jawaban HRD |
+|---|---|---|---|---|
+| E1 | Aturan hitung apa yang berbeda antar Department? Contoh: tarif atau pengali lembur, insentif, tunjangan transport atau makan, potongan telat, gaji pokok atau tarif harian | Menentukan isi DocType Department Rule | Department Rule | |
+| E2 | Daftar Department dan nilai aturan tiap Department (angka saat ini) | Mengisi data awal | Department Rule | |
+| E3 | Karyawan dipinjam antar Department: apakah seluruh gaji, lembur, dan insentif hari itu mengikuti aturan Department tujuan (keputusan sementara Efendy, 11 Nov 2026) | Konfirmasi aturan peminjaman | Department Rule | |
+| E4 | Apakah satu Employee Group selalu berada di satu Department | Menentukan cara mengetahui Department tujuan saat peminjaman | Department Rule | |
+| E5 | Bila ada karyawan dengan aturan khusus (berbeda dari Department-nya), apa saja yang bisa berbeda dan siapa yang berwenang menetapkan | Penggantian per karyawan | Department Rule | |
+| E6 | Apakah aturan berubah dengan tanggal berlaku, dan bagaimana periode yang melewati tanggal perubahan dihitung | Effective From | Department Rule | |
+
 ## Catatan
 
 - Selama jawaban belum ada, HRIS tetap memakai tarif fiktif di site uji dan **tidak boleh** dipakai untuk slip produksi.
