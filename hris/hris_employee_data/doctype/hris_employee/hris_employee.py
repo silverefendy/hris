@@ -10,11 +10,23 @@ FIELD_SENSITIF = ("ktp_number", "npwp", "bpjs_tk_no", "bpjs_kes_no", "bank_accou
 
 class HRISEmployee(Document):
     def validate(self):
+        self._cek_pph21()
         self._normalisasi()
         self._cek_ktp()
         self._cek_id_finger()
         self._cek_tanggal()
         self._cek_status()
+
+    def _cek_pph21(self):
+        """K-134: Status PTKP wajib bila Peserta PPh 21 dicentang (mandatory_depends_on hanya berlaku di form)."""
+        if self.get("pph21_enrolled") and not (self.get("ptkp_status") or "").strip():
+            frappe.throw(
+                _("Masalah: Peserta PPh 21 dicentang tetapi Status PTKP kosong. "
+                  "Penyebab: Status PTKP menentukan kategori tarif TER. "
+                  "Tindakan: isi Status PTKP, atau hilangkan centang Peserta PPh 21. "
+                  "Berwenang: HRD (HRIS HR Admin atau HRIS Employee Admin)."),
+                title=_("Status PTKP wajib"),
+            )
 
     def on_update(self):
         if self.flags.skip_sync:

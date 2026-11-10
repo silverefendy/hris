@@ -1,4 +1,4 @@
-"""Pembuatan dan perhitungan HRIS Payroll Slip (K-130); BPJS pada slip (K-133); PPh 21 menyusul."""
+"""Pembuatan dan perhitungan HRIS Payroll Slip (K-130); BPJS pada slip (K-133); PPh 21 TER (K-134)."""
 
 import time
 import uuid
@@ -10,6 +10,7 @@ from frappe.utils import cstr, flt, getdate, now_datetime
 
 from hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay import boleh_baris
 from hris.hris_payroll.services.payroll_bpjs import hitung_bpjs_slip
+from hris.hris_payroll.services.payroll_pph21 import hitung_pph21_slip
 
 SLIP = "HRIS Payroll Slip"
 PERIOD = "HRIS Payroll Period"
@@ -225,6 +226,11 @@ def proses_karyawan(period, he_name):
         return "dilewati", bpjs["dilewati"]
     hasil["komponen"].extend(bpjs["komponen"])
     hasil["catatan"].extend(bpjs["catatan"])
+    pph21 = hitung_pph21_slip(he, period, gaji, hasil)
+    if pph21.get("dilewati"):
+        return "dilewati", pph21["dilewati"]
+    hasil["komponen"].extend(pph21["komponen"])
+    hasil["catatan"].extend(pph21["catatan"])
 
     kunci = "{0}|{1}".format(period.name, he.name)
     ada = frappe.db.get_value(SLIP, {"unique_key": kunci}, ["name", "status"], as_dict=True)
