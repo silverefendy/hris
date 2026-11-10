@@ -298,6 +298,76 @@
             "permlevel": 1
         },
         {
+            "fieldname": "sec_bpjs_peserta",
+            "fieldtype": "Section Break",
+            "label": "Kepesertaan BPJS dan Pajak (HRD)",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_kes_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta BPJS Kesehatan",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jht_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JHT",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jp_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JP",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jkk_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JKK",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jkm_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JKM",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "col_bpjs_peserta",
+            "fieldtype": "Column Break",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jkk_risk_class",
+            "fieldtype": "Data",
+            "label": "Kelas Risiko JKK",
+            "depends_on": "eval:doc.bpjs_jkk_enrolled",
+            "description": "Isi persis sama dengan Kelas Risiko pada HRIS BPJS Rate.",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_wage_basis",
+            "fieldtype": "Select",
+            "label": "Dasar Upah BPJS (karyawan Harian)",
+            "options": "Gaji Final\nGaji Penuh",
+            "default": "Gaji Final",
+            "description": "Hanya dipakai karyawan Harian. Gaji Final = setelah potongan absensi; Gaji Penuh = upah harian x hari kerja terjadwal.",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "pph21_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta PPh 21 (dipakai tahap 2)",
+            "default": "0",
+            "permlevel": 1
+        },
+        {
             "fieldname": "sec_sinkron",
             "fieldtype": "Section Break",
             "label": "Sinkron ke Employee ERPNext"
@@ -448,5 +518,5 @@
             "write": 1
         }
     ],
-    "modified": "2026-11-06 04:50:15.275053"
+    "modified": "2026-11-10 08:00:00.000000"
 }
