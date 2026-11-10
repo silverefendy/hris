@@ -1,3 +1,33 @@
+// Kolom tabel Komponen yang dikunci pada baris Otomatis (K-130).
+// Kolom "source" dikunci di SEMUA baris: baris baru otomatis Manual, dan Manual tidak boleh diubah menjadi Otomatis.
+const KOLOM_KOMPONEN = ["component", "component_type", "amount", "source", "basis", "reason"];
+
+function kunci_komponen(frm) {
+    const grid = frm.fields_dict.components && frm.fields_dict.components.grid;
+    if (!grid || !grid.grid_rows) {
+        return;
+    }
+    const draft = frm.doc.status === "Draft";
+    // Slip bukan Draft: seluruh tabel terkunci (server sudah menolak; ini hanya tampilan).
+    frm.set_df_property("components", "read_only", draft ? 0 : 1);
+    if (!draft) {
+        return;
+    }
+    grid.grid_rows.forEach((grid_row) => {
+        const baris = grid_row.doc;
+        if (!baris) {
+            return;
+        }
+        const otomatis = baris.source === "Otomatis";
+        KOLOM_KOMPONEN.forEach((fieldname) => {
+            const bisa_diedit = fieldname === "source" ? false : !otomatis;
+            grid_row.toggle_editable(fieldname, bisa_diedit);
+        });
+        // Baris Otomatis tidak boleh dipilih untuk dihapus.
+        grid_row.wrapper.find(".grid-row-check").prop("disabled", otomatis);
+    });
+}
+
 frappe.ui.form.on("HRIS Payroll Slip", {
     refresh(frm) {
         hris.audit.render(frm);
@@ -30,5 +60,18 @@ frappe.ui.form.on("HRIS Payroll Slip", {
                 });
             });
         }
+
+        // Grid dirender setelah refresh; panggil sekarang dan sekali lagi sesudah render selesai.
+        kunci_komponen(frm);
+        setTimeout(() => kunci_komponen(frm), 300);
+    },
+    components_add(frm) {
+        setTimeout(() => kunci_komponen(frm), 100);
+    },
+});
+
+frappe.ui.form.on("HRIS Payroll Slip Item", {
+    form_render(frm) {
+        kunci_komponen(frm);
     },
 });
