@@ -12,6 +12,8 @@ PERIOD = "HRIS Payroll Period"
 SCHEDULE = "HRIS Payroll Schedule"
 NAMA_BULANAN = "ZZ Uji BPJS Bulanan"
 NAMA_MINGGUAN = "ZZ Uji BPJS Mingguan"
+NAMA_TK = "ZZ Uji BPJS TK"
+FLAG_RINCIAN = ["bpjs_jht_enrolled", "bpjs_jp_enrolled", "bpjs_jkk_enrolled", "bpjs_jkm_enrolled"]
 FLAG = ["bpjs_kes_enrolled", "bpjs_jht_enrolled", "bpjs_jp_enrolled", "bpjs_jkk_enrolled", "bpjs_jkm_enrolled"]
 JUMLAH = ["bpjs_kes_amount", "bpjs_jht_amount", "bpjs_jp_amount", "bpjs_jkk_amount", "bpjs_jkm_amount"]
 ANGKA = {
@@ -300,18 +302,153 @@ def uji_db():
     cek("H4 total iuran satu bulan = 120.000 (satu kali)", total == 120000, total)
 
 
+def set_tk(he, tk=0, tk_angka=0, kes=0, kes_angka=0, rincian=(0, 0, 0, 0)):
+    nilai = {
+        "bpjs_tk_enrolled": tk, "bpjs_tk_amount": tk_angka,
+        "bpjs_kes_enrolled": kes, "bpjs_kes_amount": kes_angka,
+        "bpjs_jht_amount": 60000, "bpjs_jp_amount": 30000, "bpjs_jkk_amount": 0, "bpjs_jkm_amount": 0,
+    }
+    nilai.update(dict(zip(FLAG_RINCIAN, rincian)))
+    frappe.db.set_value("HRIS Employee", he, nilai)
+
+
+def uji_tk_meta():
+    meta = frappe.get_meta("HRIS Employee")
+    for f in ("bpjs_tk_enrolled", "bpjs_tk_amount"):
+        df = meta.get_field(f)
+        cek("K1 %s: ada dan permlevel 1" % f, df is not None and (df.permlevel or 0) == 1, "field tidak ada" if df is None else df.as_dict())
+    df = meta.get_field("bpjs_tk_amount")
+    cek("K2 angka Ketenagakerjaan tidak boleh negatif", df is not None and df.get("non_negative") in (1, True))
+    for f in FLAG_RINCIAN:
+        df = meta.get_field(f)
+        cek("K3 %s: read-only bila centang total aktif" % f, df is not None and "bpjs_tk_enrolled" in cstr(df.get("read_only_depends_on")))
+    df = meta.get_field("bpjs_tk_enrolled")
+    cek("K4 centang total: read-only bila ada rincian aktif", df is not None and "bpjs_jht_enrolled" in cstr(df.get("read_only_depends_on")))
+    urut = [d.fieldname for d in meta.fields]
+    cek(
+        "K5 Iuran Ketenagakerjaan tepat di bawah Iuran Kesehatan",
+        "bpjs_tk_amount" in urut and urut.index("bpjs_tk_amount") == urut.index("bpjs_kes_amount") + 1,
+    )
+    cek(
+        "K6 centang Ketenagakerjaan tepat di bawah centang Kesehatan",
+        "bpjs_tk_enrolled" in urut and urut.index("bpjs_tk_enrolled") == urut.index("bpjs_kes_enrolled") + 1,
+    )
+
+
+def uji_tk_db():
+    from hris.hris_payroll.services import payroll_slip as ps
+    from hris.hris_payroll.services.payroll_schedule import compute_period
+
+    awal, akhir = compute_period({"schedule_type": "Bulanan", "cut_off_day": 26}, date(2026, 10, 17))
+    kand = kandidat(awal, akhir)
+    cek("K0 ada karyawan kandidat dengan Working Hour pada periode", bool(kand), "periode %s s/d %s" % (awal, akhir))
+    if not kand:
+        return
+    he, company = kand[0].he, kand[0].company
+    sch = frappe.get_doc(
+        {
+            "doctype": SCHEDULE, "schedule_name": NAMA_TK, "company": company,
+            "schedule_type": "Bulanan", "is_active": 1, "pay_date_offset_days": 3,
+            "sunday_rule": "Maju ke Senin", "cut_off_day": 26,
+        }
+    ).insert(ignore_permissions=True)
+    frappe.get_doc(
+        {
+            "doctype": "HRIS Employee Pay", "employee": he, "pay_type": "Bulanan", "amount": 3000000,
+            "payroll_schedule": sch.name, "effective_from": "2026-01-01",
+        }
+    ).insert(ignore_permissions=True)
+    period = frappe.get_doc({"doctype": PERIOD, "payroll_schedule": sch.name, "reference_date": "2026-10-17"}).insert(ignore_permissions=True)
+    state["periods"].append(period.name)
+
+    # --- bentrok sejak awal: total dan rincian sama-sama aktif ---
+    set_tk(he, tk=1, tk_angka=150000, rincian=(1, 0, 0, 0))
+    res = ps.buat_slip(period.name, "Karyawan", employee=he)
+    cek("K10 bentrok total dan rincian: slip dilewati, tidak dibuat", res.get("dilewati") == 1 and res.get("dibuat") == 0, res)
+    alasan = " ".join(res.get("alasan", {}).keys())
+    cek("K11 pesan bentrok memuat Masalah, Penyebab, Tindakan", all(k in alasan for k in ("Masalah", "Penyebab", "Tindakan")), alasan)
+    cek("K12 tidak ada slip tersimpan untuk karyawan bentrok", not frappe.db.exists(SLIP, {"payroll_period": period.name, "employee": he}))
+
+    # --- jalur total (bersama Kesehatan) ---
+    set_tk(he, tk=1, tk_angka=150000, kes=1, kes_angka=30000)
+    res = ps.buat_slip(period.name, "Karyawan", employee=he)
+    cek("K20 slip jalur total dibuat", res.get("dibuat") == 1, res)
+    nama = frappe.db.get_value(SLIP, {"payroll_period": period.name, "employee": he}, "name")
+    if not nama:
+        return
+    s = frappe.get_doc(SLIP, nama)
+    k = komp(s)
+    cek("K21 satu potongan Iuran BPJS Ketenagakerjaan = 150.000", k.get("Iuran BPJS Ketenagakerjaan") == 150000, k)
+    cek("K22 tidak ada potongan JHT, JP, JKK, JKM", not any(n in k for n in ("Iuran JHT", "Iuran JP", "Iuran JKK", "Iuran JKM")), k)
+    cek("K23 Iuran Kesehatan tetap 30.000", k.get("Iuran BPJS Kesehatan") == 30000, k)
+    nyata = {r.program: int(round(flt(r.employee_amount))) for r in s.bpjs_items}
+    cek("K24 rincian dua baris: Kesehatan dan Ketenagakerjaan", nyata == {"BPJS Kesehatan": 30000, "BPJS Ketenagakerjaan": 150000}, nyata)
+    baris = [r for r in s.bpjs_items if r.program == "BPJS Ketenagakerjaan"]
+    cek("K25 dasar rincian: Angka tetap dari data karyawan", len(baris) == 1 and "Angka tetap" in cstr(baris[0].basis), [cstr(r.basis) for r in baris])
+    cek("K26 baris potongan Ketenagakerjaan hanya satu", [r.component for r in s.components].count("Iuran BPJS Ketenagakerjaan") == 1)
+
+    # --- bentrok pada slip yang sudah ada: dilewati, slip lama utuh ---
+    set_tk(he, tk=1, tk_angka=150000, rincian=(1, 0, 0, 0))
+    jenis, info = ps.proses_karyawan(frappe.get_doc(PERIOD, period.name), he)
+    cek("K30 bentrok pada slip yang ada: dilewati dengan pesan Masalah", jenis == "dilewati" and "Masalah" in cstr(info), (jenis, info))
+    s2 = frappe.get_doc(SLIP, nama)
+    cek("K31 slip lama tidak berubah saat dilewati", komp(s2).get("Iuran BPJS Ketenagakerjaan") == 150000 and len(s2.bpjs_items) == 2, komp(s2))
+
+    # --- pindah total -> rincian -> total ---
+    set_tk(he, tk=0, rincian=(1, 1, 0, 0))
+    ps.hitung_ulang_slip(nama)
+    s3 = frappe.get_doc(SLIP, nama)
+    k3 = komp(s3)
+    cek(
+        "K40 pindah total ke rincian: Iuran JHT dan JP ada, baris Ketenagakerjaan hilang",
+        k3.get("Iuran JHT") == 60000 and k3.get("Iuran JP") == 30000 and "Iuran BPJS Ketenagakerjaan" not in k3,
+        k3,
+    )
+    cek("K41 rincian slip: hanya JHT dan JP", {r.program for r in s3.bpjs_items} == {"JHT", "JP"}, [r.program for r in s3.bpjs_items])
+    set_tk(he, tk=1, tk_angka=150000)
+    ps.hitung_ulang_slip(nama)
+    s4 = frappe.get_doc(SLIP, nama)
+    k4 = komp(s4)
+    cek(
+        "K42 pindah rincian ke total: hanya satu potongan Ketenagakerjaan dan satu baris rincian",
+        k4.get("Iuran BPJS Ketenagakerjaan") == 150000 and "Iuran JHT" not in k4 and "Iuran JP" not in k4 and len(s4.bpjs_items) == 1,
+        (k4, len(s4.bpjs_items)),
+    )
+
+    # --- total berangka 0 dan tidak ikut ---
+    set_tk(he, tk=1, tk_angka=0)
+    ps.hitung_ulang_slip(nama)
+    s5 = frappe.get_doc(SLIP, nama)
+    cek(
+        "K50 total angka 0: tanpa potongan, satu baris rincian bernilai 0",
+        "Iuran BPJS Ketenagakerjaan" not in komp(s5) and len(s5.bpjs_items) == 1 and flt(s5.bpjs_items[0].employee_amount) == 0,
+        komp(s5),
+    )
+    set_tk(he)
+    ps.hitung_ulang_slip(nama)
+    s6 = frappe.get_doc(SLIP, nama)
+    cek(
+        "K60 tidak ikut apa pun: tanpa iuran dan tanpa rincian",
+        not any(r.component.startswith("Iuran ") for r in s6.components) and len(s6.bpjs_items) == 0,
+        [r.component for r in s6.components],
+    )
+
+
 try:
     if frappe.local.site != SITE:
         raise SystemExit("Site bukan %s; berhenti." % SITE)
     uji_meta()
     uji_murni()
     uji_db()
+    frappe.db.rollback()
+    uji_tk_meta()
+    uji_tk_db()
 finally:
     frappe.db.rollback()
     if hasil:
         sisa = [n for n in state["periods"] if frappe.db.exists(PERIOD, n)]
         cek("Z1 tidak ada sisa periode uji", not sisa, sisa)
-        sisa2 = [n for n in (NAMA_BULANAN, NAMA_MINGGUAN) if frappe.db.exists(SCHEDULE, {"schedule_name": n})]
+        sisa2 = [n for n in (NAMA_BULANAN, NAMA_MINGGUAN, NAMA_TK) if frappe.db.exists(SCHEDULE, {"schedule_name": n})]
         cek("Z2 tidak ada sisa jadwal uji", not sisa2, sisa2)
         print("HASIL: OK %d, GAGAL %d, SKIP %d" % (hasil.count(True), hasil.count(False), len(skip)))
     frappe.destroy()

@@ -23,6 +23,9 @@ PROGRAM = (
     ("JKM", "bpjs_jkm_enrolled", "bpjs_jkm_amount", "Iuran JKM"),
 )
 
+# Satu angka untuk seluruh program Ketenagakerjaan (JHT, JP, JKK, JKM); dipakai bila bpjs_tk_enrolled aktif.
+TOTAL = ("BPJS Ketenagakerjaan", "bpjs_tk_enrolled", "bpjs_tk_amount", "Iuran BPJS Ketenagakerjaan")
+
 
 # ---------- angka ----------
 def _d(nilai):
@@ -58,16 +61,31 @@ def _jadwal(period):
 
 # ---------- gabungan ----------
 def hitung_bpjs_slip(he, period, gaji, hasil):
-    """Mengembalikan {"komponen", "rincian", "catatan"}.
+    """Mengembalikan {"komponen", "rincian", "catatan"}; bila data bentrok ditambah kunci "dilewati" (pesan).
 
     he = baris HRIS Employee, period = dokumen HRIS Payroll Period, gaji = baris HRIS Employee Pay,
     hasil = keluaran hitung_komponen (dipakai hanya untuk peringatan gaji bersih negatif).
     """
     kosong = {"komponen": [], "rincian": [], "catatan": []}
-    kolom = [p[1] for p in PROGRAM] + [p[2] for p in PROGRAM]
+    kolom = [p[1] for p in PROGRAM] + [p[2] for p in PROGRAM] + [TOTAL[1], TOTAL[2]]
     # Query langsung agar tidak terhalang izin field (permlevel) pemanggil.
     data = frappe.db.get_value("HRIS Employee", he.name, kolom, as_dict=True) or {}
-    ikut = [p for p in PROGRAM if data.get(p[1])]
+    kesehatan = [p for p in PROGRAM if p[0] == "BPJS Kesehatan" and data.get(p[1])]
+    ikut_rincian = [p for p in PROGRAM if p[0] != "BPJS Kesehatan" and data.get(p[1])]
+    pakai_total = bool(data.get(TOTAL[1]))
+    if pakai_total and ikut_rincian:
+        # Pengaman: form hanya mengizinkan satu cara, tetapi data bisa bentrok (misalnya hasil impor).
+        return {
+            "komponen": [],
+            "rincian": [],
+            "catatan": [],
+            "dilewati": _(
+                "Masalah: BPJS Ketenagakerjaan satu angka dan rincian (JHT, JP, JKK, JKM) sama-sama aktif. "
+                "Penyebab: data karyawan bentrok, misalnya hasil impor; satu karyawan hanya boleh memakai satu cara. "
+                "Tindakan: HRD membuka data karyawan, mematikan salah satu cara, lalu slip dibuat atau dihitung ulang."
+            ),
+        }
+    ikut = kesehatan + ([TOTAL] if pakai_total else ikut_rincian)
     if not ikut:
         return kosong
 

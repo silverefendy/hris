@@ -311,30 +311,18 @@
             "permlevel": 1
         },
         {
-            "fieldname": "bpjs_jht_enrolled",
+            "fieldname": "bpjs_tk_enrolled",
             "fieldtype": "Check",
-            "label": "Peserta JHT",
+            "label": "Peserta BPJS Ketenagakerjaan (satu angka)",
             "default": "0",
+            "read_only_depends_on": "eval:!doc.bpjs_tk_enrolled && (doc.bpjs_jht_enrolled||doc.bpjs_jp_enrolled||doc.bpjs_jkk_enrolled||doc.bpjs_jkm_enrolled)",
+            "description": "Satu angka iuran untuk seluruh program Ketenagakerjaan. Pilih ini ATAU rincian JHT, JP, JKK, JKM di kolom kanan, tidak keduanya.",
             "permlevel": 1
         },
         {
-            "fieldname": "bpjs_jp_enrolled",
+            "fieldname": "pph21_enrolled",
             "fieldtype": "Check",
-            "label": "Peserta JP",
-            "default": "0",
-            "permlevel": 1
-        },
-        {
-            "fieldname": "bpjs_jkk_enrolled",
-            "fieldtype": "Check",
-            "label": "Peserta JKK",
-            "default": "0",
-            "permlevel": 1
-        },
-        {
-            "fieldname": "bpjs_jkm_enrolled",
-            "fieldtype": "Check",
-            "label": "Peserta JKM",
+            "label": "Peserta PPh 21 (dipakai tahap 2)",
             "default": "0",
             "permlevel": 1
         },
@@ -342,6 +330,38 @@
             "fieldname": "col_bpjs_peserta",
             "fieldtype": "Column Break",
             "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_jht_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JHT",
+            "default": "0",
+            "permlevel": 1,
+            "read_only_depends_on": "eval:doc.bpjs_tk_enrolled && !doc.bpjs_jht_enrolled"
+        },
+        {
+            "fieldname": "bpjs_jp_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JP",
+            "default": "0",
+            "permlevel": 1,
+            "read_only_depends_on": "eval:doc.bpjs_tk_enrolled && !doc.bpjs_jp_enrolled"
+        },
+        {
+            "fieldname": "bpjs_jkk_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JKK",
+            "default": "0",
+            "permlevel": 1,
+            "read_only_depends_on": "eval:doc.bpjs_tk_enrolled && !doc.bpjs_jkk_enrolled"
+        },
+        {
+            "fieldname": "bpjs_jkm_enrolled",
+            "fieldtype": "Check",
+            "label": "Peserta JKM",
+            "default": "0",
+            "permlevel": 1,
+            "read_only_depends_on": "eval:doc.bpjs_tk_enrolled && !doc.bpjs_jkm_enrolled"
         },
         {
             "fieldname": "bpjs_jkk_risk_class",
@@ -363,17 +383,10 @@
             "hidden": 1
         },
         {
-            "fieldname": "pph21_enrolled",
-            "fieldtype": "Check",
-            "label": "Peserta PPh 21 (dipakai tahap 2)",
-            "default": "0",
-            "permlevel": 1
-        },
-        {
             "fieldname": "sec_bpjs_iuran",
             "fieldtype": "Section Break",
             "label": "Iuran BPJS Karyawan (angka tetap per bulan)",
-            "depends_on": "eval:doc.bpjs_kes_enrolled||doc.bpjs_jht_enrolled||doc.bpjs_jp_enrolled||doc.bpjs_jkk_enrolled||doc.bpjs_jkm_enrolled",
+            "depends_on": "eval:doc.bpjs_kes_enrolled||doc.bpjs_jht_enrolled||doc.bpjs_jp_enrolled||doc.bpjs_jkk_enrolled||doc.bpjs_jkm_enrolled||doc.bpjs_tk_enrolled",
             "permlevel": 1,
             "description": "Angka rupiah yang dipotong dari karyawan. Karyawan Harian: dipotong penuh sekali, pada slip pertama bulan itu."
         },
@@ -383,6 +396,20 @@
             "label": "Iuran BPJS Kesehatan",
             "depends_on": "eval:doc.bpjs_kes_enrolled",
             "non_negative": 1,
+            "permlevel": 1
+        },
+        {
+            "fieldname": "bpjs_tk_amount",
+            "fieldtype": "Currency",
+            "label": "Iuran BPJS Ketenagakerjaan",
+            "depends_on": "eval:doc.bpjs_tk_enrolled",
+            "non_negative": 1,
+            "description": "Satu angka untuk seluruh program Ketenagakerjaan.",
+            "permlevel": 1
+        },
+        {
+            "fieldname": "col_bpjs_iuran",
+            "fieldtype": "Column Break",
             "permlevel": 1
         },
         {
@@ -399,11 +426,6 @@
             "label": "Iuran JP",
             "depends_on": "eval:doc.bpjs_jp_enrolled",
             "non_negative": 1,
-            "permlevel": 1
-        },
-        {
-            "fieldname": "col_bpjs_iuran",
-            "fieldtype": "Column Break",
             "permlevel": 1
         },
         {
@@ -573,5 +595,5 @@
             "write": 1
         }
     ],
-    "modified": "2026-11-10 10:00:00.000000"
+    "modified": "2026-11-10 12:00:00.000000"
 }
