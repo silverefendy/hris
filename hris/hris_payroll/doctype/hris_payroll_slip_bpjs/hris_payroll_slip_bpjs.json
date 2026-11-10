@@ -1,6 +1,6 @@
 {
  "creation": "2026-11-10 09:00:00.000000",
- "modified": "2026-11-10 09:00:00.000000",
+ "modified": "2026-11-10 10:00:00.000000",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "doctype": "DocType",
@@ -15,17 +15,17 @@
  "states": [],
  "fields": [
   {"fieldname": "program", "fieldtype": "Data", "label": "Program", "read_only": 1, "in_list_view": 1},
-  {"fieldname": "risk_class", "fieldtype": "Data", "label": "Kelas Risiko", "read_only": 1},
-  {"fieldname": "base_amount", "fieldtype": "Currency", "label": "Dasar Upah", "read_only": 1},
-  {"fieldname": "wage_cap", "fieldtype": "Currency", "label": "Batas Upah", "read_only": 1},
-  {"fieldname": "capped_base", "fieldtype": "Currency", "label": "Dasar Iuran", "read_only": 1, "in_list_view": 1},
-  {"fieldname": "employee_rate", "fieldtype": "Percent", "label": "Tarif Karyawan (%)", "precision": "4", "read_only": 1, "in_list_view": 1},
   {"fieldname": "employee_amount", "fieldtype": "Currency", "label": "Iuran Karyawan", "read_only": 1, "in_list_view": 1},
-  {"fieldname": "company_rate", "fieldtype": "Percent", "label": "Tarif Perusahaan (%)", "precision": "4", "read_only": 1, "in_list_view": 1},
-  {"fieldname": "company_amount", "fieldtype": "Currency", "label": "Bagian Perusahaan (info)", "read_only": 1, "in_list_view": 1},
-  {"fieldname": "rate_ref", "fieldtype": "Link", "label": "Tarif Dipakai", "options": "HRIS BPJS Rate", "read_only": 1},
-  {"fieldname": "basis", "fieldtype": "Small Text", "label": "Dasar Hitung", "read_only": 1}
+  {"fieldname": "basis", "fieldtype": "Small Text", "label": "Dasar", "read_only": 1, "in_list_view": 1},
+  {"fieldname": "risk_class", "fieldtype": "Data", "label": "Kelas Risiko (tidak dipakai)", "read_only": 1, "hidden": 1},
+  {"fieldname": "base_amount", "fieldtype": "Currency", "label": "Dasar Upah (tidak dipakai)", "read_only": 1, "hidden": 1},
+  {"fieldname": "wage_cap", "fieldtype": "Currency", "label": "Batas Upah (tidak dipakai)", "read_only": 1, "hidden": 1},
+  {"fieldname": "capped_base", "fieldtype": "Currency", "label": "Dasar Iuran (tidak dipakai)", "read_only": 1, "hidden": 1},
+  {"fieldname": "employee_rate", "fieldtype": "Percent", "label": "Tarif Karyawan (tidak dipakai)", "precision": "4", "read_only": 1, "hidden": 1},
+  {"fieldname": "company_rate", "fieldtype": "Percent", "label": "Tarif Perusahaan (tidak dipakai)", "precision": "4", "read_only": 1, "hidden": 1},
+  {"fieldname": "company_amount", "fieldtype": "Currency", "label": "Bagian Perusahaan (tidak dipakai)", "read_only": 1, "hidden": 1},
+  {"fieldname": "rate_ref", "fieldtype": "Link", "label": "Tarif Dipakai (tidak dipakai)", "options": "HRIS BPJS Rate", "read_only": 1, "hidden": 1}
  ],
- "field_order": ["program", "risk_class", "base_amount", "wage_cap", "capped_base", "employee_rate", "employee_amount", "company_rate", "company_amount", "rate_ref", "basis"],
+ "field_order": ["program", "employee_amount", "basis", "risk_class", "base_amount", "wage_cap", "capped_base", "employee_rate", "company_rate", "company_amount", "rate_ref"],
  "permissions": []
 }
