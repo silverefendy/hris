@@ -133,7 +133,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | Readiness Check sebelum Payroll Run (P10) | Belum | |
 | Pro-rata (masuk/keluar di tengah periode), mutasi, final pay | Belum | Muncul tiap bulan |
 | Pinjaman karyawan | Belum | P11 |
-| Potongan dan pajak (BPJS, PPh 21, THR) | Belum | Tarif sebagai pengaturan; konfirmasi HRD atau konsultan pajak |
+| Potongan dan pajak (BPJS, PPh 21, THR) | Sebagian | BPJS (K-133): angka tetap per program, Ketenagakerjaan satu angka atau rincian, dipotong sekali sebulan; kode `f6f837b`, teruji di site uji (skrip OK 68 dan OK 77, browser, izin per peran `aa87b66` OK 16); belum di produksi; dua butir menunggu konfirmasi HRD (keputusan-2026-11-10-bpjs.md bagian 8). PPh 21 dan THR belum. Angka resmi diverifikasi HRD atau konsultan pajak |
 | Slip gaji cetak (PDF) | Belum | Format perlu konfirmasi atasan |
 | File transfer bank | Belum | Format menunggu dari HRD |
 | Laporan gaji dan laporan wajib | Belum | Daftar menunggu dari HRD |
@@ -232,6 +232,7 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-09 | `HRIS Payroll Period` (K-128) dan hak akses K-129 dibuat dan teruji di site uji (9c0648a, 0ebc487, 913268f, 4807cba); data uji dibersihkan; keputusan di [keputusan-2026-11-09.md](../decisions/keputusan-2026-11-09.md) |
 | 2026-11-09 | Rancangan `HRIS Payroll Slip` disetujui (K-130, belum ada kode); klasifikasi absen (K-131, 097a946) teruji skrip dan browser; aturan karyawan Harian (89f0c63) teruji skrip, browser menunggu baris gaji karyawan; keputusan di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) dan [keputusan-2026-11-09-absen.md](../decisions/keputusan-2026-11-09-absen.md) |
 | 2026-11-10 | `HRIS Payroll Slip` tahap pertama dibuat dan teruji di site uji (2f483dc, b11d89c): uji skrip OK 77, uji browser lulus termasuk potongan absen Mangkir dan Sakit; slip uji dibersihkan; keputusan tetap di [keputusan-2026-11-09-payroll-slip.md](../decisions/keputusan-2026-11-09-payroll-slip.md) |
+| 2026-11-10 | BPJS pada Payroll Slip (K-133, angka tetap) dibuat dan teruji di site uji (`f6f837b`, uji izin `aa87b66`): skrip OK 68, OK 77, izin OK 16, browser lulus; dokumen di [keputusan-2026-11-10-bpjs.md](../decisions/keputusan-2026-11-10-bpjs.md) |
 
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 

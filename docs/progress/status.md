@@ -180,10 +180,20 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Pembersihan data uji | Slip uji dihapus lewat skrip sekali pakai (mode COBA lalu TERAPKAN, slip tersisa 0); klasifikasi absen Working Hour uji dibiarkan di site uji |
 | Belum | Cakupan pembuatan slip massal, per kelompok, dan per departemen belum diuji; uji browser per peran untuk slip belum; Catatan Audit Hitung Ulang masih mencatat "baris dihapus lalu ditambah" untuk komponen yang nilainya sama (hanya bising); BPJS dan PPh 21 menyusul. Catatan sesi: [session-log-2026-11-09.md](session-log-2026-11-09.md) |
 
+## Pembaruan 10 Nov 2026 (BPJS pada Payroll Slip, K-133)
+
+| Item | Status |
+|---|---|
+| BPJS pada `HRIS Payroll Slip` (K-133, angka tetap) | Kode di `f6f837b` (`hris_employee.json`, `payroll_bpjs.py`, `uji_bpjs_slip.py`). Angka iuran diinput HRD di `HRIS Employee`; dipotong sekali sebulan pada slip pertama yang tanggal bayarnya jatuh di bulan itu. Ketenagakerjaan: satu angka atau rincian JHT, JP, JKK, JKM, tidak boleh keduanya. Uji skrip OK 68 dan OK 77, GAGAL 0. Belum di produksi |
+| Uji browser (10:56 sampai 11:02 WIB) | Slip Bulanan dan Harian lulus; Hitung Ulang tidak melipatgandakan baris; data uji dibersihkan (`bersihkan`) |
+| Uji izin per peran | `aa87b66`: OK 16, GAGAL 0 (HR Admin baca dan tulis; Payroll Admin hanya baca, simpan ditolak) |
+| Belum | Hitung Ulang slip Bulanan dan pindah total ke rincian di browser; konfirmasi HRD atas dua butir sementara; PPh 21 dan jembatan ke ERPNext; pesan "Komponen Otomatis tidak dapat diubah..." (guard K-130, fitur perbaikan tampilan terpisah setelah K-133) |
+| Dokumen | [decisions/keputusan-2026-11-10-bpjs.md](../decisions/keputusan-2026-11-10-bpjs.md) bagian 8; catatan sesi [session-log-2026-11-10.md](session-log-2026-11-10.md) |
+
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); berikutnya pembuatan slip massal, per kelompok, dan per departemen, lalu `Department Rule` (P8), BPJS dan PPh 21: satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
+3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); berikutnya pembuatan slip massal, per kelompok, dan per departemen, lalu `Department Rule` (P8) dan PPh 21 (BPJS K-133 sudah ada, lihat Pembaruan 10 Nov): satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
 5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.

@@ -1,4 +1,6 @@
-# Keputusan 10 November 2026: BPJS pada HRIS Payroll Slip (K-133, rancangan)
+# Keputusan 10 November 2026: BPJS pada HRIS Payroll Slip (K-133)
+
+> **Catatan revisi (10 Nov 2026, siang):** bagian 3 sampai 7 adalah rancangan awal (persentase). Implementasi yang berlaku memakai angka tetap; lihat **bagian 8**. Bila berbeda, bagian 8 yang berlaku.
 
 Status: **disetujui Efendy (10 Nov 2026, 06:53 WIB, "lanjutkan semuanya"); diterapkan bertahap dalam empat langkah: (1) HRIS BPJS Rate, (2) field peserta di HRIS Employee, (3) tabel informasi dan perhitungan pada slip, (4) uji browser per peran dan sinkron dokumen.**
 Nomor K-133 dipakai karena K-132 sudah menjadi usulan di `status.md`; ubah bila perlu.
@@ -33,7 +35,7 @@ Nomor K-133 dipakai karena K-132 sudah menjadi usulan di `status.md`; ubah bila 
 | Yang mengisi pilihan peserta | HRD (HRIS HR Admin dan HRIS Employee Admin); HRIS Payroll Admin hanya baca |
 | Gaji Penuh karyawan Harian | Upah harian x jumlah hari kerja terjadwal, tanpa memotong ketidakhadiran (dikonfirmasi) |
 
-## 4. Rancangan tahap 1
+## 4. Rancangan tahap 1 (rancangan awal; digantikan oleh bagian 8)
 
 ### 4.1 DocType baru `HRIS BPJS Rate` (modul HRIS Payroll)
 
@@ -111,3 +113,41 @@ Semua centang bawaan **mati**, sehingga tidak ada potongan sampai HRD mengisinya
 5. Tanggal acuan tarif berlaku (akhir periode, usulan).
 6. Tahap 2: pengaruh iuran karyawan pada dasar pajak, jumlah tanggungan (PTKP), tabel TER, rekonsiliasi Desember, THR dan lembur.
 7. Tahap 3: field NPWP dan BPJS ke Employee ERPNext; slip Final ke Salary Slip. Perlu dicek dulu apakah submit Salary Slip membuat jurnal (K-19 menunda posting akuntansi).
+
+## 8. Revisi implementasi (10 Nov 2026, siang)
+
+Bagian 3 sampai 7 adalah rancangan awal (persentase). Bila berbeda, bagian ini yang berlaku. Dasar: kode `payroll_bpjs.py` (commit `f6f837b`) dan jawaban Efendy 10 Nov 2026 12:01 WIB.
+
+### 8.1 Perbedaan terhadap rancangan awal
+
+| Hal | Rancangan awal | Yang berlaku |
+|---|---|---|
+| Cara hitung | Dasar upah dikali tarif persen | **Angka tetap** per program yang diinput HRD di `HRIS Employee`; slip hanya memotong angka itu (Efendy: "tidak pakai persen lagi") |
+| Field peserta | Lima centang per program | Centang dan angka per program (`bpjs_kes_*`, `bpjs_jht_*`, `bpjs_jp_*`, `bpjs_jkk_*`, `bpjs_jkm_*`) dan satu angka Ketenagakerjaan (`bpjs_tk_enrolled`, `bpjs_tk_amount`) |
+| Ketenagakerjaan | Empat program terpisah | **Dua cara bisa dipilih per karyawan:** satu angka, atau rincian JHT, JP, JKK, JKM. Tidak boleh keduanya; bila data bentrok (misalnya hasil impor), slip dilewati dengan pesan jelas. Kesehatan tetap terpisah |
+| `HRIS BPJS Rate` | DocType tarif | Tidak ditandai "tidak dipakai" (Efendy). Perhitungan slip pada kode ini tidak membaca tarif. Maksud pernyataan "jika ditandai baru dipakai" **perlu dikonfirmasi** |
+| Bagian perusahaan, batas upah, basis Gaji Final atau Penuh | Ada dalam rancangan | Tidak dipakai pada implementasi angka tetap (kode tidak memuatnya) |
+| Slip pembawa potongan | Slip **terakhir** yang tanggal bayarnya jatuh di bulan itu (opsi A, 06:53) | Kode: slip **pertama** menurut jadwal yang tanggal bayarnya jatuh di bulan itu (bulan dari tanggal bayar). Karyawan Bulanan tidak berbeda karena hanya ada satu slip per bulan. Efendy: ikut hitungan yang berjalan sampai ada perubahan, jadi **sementara slip pertama** |
+| Catatan slip | Belum dirinci | Catatan Perhitungan menyebut slip yang membawa atau tidak membawa potongan; ada peringatan bila gaji bersih komponen otomatis negatif setelah iuran. Tabel Rincian BPJS di slip tidak bisa diedit |
+| Pengisi pilihan peserta | HR Admin dan Employee Admin; Payroll Admin baca | Tidak berubah, dan terbukti lewat skrip uji izin |
+
+### 8.2 Hasil uji (site uji `hris-uji.local`)
+
+| Pemeriksaan | Hasil |
+|---|---|
+| Uji skrip | OK 68 dan OK 77, GAGAL 0 |
+| Uji browser slip Bulanan dan Harian (10 Nov 10:56 sampai 11:02 WIB) | Lulus: total dan rincian, aturan sekali sebulan, pembedaan slip pertama dan berikutnya, Hitung Ulang tidak melipatgandakan baris |
+| Uji izin per peran (`uji_izin_bpjs.py`, `aa87b66`) | OK 16, GAGAL 0: HR Admin baca dan tulis, Payroll Admin hanya baca dan simpan ditolak |
+| Commit | `f6f837b` (kode, 204 tambah, 27 hapus), `aa87b66` (uji izin) |
+| Belum terbukti di browser | Hitung Ulang slip Bulanan dan pindah total ke rincian (terbukti unit test K40 sampai K42) |
+
+### 8.3 Perlu konfirmasi HRD
+
+1. Slip pembawa potongan untuk karyawan Harian dan Mingguan: slip pertama (berjalan sementara) atau slip terakhir (rancangan awal).
+2. Ketenagakerjaan boleh dipilih satu angka atau rincian per karyawan; HRD memastikan cara mana yang dipakai untuk tiap kelompok karyawan.
+
+Angka iuran resmi tetap diisi dan diverifikasi HRD, bukan oleh dokumen ini.
+
+### 8.4 Di luar K-133
+
+Pesan "Komponen Otomatis tidak dapat diubah..." berasal dari guard K-130, bukan BPJS. Perbaikan tampilan (baris Otomatis abu-abu dan tidak bisa dihapus di form) dikerjakan sebagai fitur terpisah setelah K-133. Belum dipastikan apakah pesan muncul saat Simpan tanpa perubahan.
