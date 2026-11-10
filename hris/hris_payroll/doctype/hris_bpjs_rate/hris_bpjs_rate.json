@@ -1,0 +1,164 @@
+{
+ "creation": "2026-11-10 07:30:00.000000",
+ "modified": "2026-11-10 07:30:00.000000",
+ "modified_by": "Administrator",
+ "owner": "Administrator",
+ "doctype": "DocType",
+ "module": "HRIS Payroll",
+ "engine": "InnoDB",
+ "custom": 0,
+ "index_web_pages_for_search": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "name": "HRIS BPJS Rate",
+ "naming_rule": "Expression",
+ "autoname": "format:BPR-{YY}{MM}-{####}",
+ "track_changes": 1,
+ "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "program",
+   "fieldtype": "Select",
+   "label": "Program",
+   "options": "BPJS Kesehatan\nJHT\nJP\nJKK\nJKM",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "risk_class",
+   "fieldtype": "Data",
+   "label": "Kelas Risiko (khusus JKK)",
+   "depends_on": "eval:doc.program=='JKK'",
+   "in_list_view": 1,
+   "description": "Tarif JKK bergantung kelas risiko. Isi persis sama dengan Kelas Risiko JKK di data karyawan."
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Date",
+   "label": "Berlaku Mulai",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Aktif",
+   "default": "1",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_rate",
+   "fieldtype": "Percent",
+   "label": "Tarif Karyawan (%)",
+   "precision": "4",
+   "in_list_view": 1,
+   "description": "Bagian yang dipotong dari gaji karyawan. Isi 0 bila tidak ada."
+  },
+  {
+   "fieldname": "company_rate",
+   "fieldtype": "Percent",
+   "label": "Tarif Perusahaan (%)",
+   "precision": "4",
+   "in_list_view": 1,
+   "description": "Bagian yang ditanggung perusahaan; hanya dicatat sebagai informasi di slip."
+  },
+  {
+   "fieldname": "wage_cap",
+   "fieldtype": "Currency",
+   "label": "Batas Upah Tertinggi",
+   "description": "Kosong atau 0 = tanpa batas. Dasar iuran dibatasi sampai nilai ini."
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Sumber Peraturan / Catatan"
+  },
+  {
+   "fieldname": "unique_key",
+   "fieldtype": "Data",
+   "label": "Kunci Unik",
+   "hidden": 1,
+   "read_only": 1,
+   "unique": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail HRIS",
+   "depends_on": "eval:!doc.__islocal"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
+  }
+ ],
+ "field_order": [
+  "details_tab",
+  "company",
+  "program",
+  "risk_class",
+  "effective_from",
+  "is_active",
+  "column_break_1",
+  "employee_rate",
+  "company_rate",
+  "wage_cap",
+  "notes",
+  "unique_key",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Admin"
+  },
+  {
+   "read": 1,
+   "role": "HRIS Direksi"
+  }
+ ]
+}
