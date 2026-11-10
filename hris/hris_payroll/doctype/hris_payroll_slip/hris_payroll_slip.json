@@ -1,6 +1,6 @@
 {
  "creation": "2026-11-09 17:00:00.000000",
- "modified": "2026-11-09 17:00:00.000000",
+ "modified": "2026-11-10 09:00:00.000000",
  "modified_by": "Administrator",
  "owner": "Administrator",
  "doctype": "DocType",
@@ -247,6 +247,20 @@
    "options": "HRIS Payroll Slip Item"
   },
   {
+   "fieldname": "bpjs_section",
+   "fieldtype": "Section Break",
+   "label": "Rincian BPJS (informasi)",
+   "depends_on": "eval:doc.bpjs_items && doc.bpjs_items.length"
+  },
+  {
+   "fieldname": "bpjs_items",
+   "fieldtype": "Table",
+   "label": "Rincian BPJS",
+   "options": "HRIS Payroll Slip BPJS",
+   "read_only": 1,
+   "description": "Iuran karyawan sudah masuk ke komponen Potongan. Bagian perusahaan hanya informasi, tidak mengurangi gaji bersih."
+  },
+  {
    "fieldname": "totals_section",
    "fieldtype": "Section Break",
    "label": "Total"
@@ -352,6 +366,8 @@
   "overtime_hours",
   "components_section",
   "components",
+  "bpjs_section",
+  "bpjs_items",
   "totals_section",
   "total_earning",
   "total_deduction",

@@ -1,4 +1,4 @@
-"""Pembuatan dan perhitungan HRIS Payroll Slip (K-130), tahap pertama tanpa BPJS dan PPh 21."""
+"""Pembuatan dan perhitungan HRIS Payroll Slip (K-130); BPJS pada slip (K-133); PPh 21 menyusul."""
 
 import time
 import uuid
@@ -9,6 +9,7 @@ from frappe import _
 from frappe.utils import cstr, flt, getdate, now_datetime
 
 from hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay import boleh_baris
+from hris.hris_payroll.services.payroll_bpjs import hitung_bpjs_slip
 
 SLIP = "HRIS Payroll Slip"
 PERIOD = "HRIS Payroll Period"
@@ -219,6 +220,12 @@ def proses_karyawan(period, he_name):
     if hasil.get("error"):
         return "dilewati", hasil["error"]
 
+    bpjs = hitung_bpjs_slip(he, period, gaji, hasil)
+    if bpjs.get("dilewati"):
+        return "dilewati", bpjs["dilewati"]
+    hasil["komponen"].extend(bpjs["komponen"])
+    hasil["catatan"].extend(bpjs["catatan"])
+
     kunci = "{0}|{1}".format(period.name, he.name)
     ada = frappe.db.get_value(SLIP, {"unique_key": kunci}, ["name", "status"], as_dict=True)
     if ada:
@@ -254,6 +261,9 @@ def proses_karyawan(period, he_name):
     doc.calc_notes = "\n".join(hasil["catatan"])
     doc.calculated_on = now_datetime()
     doc.calculated_by = frappe.session.user
+    doc.set("bpjs_items", [])
+    for baris_bpjs in bpjs["rincian"]:
+        doc.append("bpjs_items", baris_bpjs)
     for k in hasil["komponen"]:
         doc.append("components", {
             "component": k["nama"], "component_type": k["tipe"], "amount": k["jumlah"],

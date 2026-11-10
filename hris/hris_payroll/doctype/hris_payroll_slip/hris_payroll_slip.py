@@ -70,6 +70,7 @@ class HRISPayrollSlip(Document):
             )
         self.validate_terkunci(lama)
         self.validate_komponen(lama)
+        self.validate_bpjs(lama)
         self.hitung_total()
 
     def validate_terkunci(self, lama):
@@ -102,6 +103,25 @@ class HRISPayrollSlip(Document):
                 frappe.throw(_("Baris {0}: jumlah komponen Manual harus lebih dari 0 (jenis menentukan tambah atau kurang).").format(r.idx))
             if not cstr(r.reason).strip():
                 frappe.throw(_("Baris {0}: alasan wajib diisi untuk komponen Manual.").format(r.idx))
+
+    def validate_bpjs(self, lama):
+        def rincian(doc):
+            return sorted(
+                (
+                    cstr(r.program),
+                    cstr(r.risk_class),
+                    int(round(flt(r.base_amount))),
+                    int(round(flt(r.capped_base))),
+                    round(flt(r.employee_rate), 4),
+                    round(flt(r.company_rate), 4),
+                    int(round(flt(r.employee_amount))),
+                    int(round(flt(r.company_amount))),
+                )
+                for r in (doc.get("bpjs_items") or [])
+            )
+
+        if rincian(self) != rincian(lama):
+            frappe.throw(_("Rincian BPJS terisi otomatis dan tidak dapat diubah dengan tangan. Gunakan Hitung Ulang Slip."))
 
     def hitung_total(self):
         pendapatan = sum(flt(r.amount) for r in self.components if r.component_type == "Pendapatan")
