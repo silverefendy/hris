@@ -1,6 +1,6 @@
-# Keputusan 10 November 2026: PPh 21 pada HRIS Payroll Slip (K-134, rancangan)
+# Keputusan 10 November 2026: PPh 21 pada HRIS Payroll Slip (K-134, disetujui)
 
-Status: **rancangan; belum disetujui akhir dan belum ada kode.** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
+Status: **disetujui 10 Nov 2026 (tiga keputusan awal dan empat keputusan rancangan teknis langkah 1); kode langkah 1 sedang dibuat dan diuji.** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
 
 **Peringatan:** dokumen ini tidak memuat tarif, kategori, atau aturan pajak resmi. Semua angka dan aturan wajib diverifikasi HRD atau konsultan pajak dari peraturan resmi (DJP atau PMK tentang PPh 21 dengan tarif efektif rata-rata, TER). Bagian yang berasal dari pemahaman Claude dan belum terverifikasi ditandai "verifikasi".
 
@@ -84,3 +84,17 @@ Contoh dengan angka fiktif (bukan tarif resmi): bruto bulan itu Rp 5.700.000, ta
 3. Penanda kena pajak pada komponen.
 4. Perhitungan pada slip dan skrip uji.
 5. Uji browser per peran, lalu sinkron dokumen.
+
+## Rancangan teknis langkah 1 (disetujui 10 Nov 2026)
+
+| Hal | Keputusan |
+|---|---|
+| DocType | `HRIS PPh21 Settings` (Single), `HRIS PPh21 TER Rate`, tabel anak `HRIS PPh21 PTKP Map` dan `HRIS PPh21 Exempt Item` |
+| Cakupan pengaturan | Satu untuk semua company (tarif TER aturan nasional); tidak ada field `company` |
+| Pengisi | HRIS HR Admin dan System Manager menulis; Payroll Manager, Payroll Admin, dan Direksi hanya membaca; hapus baris tarif hanya System Manager (HR Admin menonaktifkan lewat centang Aktif) |
+| Tarif | Memakai Berlaku Sejak; set dengan tanggal berlaku terbaru (<= tanggal pajak) menggantikan seluruh set lama untuk kategori itu |
+| Rentang | Dari dan Sampai inklusif; atas terbuka lewat centang Tanpa Batas Atas; tumpang tindih ditolak per kategori dan Berlaku Sejak |
+| Pembulatan | Ke bawah ke rupiah (bawaan), bisa diubah di pengaturan |
+| Aktif | Bawaan mati sampai HRD selesai mengisi dan memverifikasi tarif |
+| Kode | `services/pph21_rate.py` (`find_rate`, `pesan`); tidak ada fungsi `@frappe.whitelist()` |
+| Uji | `tests/uji_pph21_rate.py` dengan tarif fiktif; tarif resmi hanya diisi HRD di produksi setelah diverifikasi |
