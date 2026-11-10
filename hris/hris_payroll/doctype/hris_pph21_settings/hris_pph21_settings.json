@@ -1,0 +1,129 @@
+{
+ "actions": [],
+ "creation": "2026-11-10 15:40:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "section_ptkp",
+  "ptkp_map",
+  "section_npwp",
+  "no_npwp_multiplier",
+  "column_break_1",
+  "rounding",
+  "section_exempt",
+  "exempt_components",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "description": "Bila mati, slip tidak menghitung PPh 21. Nyalakan setelah pemetaan PTKP dan tabel tarif diisi dan diverifikasi.",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Aktif"
+  },
+  {
+   "fieldname": "section_ptkp",
+   "fieldtype": "Section Break",
+   "label": "Pemetaan PTKP ke Kategori TER"
+  },
+  {
+   "fieldname": "ptkp_map",
+   "fieldtype": "Table",
+   "label": "Pemetaan",
+   "options": "HRIS PPh21 PTKP Map"
+  },
+  {
+   "fieldname": "section_npwp",
+   "fieldtype": "Section Break",
+   "label": "NPWP dan Pembulatan"
+  },
+  {
+   "default": "1",
+   "description": "1 = tidak ada pengaruh. Isi sesuai peraturan setelah diverifikasi.",
+   "fieldname": "no_npwp_multiplier",
+   "fieldtype": "Float",
+   "label": "Pengali Tarif Tanpa NPWP",
+   "precision": "4",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Ke Bawah",
+   "description": "Ke rupiah. Bawaan: ke bawah.",
+   "fieldname": "rounding",
+   "fieldtype": "Select",
+   "label": "Pembulatan Pajak",
+   "options": "Ke Bawah\nTerdekat"
+  },
+  {
+   "fieldname": "section_exempt",
+   "fieldtype": "Section Break",
+   "label": "Komponen Tidak Kena Pajak"
+  },
+  {
+   "fieldname": "exempt_components",
+   "fieldtype": "Table",
+   "label": "Daftar Komponen",
+   "options": "HRIS PPh21 Exempt Item"
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail HRIS"
+  }
+ ],
+ "issingle": 1,
+ "modified": "2026-11-10 15:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Payroll",
+ "name": "HRIS PPh21 Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Admin"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Direksi"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

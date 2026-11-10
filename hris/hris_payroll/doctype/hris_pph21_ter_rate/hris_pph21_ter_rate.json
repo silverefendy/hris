@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "autoname": "format:PTR-{#####}",
+ "creation": "2026-11-10 15:40:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "ter_category",
+  "effective_from",
+  "enabled",
+  "column_break_1",
+  "bruto_from",
+  "open_ended",
+  "bruto_to",
+  "rate_percent",
+  "audit_trail_tab",
+  "audit_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "ter_category",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Kategori TER",
+   "reqd": 1
+  },
+  {
+   "fieldname": "effective_from",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Berlaku Sejak",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Aktif"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bruto_from",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Bruto Dari",
+   "reqd": 1
+  },
+  {
+   "fieldname": "open_ended",
+   "fieldtype": "Check",
+   "label": "Tanpa Batas Atas"
+  },
+  {
+   "depends_on": "eval:!doc.open_ended",
+   "fieldname": "bruto_to",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Bruto Sampai",
+   "mandatory_depends_on": "eval:!doc.open_ended"
+  },
+  {
+   "fieldname": "rate_percent",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Tarif (%)",
+   "precision": "4",
+   "reqd": 1
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail HRIS"
+  }
+ ],
+ "modified": "2026-11-10 15:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Payroll",
+ "name": "HRIS PPh21 TER Rate",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "export": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HRIS HR Admin",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Payroll Admin"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "HRIS Direksi"
+  }
+ ],
+ "search_fields": "ter_category,effective_from",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
