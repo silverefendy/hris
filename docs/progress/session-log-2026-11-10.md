@@ -58,3 +58,10 @@ Fokus: BPJS pada `HRIS Payroll Slip` (K-133), implementasi angka tetap, uji brow
 | Pembersihan | `bersihkan` dijalankan; setelah Hitung Ulang Slip, baris PPh 21 hilang dan angka kembali seperti sebelum uji |
 | Belum terbukti | Jadwal Harian atau Mingguan dengan banyak slip pada data nyata (deteksi slip terakhir baru diuji pada satu Periode Bulanan); uji izin per peran untuk field PTKP dan Ikut PPh 21 |
 | Verifikasi HRD atau pajak | Rumus TER (bruto x tarif; pemahaman Claude), tarif resmi, pemetaan PTKP, pengaruh NPWP, aturan harian atau mingguan |
+
+## Malam (uji slip massal dan jadwal PPh 21)
+
+- `uji_slip_massal.py` OK 19 (`d645b00`); `uji_pph21_jadwal.py` OK 9 (`e5c22e0`); `uji_pph21_mingguan.py` OK 16 (`705fc4e`).
+- Temuan: data Working Hour ber-Hadir hanya di tiga minggu (28 Sep, 12 Okt, 26 Okt); jadwal Mingguan dengan offset 10 dipakai agar slip terakhir bulan bayar Oktober punya data.
+- Risiko: slip terakhir bulan bayar yang dilewati (Working Hour belum dihitung) berarti PPh 21 bulan itu tidak terpotong.
+- Tertunda: permintaan ke HRD (tarif TER resmi, PTKP, BPJS, kelas risiko JKK, aturan Harian), uji izin PPh 21 per peran, tahap 2b, migrasi produksi K-102.

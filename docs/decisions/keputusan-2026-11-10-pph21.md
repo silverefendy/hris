@@ -1,6 +1,6 @@
 # Keputusan 10 November 2026: PPh 21 pada HRIS Payroll Slip (K-134, disetujui)
 
-Status: **disetujui 10 Nov 2026; langkah 1 sampai 4 selesai, lulus uji skrip dan uji browser di site uji (commit 84b093c dan 9ad4fcf). Verifikasi tarif, NPWP, dan aturan harian atau mingguan oleh HRD atau konsultan pajak masih tertunda.** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
+Status: **disetujui 10 Nov 2026; langkah 1 sampai 4 selesai, lulus uji skrip dan uji browser di site uji (commit 84b093c dan 9ad4fcf). Verifikasi tarif, NPWP, dan aturan harian atau mingguan oleh HRD atau konsultan pajak masih tertunda. Uji jadwal Bulanan dan Mingguan selesai (10 Nov malam, bagian 12).** Jawaban Efendy 10 Nov 2026 (13:11 dan 13:25 WIB) sudah dimasukkan. Nomor K-134 dipakai karena K-133 sudah BPJS; ubah bila perlu.
 
 **Peringatan:** dokumen ini tidak memuat tarif, kategori, atau aturan pajak resmi. Semua angka dan aturan wajib diverifikasi HRD atau konsultan pajak dari peraturan resmi (DJP atau PMK tentang PPh 21 dengan tarif efektif rata-rata, TER). Bagian yang berasal dari pemahaman Claude dan belum terverifikasi ditandai "verifikasi".
 
@@ -142,3 +142,23 @@ Perilaku yang diterapkan:
 - Uji izin per peran untuk field PTKP dan Ikut PPh 21 (seperti K-133).
 - Verifikasi HRD atau konsultan pajak: rumus TER (bruto x tarif, dasar bruto penuh; ini pemahaman Claude), tarif resmi, pemetaan PTKP, pengaruh NPWP, aturan harian atau mingguan.
 - Tahap 2b (rekonsiliasi, THR, pengurang BPJS per program) dan migrasi produksi K-102.
+
+## 12. Uji jadwal dan multi-slip (10 Nov 2026, malam)
+
+Semua uji berjalan di `hris-uji.local` dengan tarif fiktif; data di-rollback.
+
+| Uji | Hasil | Commit |
+|---|---|---|
+| `uji_slip_massal.py` (cakupan Semua, Department, Grup, Karyawan, mode background, idempotensi, Periode Ditinjau menolak) | OK 19, GAGAL 0 | `d645b00` |
+| `uji_pph21_jadwal.py` bagian J (enam jenis jadwal, tiap bulan 2026 tepat satu slip pertama dan satu terakhir) | OK 9, GAGAL 0 | `e5c22e0` |
+| `uji_pph21_mingguan.py` (jadwal Mingguan Senin offset 10; slip terakhir dibuat dulu, lalu slip lain, lalu hitung ulang) | OK 16, GAGAL 0 | `705fc4e` |
+
+Temuan:
+
+- Bagian P pada `uji_pph21_jadwal.py` dilewati (tidak ada karyawan Hadir di empat minggu berturut-turut: data Working Hour ber-Hadir hanya di minggu 28 Sep, 12 Okt, dan 26 Okt). Cakupannya dipenuhi oleh `uji_pph21_mingguan.py`.
+- Pajak slip terakhir = tarif x bruto slip yang ada: 1 slip (345.768) dengan peringatan "1 dari 4", lalu 2 slip (545.768) dengan catatan "2 dari 4". Hitung ulang idempoten; slip bukan terakhir tidak memuat baris PPh 21 dan memuat peringatan.
+- Minggu tanpa data Working Hour dilewati dengan alasan "Tidak ada data Working Hour pada periode ini (belum dihitung)".
+
+Risiko operasional: bila slip terakhir bulan bayar dilewati karena Working Hour belum dihitung, tidak ada slip yang memotong PPh 21 untuk karyawan itu pada bulan tersebut. Urutan kerja HRD: hitung Working Hour, lalu buat slip. Perlu masuk panduan HRD.
+
+Belum teruji: jadwal Harian multi-slip pada data nyata; izin per peran untuk field PTKP dan Ikut PPh 21; rumus TER dan tarif resmi (menunggu HRD atau konsultan pajak).
