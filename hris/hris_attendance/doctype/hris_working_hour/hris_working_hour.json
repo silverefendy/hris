@@ -163,7 +163,7 @@
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
-   "options": "Department",
+   "options": "HRIS Department",
    "read_only": 1
   },
   {
