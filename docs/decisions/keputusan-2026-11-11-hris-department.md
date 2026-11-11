@@ -79,3 +79,16 @@ Keputusan tambahan (Efendy, 11 Nov): nama dan Company tidak boleh diubah setelah
 - Kode yang merujuk Department: `employee_group.py`, dialog `hris_payroll_period.js`, filter laporan Working Hour Ringkasan (js dan py), dialog `hris_working_hour_list.js`.
 - Risiko: folder kode dipakai bersama site erp. Ganti JSON tidak berdampak di erp sampai migrate; ganti kode py/js langsung berdampak. Maka tahap 4a (JSON) dikerjakan lebih dulu; 4b (kode) menunggu keputusan: ditunda sampai migrasi K-102 atau dibuat toleran.
 - HRMS: hanya `hooks.py` (required_apps) dan `setup/install.py` yang menyebut HRMS; tidak ada Link JSON ke DocType HRMS.
+
+## 11. Izin baca dan arah Department Rule (11 Nov 2026)
+
+| Hal | Keputusan / hasil | Commit |
+|---|---|---|
+| Izin baca HRIS Department | Ditambah untuk HRIS Attendance Operator dan HRIS Attendance Supervisor (read dan report). Terverifikasi di database hris-uji.local (9 peran, tanpa Custom DocPerm). Dropdown dan nilai Department tampil di Employee Group dan Working Hour. Uji browser dengan akun yang hanya berperan Operator/Supervisor belum dilakukan | ad21bb5 |
+| Pewarisan Department Rule | Per parameter: kosong ikut induk, terisi menimpa |  |
+| Parameter pertama | `overtime_multiplier` (pengganti konstanta `PENGALI_LEMBUR` di `payroll_slip.py`). Nilai bawaan di Department akar |  |
+| PPh 21 | Tetap global (HRIS PPh21 Settings), tidak masuk Department Rule |  |
+| Parameter Shift | Tidak digandakan di Department Rule sampai jawaban HRD E1/E2 |  |
+| Pengganti konstanta di kode | Menyentuh kode py, jadi masuk tahap 4b / migrasi K-102 |  |
+
+Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, batas lembur), konstanta kode (`PENGALI_LEMBUR`), HRIS PPh21 Settings (pajak). HRIS Attendance Settings hanya berisi pengaturan agent.
