@@ -61,3 +61,21 @@ DocType pohon di modul Employee Data: nama `{nama} - {singkatan company}`, akar 
 - Bentuk pewarisan: aturan cabang menggantikan seluruh aturan induk, atau hanya parameter yang diisi cabang (tahap 5).
 - Hak baca peran Payroll pada HRIS Department: dibuat membaca saja; perlu diuji pada pemilih Department.
 - Cara tab Audit Trail HRIS ditambahkan.
+
+## 9. Hasil tahap 1 sampai 3 (11 Nov 2026, hris-uji.local)
+
+| Tahap | Hasil | Commit |
+|---|---|---|
+| 1 DocType HRIS Department | Uji OK 15 GAGAL 0. Sempat rusak karena karakter Tab hilang saat paste ke terminal; diperbaiki dengan spasi | 68e4955, 2187a5b, 8ce82c6 |
+| 2 Salin Department dan akar | COBA lalu salin OK: 164 Department ditambah akar "All Departments", 13 bawaan dilewati, nama sama semua | ebb9339 |
+| 3 Sinkron ke Department ERPNext, adopsi, tab Audit Trail | Adopsi 165 dari 165; uji OK 13 GAGAL 0 | 5c57a8c |
+
+Keputusan tambahan (Efendy, 11 Nov): nama dan Company tidak boleh diubah setelah tersinkron; nonaktif di HRIS menonaktifkan Department ERPNext; 164 Department yang sudah ada diadopsi, bukan dibuat ulang. Belum teruji: tab Audit Trail di browser.
+
+## 10. Inventaris tahap 4 (ganti Link Department)
+
+- Link JSON ke Department: 5 tempat; 4 diganti (Employee, Payroll Slip, Working Hour, Employee Group), `erpnext_department` dibiarkan.
+- Data site uji: HRIS Employee 1075, Payroll Slip 1, Working Hour 5559 punya Department dan semuanya ada di HRIS Department.
+- Kode yang merujuk Department: `employee_group.py`, dialog `hris_payroll_period.js`, filter laporan Working Hour Ringkasan (js dan py), dialog `hris_working_hour_list.js`.
+- Risiko: folder kode dipakai bersama site erp. Ganti JSON tidak berdampak di erp sampai migrate; ganti kode py/js langsung berdampak. Maka tahap 4a (JSON) dikerjakan lebih dulu; 4b (kode) menunggu keputusan: ditunda sampai migrasi K-102 atau dibuat toleran.
+- HRMS: hanya `hooks.py` (required_apps) dan `setup/install.py` yang menyebut HRMS; tidak ada Link JSON ke DocType HRMS.
