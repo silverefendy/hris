@@ -1,9 +1,9 @@
 {
  "doctype": "DocType",
  "name": "HRIS Department Rule",
- "module": "HRIS Payroll",
+ "module": "HRIS Employee Data",
  "creation": "2026-11-11 16:30:00.000000",
- "modified": "2026-11-11 16:30:00.000000",
+ "modified": "2026-11-11 20:55:00.000000",
  "engine": "InnoDB",
  "track_changes": 1,
  "sort_field": "creation",
@@ -44,6 +44,16 @@
    "label": "Pengali Lembur",
    "description": "Kosong atau 0 = ikut Department induk. Pengganti konstanta PENGALI_LEMBUR.",
    "in_list_view": 1
+  },
+  {
+   "fieldname": "audit_trail_tab",
+   "fieldtype": "Tab Break",
+   "label": "Audit Trail"
+  },
+  {
+   "fieldname": "audit_trail_html",
+   "fieldtype": "HTML",
+   "label": "Audit Trail"
   }
  ],
  "permissions": [
