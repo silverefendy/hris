@@ -85,7 +85,12 @@ def uji():
 
     cek("R1 nama ganda ditolak", gagal(lambda: baru("ZZ Uji Induk", company, is_group=1)) is not None)
     cek("R2 induk bukan Is Group ditolak", gagal(lambda: baru("ZZ Uji Salah", company, parent=daun.name)) is not None)
-    cek("R3 company wajib untuk bukan akar", gagal(lambda: baru("ZZ Uji Tanpa Company", None, parent=induk.name)) is not None)
+    def validasi_tanpa_company():
+        d = frappe.get_doc({"doctype": DT, "department_name": "ZZ Uji Tanpa Company", "parent_department": induk.name})
+        d.company = None
+        d.validate()
+
+    cek("R3 company wajib untuk bukan akar", gagal(validasi_tanpa_company) is not None)
 
     for nama, (email, role, _) in PERAN.items():
         if frappe.db.exists("Role", role):
