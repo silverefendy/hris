@@ -181,6 +181,18 @@
    "permlevel": 0,
    "read": 1,
    "report": 1
+  },
+  {
+   "role": "HRIS Attendance Operator",
+   "permlevel": 0,
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "HRIS Attendance Supervisor",
+   "permlevel": 0,
+   "read": 1,
+   "report": 1
   }
  ]
 }
