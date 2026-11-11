@@ -104,3 +104,14 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 | Tanggal acuan slip | `period_end`. Aturan baru di tengah periode berlaku untuk seluruh slip periode itu | |
 | Pengali 1.0 | Ditanyakan ke HRD bersama E1/E2; pertanyaan baru E8: perlu pemecahan per hari bila aturan berubah di tengah periode? | |
 | Belum diuji | Nomor DR- lanjut lintas bulan (cek Desember); nilai 0 di database sebagai "ikut induk"; penyambungan ke `payroll_slip.py` (tahap 4b) | |
+
+## 13. Patch aturan akar dan keputusan tahap 4b (11 Nov 2026)
+
+| Hal | Keputusan / hasil | Commit |
+|---|---|---|
+| Patch aturan akar | `hris/patches/v1_0/buat_aturan_akar_department.py`, terdaftar di `[post_model_sync]`. Membuat satu aturan di akar: pengali lembur 1.0, berlaku 2000-01-01. Idempoten. Di hris-uji.local: DR-2611-0006, `resolve` dari daun mengembalikan 1.0 | f2445f0 |
+| Karyawan tanpa Department (4b) | Memakai aturan akar | |
+| `period_end` kosong (4b) | Slip dilewati dengan pesan jelas | |
+| Titik sambung 4b | Satu pemanggil produksi `hitung_komponen` di `payroll_slip.py` baris 220; nilai pengali dihitung sekali dan dipakai juga di baris 261 (salinan ke slip) | |
+| Urutan malam K-102 | Migrate (patch akar ikut jalan), lalu kode 4b aktif | |
+| Belum diuji | Migrate kedua tanpa duplikasi; nomor DR- lintas bulan; penyambungan 4b | |
