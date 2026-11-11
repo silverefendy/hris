@@ -26,10 +26,23 @@ HRIS Department menjadi sumber utama data Department. Department ERPNext hanya s
 | 4 | Ganti target Link di tempat-tempat pada bagian 2 (latihan restore, seperti K-102) |
 | 5 | Department Rule (K-135) dan field Dipinjam ke Department |
 
-## 4. Belum diputuskan
+## 4. Jawaban Efendy (11 Nov 2026, 09:35 WIB)
 
-- Pewarisan aturan lewat pohon Department (induk ke cabang).
-- Department bawaan ERPNext ikut disalin atau tidak.
-- Akhiran " - CML" dipertahankan atau tidak.
-- Siapa yang mengelola Department (usul: HRIS HR Admin).
-- Apakah kru tukang memang Department atau sebenarnya Employee Group.
+| # | Hal | Jawaban |
+|---|---|---|
+| 1 | Pewarisan aturan lewat pohon | Aturan Department berlaku untuk semua cabang; cabang yang punya setelan sendiri memakainya; bila tidak ada, ikut induk |
+| 2 | Department bawaan ERPNext | Tidak disalin dulu (hindari salah hapus). Harus diperiksa dahulu bahwa tidak ada karyawan memakainya |
+| 3 | Akhiran " - CML" | Dipertahankan (ikut saran Claude) |
+| 4 | Siapa mengelola Department | HRD saja (HRD dan manajernya mengurus employee); peran Payroll tidak menulis. Hak baca untuk peran Payroll perlu dikonfirmasi dan diuji |
+| 5 | Kru tukang | Department mirip Employee Group untuk kru; keduanya tetap ada |
+
+## 5. Data awal (erp, 11 Nov 2026)
+
+178 Department (160 daun, 18 induk, 1 company); 95 dipakai oleh 1078 karyawan; 3 karyawan tanpa Department. Custom field HRIS pada Department ERPNext: `hris_device_dept_id` (kegunaan menunggu pembacaan kode).
+
+## 6. Belum diputuskan
+
+- Bentuk pewarisan: aturan cabang menggantikan seluruh aturan induk, atau hanya parameter yang diisi cabang (bagian rancangan Department Rule, tahap 5).
+- Hak baca peran Payroll pada HRIS Department.
+- Penanganan 3 karyawan tanpa Department.
+- Nasib field `hris_device_dept_id`.
