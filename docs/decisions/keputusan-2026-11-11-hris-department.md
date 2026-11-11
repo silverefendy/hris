@@ -92,3 +92,15 @@ Keputusan tambahan (Efendy, 11 Nov): nama dan Company tidak boleh diubah setelah
 | Pengganti konstanta di kode | Menyentuh kode py, jadi masuk tahap 4b / migrasi K-102 |  |
 
 Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, batas lembur), konstanta kode (`PENGALI_LEMBUR`), HRIS PPh21 Settings (pajak). HRIS Attendance Settings hanya berisi pengaturan agent.
+
+## 12. Department Rule tahap 5a (11 Nov 2026)
+
+| Hal | Keputusan / hasil | Commit |
+|---|---|---|
+| DocType HRIS Department Rule | Modul HRIS Payroll. Kolom: department, effective_from, is_active, overtime_multiplier. Nama `DR-YYMM-####` dengan nomor lanjut (autoname di kode, penghitung kunci `DR-`). Aturan unik: tidak ada dua aturan aktif dengan Department dan tanggal berlaku sama | 49de98d |
+| Layanan `resolve` | `services/department_rule.py`: pewarisan per parameter naik ke akar; tanpa nilai sampai akar = error (P10). Uji OK 13 GAGAL 0 | 49de98d |
+| Nilai konstanta | `PENGALI_LEMBUR = 1.0` (K-98), hanya dipakai di `payroll_slip.py` (baris 20, 48, 261). Slip menyimpan salinan `overtime_multiplier` (read-only) | |
+| Aturan akar | Satu aturan `overtime_multiplier = 1.0` di akar, dibuat lewat patch idempoten (site uji dan erp K-102) | |
+| Tanggal acuan slip | `period_end`. Aturan baru di tengah periode berlaku untuk seluruh slip periode itu | |
+| Pengali 1.0 | Ditanyakan ke HRD bersama E1/E2; pertanyaan baru E8: perlu pemecahan per hari bila aturan berubah di tengah periode? | |
+| Belum diuji | Nomor DR- lanjut lintas bulan (cek Desember); nilai 0 di database sebagai "ikut induk"; penyambungan ke `payroll_slip.py` (tahap 4b) | |
