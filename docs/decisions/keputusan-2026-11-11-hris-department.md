@@ -40,9 +40,24 @@ HRIS Department menjadi sumber utama data Department. Department ERPNext hanya s
 
 178 Department (160 daun, 18 induk, 1 company); 95 dipakai oleh 1078 karyawan; 3 karyawan tanpa Department. Custom field HRIS pada Department ERPNext: `hris_device_dept_id` (kegunaan menunggu pembacaan kode).
 
-## 6. Belum diputuskan
+## 6. Hasil baca ke-4 (11 Nov 2026, 09:57 WIB)
 
-- Bentuk pewarisan: aturan cabang menggantikan seluruh aturan induk, atau hanya parameter yang diisi cabang (bagian rancangan Department Rule, tahap 5).
-- Hak baca peran Payroll pada HRIS Department.
-- Penanganan 3 karyawan tanpa Department.
-- Nasib field `hris_device_dept_id`.
+| Temuan | Keputusan |
+|---|---|
+| `hris_device_dept_id` hanya didefinisikan di `setup/install.py`, tidak dipakai kode | Tidak dibawa ke HRIS Department; field di Department ERPNext dibiarkan |
+| 13 Department bawaan ERPNext: 0 karyawan, 0 cabang | Tidak disalin (sesuai keputusan 11 Nov) |
+| 59 Department daun tanpa karyawan (bukan bawaan) | Tetap disalin; dapat dinonaktifkan nanti |
+| 482 karyawan menunjuk Department induk | HRIS Department tidak membatasi karyawan hanya ke daun |
+| 3 karyawan Active tanpa Department (HR-EMP-00730, HR-EMP-00856, HR-EMP-00879) | HRD mengisi Department (permintaan E7); menurut P10 gaji mereka ditolak sampai terisi |
+
+Salinan data tahap 2: 164 Department (178 dikurangi akar dan 13 bawaan), nama dipertahankan.
+
+## 7. Tahap 1 (DocType HRIS Department)
+
+DocType pohon di modul Employee Data: nama `{nama} - {singkatan company}`, akar otomatis sebagai induk, induk wajib Is Group, company wajib selain akar. Izin: menulis HRIS HR Admin dan HRIS Manager; hapus System Manager; baca peran Payroll, Direksi, dan Employee Admin. Belum ada: sinkron ke Department ERPNext (tahap 3) dan tab Audit Trail HRIS (pola menunggu dibaca). Uji: `uji_hris_department.py`.
+
+## 8. Belum diputuskan
+
+- Bentuk pewarisan: aturan cabang menggantikan seluruh aturan induk, atau hanya parameter yang diisi cabang (tahap 5).
+- Hak baca peran Payroll pada HRIS Department: dibuat membaca saja; perlu diuji pada pemilih Department.
+- Cara tab Audit Trail HRIS ditambahkan.

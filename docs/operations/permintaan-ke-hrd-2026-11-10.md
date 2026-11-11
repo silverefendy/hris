@@ -57,6 +57,7 @@ Cara pakai: HRD mengisi kolom "Jawaban HRD", lalu mengembalikan dokumen ini. Kol
 | E4 | (dibatalkan 11 Nov 2026: peminjaman menempel ke HRIS Department, tidak lagi lewat Employee Group) | - | - | - |
 | E5 | Bila ada karyawan dengan aturan khusus (berbeda dari Department-nya), apa saja yang bisa berbeda dan siapa yang berwenang menetapkan | Penggantian per karyawan | Department Rule | |
 | E6 | Apakah aturan berubah dengan tanggal berlaku, dan bagaimana periode yang melewati tanggal perubahan dihitung | Effective From | Department Rule | |
+| E7 | Tiga karyawan aktif belum punya Department (HR-EMP-00730 Zulhamri, HR-EMP-00856 Riski Saputra, HR-EMP-00879 Calvin): masuk Department mana | Gaji karyawan tanpa Department ditolak (P10) | Department Rule, Payroll Slip | |
 
 ## Catatan
 
