@@ -115,3 +115,12 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 | Titik sambung 4b | Satu pemanggil produksi `hitung_komponen` di `payroll_slip.py` baris 220; nilai pengali dihitung sekali dan dipakai juga di baris 261 (salinan ke slip) | |
 | Urutan malam K-102 | Migrate (patch akar ikut jalan), lalu kode 4b aktif | |
 | Belum diuji | Migrate kedua tanpa duplikasi; nomor DR- lintas bulan; penyambungan 4b | |
+
+## 14. Department Rule pindah modul dan tab Audit Trail (11 Nov 2026)
+
+| Hal | Keputusan / hasil |
+|---|---|
+| Modul | HRIS Department Rule dipindah dari HRIS Payroll ke HRIS Employee Data (folder `hris_employee_data/doctype/hris_department_rule`). Layanan `department_rule.py` dan uji tetap di `hris_payroll` |
+| Audit Trail | Field `audit_trail_tab` dan `audit_trail_html` ditambah; JS form memanggil `hris.audit.render(frm)` |
+| Catatan teknis | Perubahan DocType di JSON perlu menaikkan `modified`, kalau tidak sinkron migrate bisa melewatkannya |
+| Cek browser form (sebelum pindah) | Daftar dan form OK; pesan "Isi minimal satu parameter" dan "duplikat aktif" tampil benar |
