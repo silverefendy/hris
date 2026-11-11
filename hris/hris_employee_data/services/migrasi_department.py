@@ -43,6 +43,7 @@ def _salin():
 
     # company="" mencegah Frappe mengisi default Company user pada akar
     root = frappe.get_doc({"doctype": DT, "department_name": ROOT, "company": "", "is_group": 1, "is_active": 1})
+    root.flags.skip_sync = True
     root.insert(ignore_permissions=True)
     if root.name == ROOT:
         frappe.db.set_value(DT, ROOT, "company", None, update_modified=False)
@@ -67,6 +68,7 @@ def _salin():
                 "is_active": 0 if b.disabled else 1,
             }
         )
+        d.flags.skip_sync = True
         d.insert(ignore_permissions=True)
         laporan["salin"] += 1
         if d.name != b.name:
