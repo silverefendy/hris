@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 10 November 2026
+Diperbarui: 12 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
@@ -205,10 +205,23 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Belum | verifikasi HRD atau pajak (rumus TER, tarif resmi, pemetaan PTKP, NPWP, aturan harian atau mingguan); tahap 2b (rekonsiliasi, THR, pengurang BPJS per program); migrasi produksi K-102 |
 | Dokumen | [decisions/keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md); catatan sesi [session-log-2026-11-10.md](session-log-2026-11-10.md) |
 
+## Pembaruan 11 sampai 12 Nov 2026 (HRIS Department K-136, Department Rule, pengali lembur)
+
+| Item | Status |
+|---|---|
+| `HRIS Department` (K-136) | Sumber utama pohon Department; 164 Department disalin dari ERPNext plus akar "All Departments"; sinkron satu arah ke Department ERPNext; Link tahap 4a diganti. Uji OK |
+| `HRIS Department Rule` | Pewarisan per parameter naik ke akar; parameter pertama `overtime_multiplier`; modul HRIS Employee Data; tab Audit Trail lulus di browser. Patch aturan akar idempoten (`7020e37`) |
+| Tahap 4b: pengali lembur di slip | `_pengali_lembur` diperbaiki (`66b4825`); uji slip utuh OK 16 (`297dc6a`): pengali 1.0, 1.0, 1.75, 2.0 dan Lembur sesuai rumus |
+| Risiko urutan di erp (terbukti di gladi) | `migrate` pada database tanpa pohon Department membuat patch aturan akar dilewati dan Patch Log tetap mencatatnya. Penanganan: `migrasi_department.py` membuat aturan akar dalam transaksi yang sama (`dd3c1ea`) |
+| Runbook K-102 | Perintah `department <site> coba|salin` dan langkah 2b ditambahkan; gladi fase 1 dan 2 lulus di hris-uji, Audit Trail 3 HRIS Employee bersih. **Langkah 2b belum pernah jalan di erp** |
+| Larangan "jangan migrasi K-102 sebelum 4b benar" | Dicabut (docs `6f4c126`) |
+| Belum | Ukur waktu slip massal 1078 karyawan; uji browser akun Operator/Supervisor; nomor DR- lintas bulan (Desember); jawaban HRD E1, E2, E7, E8 dan konfirmasi pengali 1.0 |
+| Dokumen | [decisions/keputusan-2026-11-11-hris-department.md](../decisions/keputusan-2026-11-11-hris-department.md) bagian 17 |
+
 ## Langkah berikutnya
-1. Migrasi produksi K-102 lewat `produksi_k102.sh` saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
+1. Migrasi produksi K-102 lewat `produksi_k102.sh` (kini termasuk langkah 2b: `department coba` lalu `salin`) saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
-3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); pembuatan slip massal, per kelompok, dan per departemen sudah teruji (10 Nov, `d645b00`); berikutnya `Department Rule` (P8) dan tahap 2b PPh 21 (BPJS K-133 dan PPh 21 K-134 sudah ada di slip, lihat Pembaruan 10 Nov): satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
+3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); pembuatan slip massal, per kelompok, dan per departemen sudah teruji (10 Nov, `d645b00`); berikutnya tahap 2b PPh 21 (HRIS Department, Department Rule, dan pengali lembur dari Department Rule selesai, lihat Pembaruan 11 sampai 12 Nov) (BPJS K-133 dan PPh 21 K-134 sudah ada di slip, lihat Pembaruan 10 Nov): satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
 4. Fitur Dokumen Karyawan: rancangan, dan uji apakah lampiran bawaan Employee dapat dibuka role yang hanya boleh membaca dokumen (belum terbukti).
 5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.

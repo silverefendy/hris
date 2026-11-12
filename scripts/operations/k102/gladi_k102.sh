@@ -36,6 +36,10 @@ fase1)
   echo "HRIS Employee setelah restore: $N"
   [ "$N" = "0" ] || GAGAL "diharapkan 0 HRIS Employee setelah restore + migrate, dapat: $N"
 
+  judul "Langkah 2b: salin Department dan aturan akar (K-136)"
+  bash "$RB" department "$UJI" coba || GAGAL "langkah 2b (department coba)"
+  bash "$RB" department "$UJI" salin || GAGAL "langkah 2b (department salin)"
+
   judul "Langkah 3/5: kondisi awal $UJI"
   bash "$RB" awal "$UJI" || GAGAL "langkah 3 (awal)"
 

@@ -93,6 +93,10 @@ cmd_mulai() {
   judul "2/6 Skema (migrate)"
   bash "$RB" skema "$PROD" || henti "skema"
 
+  judul "2b/6 Salin Department dan aturan akar (K-136)"
+  bash "$RB" department "$PROD" coba || henti "department coba"
+  bash "$RB" department "$PROD" salin || henti "department salin"
+
   judul "3/6 Restart"
   echo "Restart $PROD sesuai prosedur Anda (skrip tidak tahu setup produksi)."
   read -r -p "Tekan Enter setelah situs di-restart dan hidup: " _

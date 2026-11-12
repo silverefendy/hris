@@ -27,6 +27,7 @@ Pemakaian: bash runbook_k102.sh <perintah> <site> [argumen]
   maintenance <site> on|off      mode maintenance
   cek         <site>             dry_run + latih (tidak meninggalkan data)
   jalankan    <site>             migrasi + verifikasi (MENULIS data, minta konfirmasi)
+  department  <site> coba|salin  salin Department ERPNext ke HRIS Department + aturan akar (K-136)
 TXT
 }
 
@@ -219,6 +220,29 @@ cmd_jalankan() {
   echo "MIGRASI LULUS. Log: $log"
 }
 
+cmd_department() {
+  perlu_site
+  case "$ARG3" in
+    coba|salin) ;;
+    *) GAGAL "gunakan: department <site> coba|salin" ;;
+  esac
+  peringatan_produksi
+  local log="$LOG_DIR/department_${ARG3}_${SITE}_$WAKTU.txt" izin=""
+  [ "$SITE" != "$SITE_UJI" ] && izin="ya"
+  if [ "$ARG3" = "salin" ] && [ "$SITE" != "$SITE_UJI" ]; then
+    konfirmasi "SALIN DEPARTMENT $SITE"
+  fi
+  (cd "$BENCH/sites" && SITE="$SITE" IZINKAN_SITE_LAIN="$izin" \
+    ../env/bin/python ../apps/hris/hris/hris_employee_data/services/migrasi_department.py "$ARG3") 2>&1 | tee "$log"
+  [ "${PIPESTATUS[0]}" -eq 0 ] || GAGAL "migrasi Department (lihat $log)"
+  grep -q "^HASIL: OK" "$log" || GAGAL "HASIL bukan OK (lihat $log)"
+  grep -q "Aturan akar aktif   : 1 " "$log" || GAGAL "aturan akar bukan tepat 1 (lihat $log)"
+  if [ "$ARG3" = "salin" ]; then
+    grep -q "DISIMPAN (commit)" "$log" || GAGAL "tidak ter-commit (lihat $log)"
+  fi
+  echo "DEPARTMENT $ARG3 LULUS di $SITE. Log: $log"
+}
+
 case "$PERINTAH" in
   awal) cmd_awal ;;
   cadangan) cmd_cadangan ;;
@@ -227,5 +251,6 @@ case "$PERINTAH" in
   maintenance) cmd_maintenance ;;
   cek) cmd_cek ;;
   jalankan) cmd_jalankan ;;
+  department) cmd_department ;;
   *) pakai; exit 1 ;;
 esac
