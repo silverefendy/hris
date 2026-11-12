@@ -79,6 +79,37 @@ def _pengali_lembur(department, period_end):
     return nilai, None
 
 
+def _pasang_pengali_harian(department, baris):
+    """K-137 (E8 opsi B): pengali lembur per tanggal kerja.
+
+    Hanya hari yang punya lembur dicari; hasil disimpan di baris["pengali"]. Mengembalikan
+    pesan galat (slip dilewati) atau None. Tanpa tabel aturan, tidak mengubah apa pun.
+    """
+    if not (frappe.db.table_exists(DEPT_RULE) and frappe.db.table_exists(DEPT_DOC)):
+        return None
+    dept = department or DEPT_AKAR
+    from hris.hris_payroll.services.department_rule import resolve
+
+    cache = {}
+    for b in baris:
+        if int(b.get("overtime_minutes") or 0) <= 0 or not b.get("work_date"):
+            continue
+        tgl = getdate(b["work_date"])
+        if tgl not in cache:
+            try:
+                hasil = resolve(dept, tgl, "overtime_multiplier")
+            except frappe.ValidationError as e:
+                return _("Pengali lembur tanggal {0}: {1}").format(tgl, cstr(e))
+            except Exception as e:  # noqa: BLE001 - dilaporkan sebagai pesan
+                return _("Pengali lembur tanggal {0} gagal dihitung ({1}): {2}").format(tgl, type(e).__name__, cstr(e))
+            nilai = flt(hasil.get("nilai")) if isinstance(hasil, dict) else 0
+            if nilai <= 0:
+                return _("Hasil pengali lembur tanggal {0} tidak valid: {1}").format(tgl, cstr(hasil))
+            cache[tgl] = nilai
+        b["pengali"] = cache[tgl]
+    return None
+
+
 def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     """Fungsi murni. baris = daftar dict hari kerja (status, scheduled_hours, late_deduction_hours,
     early_leave_deduction_hours, overtime_minutes, absence_deducted, absence_class).
@@ -126,8 +157,29 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
                 "{0} hari x gaji / {1} hari kerja".format(len(dipotong), len(hari_kerja)),
             )
         if menit_lembur > 0:
-            jam_lembur = Decimal(menit_lembur) / Decimal(60)
-            tambah("Lembur", "Pendapatan", jam_lembur * tarif * kali, "{0} jam x tarif {1}/jam x {2}".format(_jam(jam_lembur), tarif_teks, kali))
+            kelompok = {}
+            for b in hadir:
+                mnt = int(b.get("overtime_minutes") or 0)
+                if mnt <= 0:
+                    continue
+                p = _d(b.get("pengali")) if b.get("pengali") else kali
+                g = kelompok.setdefault(p, {"menit": 0, "tgl": []})
+                g["menit"] += mnt
+                if b.get("work_date"):
+                    g["tgl"].append(getdate(b["work_date"]))
+            jumlah_lembur = Decimal(0)
+            bagian = []
+            rincian = []
+            for p, g in sorted(kelompok.items(), key=lambda kv: kv[0]):
+                jam_g = Decimal(g["menit"]) / Decimal(60)
+                jumlah_lembur += jam_g * tarif * p
+                bagian.append("{0} jam x tarif {1}/jam x {2}".format(_jam(jam_g), tarif_teks, p))
+                if g["tgl"]:
+                    rincian.append("{0} jam x {1} ({2} s/d {3})".format(
+                        _jam(jam_g), p, min(g["tgl"]).strftime("%d-%m-%Y"), max(g["tgl"]).strftime("%d-%m-%Y")))
+            tambah("Lembur", "Pendapatan", jumlah_lembur, " + ".join(bagian))
+            if len(kelompok) > 1 and rincian:
+                catatan.append(_("Pengali lembur berubah di periode ini: {0}.").format("; ".join(rincian)))
         if tidak_lengkap:
             catatan.append(_("{0} hari Tidak Lengkap tidak dipotong (aturan gaji Bulanan untuk hari ini belum diputuskan).").format(len(tidak_lengkap)))
         if belum_klas:
@@ -135,6 +187,7 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     elif pay_type == "Harian":
         tambah("Upah Harian", "Pendapatan", gaji * len(hadir), "{0} hari Hadir x {1}".format(len(hadir), _rp(_rupiah(gaji))))
         telat = cepat = lembur = Decimal(0)
+        pengali_dipakai = set()
         tanpa_jam = 0
         for b in hadir:
             jam = _d(b.get("scheduled_hours"))
@@ -148,13 +201,24 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
             per_jam = gaji / jam
             telat += tl * per_jam
             cepat += ce * per_jam
-            lembur += lm * per_jam * kali
+            kali_b = _d(b.get("pengali")) if b.get("pengali") else kali
+            lembur += lm * per_jam * kali_b
+            if lm > 0:
+                pengali_dipakai.add(kali_b)
         if jam_telat > 0 and telat > 0:
             tambah("Potongan Telat", "Potongan", telat, "{0} jam x upah / jam terjadwal hari itu".format(_jam(jam_telat)))
         if jam_cepat > 0 and cepat > 0:
             tambah("Potongan Pulang Cepat", "Potongan", cepat, "{0} jam x upah / jam terjadwal hari itu".format(_jam(jam_cepat)))
         if menit_lembur > 0 and lembur > 0:
-            tambah("Lembur", "Pendapatan", lembur, "{0} jam x upah / jam terjadwal x {1}".format(_jam(Decimal(menit_lembur) / Decimal(60)), kali))
+            if len(pengali_dipakai) > 1:
+                kali_teks = " / ".join(str(x) for x in sorted(pengali_dipakai))
+            elif pengali_dipakai:
+                kali_teks = next(iter(pengali_dipakai))
+            else:
+                kali_teks = kali
+            tambah("Lembur", "Pendapatan", lembur, "{0} jam x upah / jam terjadwal x {1}".format(_jam(Decimal(menit_lembur) / Decimal(60)), kali_teks))
+            if len(pengali_dipakai) > 1:
+                catatan.append(_("Pengali lembur berubah di periode ini ({0}); dipakai per tanggal lembur.").format(kali_teks))
         if tidak_lengkap:
             catatan.append(_("{0} hari Tidak Lengkap tidak dibayar (aturan belum diputuskan).").format(len(tidak_lengkap)))
         if tanpa_jam:
@@ -246,7 +310,7 @@ def proses_karyawan(period, he_name):
         WH,
         filters={"employee": he.erpnext_employee, "work_date": ["between", [str(awal), str(akhir)]]},
         fields=["status", "scheduled_hours", "late_deduction_hours", "early_leave_deduction_hours",
-                "overtime_minutes", "absence_deducted", "absence_class"],
+                "overtime_minutes", "absence_deducted", "absence_class", "work_date"],
     )
     if not rows:
         return "dilewati", _("Tidak ada data Working Hour pada periode ini (belum dihitung).")
@@ -255,7 +319,11 @@ def proses_karyawan(period, he_name):
     if galat_pengali_lembur:
         return "dilewati", galat_pengali_lembur
 
-    hasil = hitung_komponen(gaji.pay_type, gaji.amount, [dict(r) for r in rows], pengali=pengali_lembur_slip)
+    baris_hitung = [dict(r) for r in rows]
+    galat_tanggal = _pasang_pengali_harian(he.department, baris_hitung)
+    if galat_tanggal:
+        return "dilewati", galat_tanggal
+    hasil = hitung_komponen(gaji.pay_type, gaji.amount, baris_hitung, pengali=pengali_lembur_slip)
     if hasil.get("error"):
         return "dilewati", hasil["error"]
 
