@@ -216,7 +216,8 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Runbook K-102 | Perintah `department <site> coba|salin` dan langkah 2b ditambahkan; gladi fase 1 dan 2 lulus di hris-uji, Audit Trail 3 HRIS Employee bersih. **Langkah 2b belum pernah jalan di erp** |
 | Larangan "jangan migrasi K-102 sebelum 4b benar" | Dicabut (docs `6f4c126`) |
 | Kinerja | Slip massal (p89, hris-uji): 150 slip 1,0 detik, perkiraan 1078 slip sekitar 7 detik (batas bawah, tanpa antrean dan commit worker) |
-| Belum | Uji akun Operator/Supervisor (izin baca HRIS Department); jawaban HRD E1, E2, E7, E8 |
+| K-137 | Pengali lembur dihitung per tanggal berlaku (Bulanan dan Harian) dan notifikasi slip Draft saat HRIS Department Rule berubah (bbbb27d, 8eb5c8e); uji akun Operator/Supervisor lulus (OK 17) |
+| Belum | Sambungan peminjaman karyawan (P9: Department per hari dari Working Hour); jawaban HRD E1, E2, E5 (aturan selain pengali lembur per Department) |
 | Dokumen | [decisions/keputusan-2026-11-11-hris-department.md](../decisions/keputusan-2026-11-11-hris-department.md) bagian 17 |
 
 ## Langkah berikutnya
