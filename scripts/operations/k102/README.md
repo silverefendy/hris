@@ -2,8 +2,10 @@
 
 Dibuat: 7 November 2026.
 
-Salinan skrip yang dipakai untuk migrasi Employee ke HRIS Employee (K-102)
-di server `erp.ciptamebel.co.id`. Skrip yang dijalankan sebenarnya berada di
+**Status (12 November 2026): migrasi produksi K-102 BELUM dijalankan.** Tabel HRIS Employee belum ada di `erp.ciptamebel.co.id` (diperiksa dengan SELECT). Semua uji dan gladi baru dilakukan di `hris-uji.local`.
+
+Salinan skrip yang akan dipakai untuk migrasi Employee ke HRIS Employee (K-102)
+di server `erp.ciptamebel.co.id`. Skrip yang akan dijalankan sebenarnya berada di
 `/home/it/runbook_k102/`. Salinan ini hanya arsip supaya skrip tidak hilang
 bila server bermasalah. Bila keduanya berbeda, periksa dengan `diff`.
 
