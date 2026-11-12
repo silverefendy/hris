@@ -34,3 +34,9 @@ class HRISDepartmentRule(Document):
                         ada, self.department
                     )
                 )
+
+    def on_update(self):
+        """K-137 (E8): beri tahu bila ada slip Draft yang terpengaruh. Tidak membatalkan simpan."""
+        from hris.hris_payroll.services.department_rule_notify import setelah_simpan
+
+        setelah_simpan(self)
