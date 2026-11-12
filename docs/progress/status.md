@@ -217,8 +217,18 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Larangan "jangan migrasi K-102 sebelum 4b benar" | Dicabut (docs `6f4c126`) |
 | Kinerja | Slip massal (p89, hris-uji): 150 slip 1,0 detik, perkiraan 1078 slip sekitar 7 detik (batas bawah, tanpa antrean dan commit worker) |
 | K-137 | Pengali lembur dihitung per tanggal berlaku (Bulanan dan Harian) dan notifikasi slip Draft saat HRIS Department Rule berubah (bbbb27d, 8eb5c8e); uji akun Operator/Supervisor lulus (OK 17) |
-| Belum | Sambungan peminjaman karyawan (P9: Department per hari dari Working Hour); jawaban HRD E1, E2, E5 (aturan selain pengali lembur per Department) |
+| Belum | Tahap 3 P9 (slip memakai `rule_department`, lihat Pembaruan 12 sampai 13 Nov); jawaban HRD E1, E2, E5 (aturan selain pengali lembur per Department) |
 | Dokumen | [decisions/keputusan-2026-11-11-hris-department.md](../decisions/keputusan-2026-11-11-hris-department.md) bagian 17 |
+
+## Pembaruan 12 sampai 13 Nov 2026 (K-138 peminjaman ke Department, tahap 1 dan 2)
+
+| Item | Status |
+|---|---|
+| Tahap 1 (`ab4908f`) | Field `borrowed_for_department`, `rule_follow`, `rule_department`; `tentukan_department`; validasi Grup tanpa Department; jadwal membawa Department tujuan. `uji_p9_tahap1` OK 17 |
+| Tahap 2 (`904efc9`, `6f053d7`) | Working Hour mengisi `rule_department`; hook Shift Assignment menghitung ulang baris biasa, menandai baris Sudah Ditinjau, ber-adjustment, atau periode Final. `uji_p9_tahap2` OK 11; `uji_p9_alur` OK 9 |
+| Deploy | Tahap 2 tidak butuh `migrate`; aman sebelum K-102 |
+| Belum | Tahap 3 (slip memakai `rule_department`); Department Grup memicu hitung ulang; filter Department hitung ulang massal; komponen E1 |
+| Dokumen | [decisions/keputusan-2026-11-12-peminjaman-aturan.md](../decisions/keputusan-2026-11-12-peminjaman-aturan.md) bagian 6 sampai 8; [session-log-2026-11-12.md](session-log-2026-11-12.md) |
 
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` (kini termasuk langkah 2b: `department coba` lalu `salin`) saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.

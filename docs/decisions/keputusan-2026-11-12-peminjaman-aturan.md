@@ -1,6 +1,6 @@
 # K-138: Peminjaman karyawan (P9), aturan khusus per karyawan, dan komponen aturan
 
-Tanggal: 12 Nov 2026. Status: keputusan Efendy (sesi 12 Nov); **belum ada kode**. Lanjutan K-136 dan K-137.
+Tanggal: 12 Nov 2026. Status: keputusan Efendy (sesi 12 Nov); **tahap 1 dan 2 selesai dan teruji di hris-uji (13 Nov); tahap 3 belum**. Lanjutan K-136 dan K-137.
 
 ## 1. Jawaban Efendy
 
@@ -55,3 +55,34 @@ Contoh: Budi (Department Produksi) dipinjam 20 Okt ke Department Finishing: lemb
 3. Malam migrasi K-102 setelah tanggal ditentukan.
 
 Belum dijawab: apakah penarikan absensi mesin bergantung pada erp saat mode maintenance; daftar komponen E1; tanggal malam K-102.
+
+## 6. Keputusan tahap 2 (12 sampai 13 Nov 2026)
+
+| No | Keputusan |
+|---|---|
+| 1 | Peminjaman dibuat, diubah, atau dibatalkan setelah Working Hour terhitung: hari terkait dihitung ulang otomatis bila belum final |
+| 2 | Periode Final: terkunci, hanya ditandai `needs_review`. Periode Draft boleh dihitung ulang |
+| 3 | Department dibaca dari HRIS Employee, bukan Employee ERPNext. Department ERPNext hanya menerima salinan dari HRIS Department |
+| 4 | Baris `Sudah Ditinjau` atau ber-`adjustment_hours` tidak 0 (periode belum Final): tidak dihitung ulang, hanya ditandai (melindungi koreksi HRD) |
+| 5 | Penanda `needs_review` boleh ditulis pada baris periode Final lewat `frappe.db.set_value` |
+| 6 | Cabang transisi: jatuh ke Department Employee ERPNext hanya selama tabel HRIS Employee belum ada (sebelum K-102 di produksi); boleh dihapus setelah K-102 selesai dan stabil |
+
+## 7. Hasil implementasi dan uji
+
+| Tahap | Isi | Commit | Uji (hris-uji.local) |
+|---|---|---|---|
+| 1 | Field peminjaman, `tentukan_department`, validasi Grup tanpa Department, jadwal membawa Department tujuan, `rule_department` di Working Hour (read-only) | `ab4908f` | `uji_p9_tahap1` OK 17 |
+| 2 | Working Hour mengisi `rule_department`; hook Shift Assignment (`on_update`, `after_delete`) menghitung ulang atau menandai | `904efc9` | `uji_p9_tahap2` OK 11 |
+| 2 | Uji alur penuh hook: pinjam, persempit, hapus, penugasan biasa, Sudah Ditinjau, adjustment, periode Final | `6f053d7` | `uji_p9_alur` OK 9 |
+
+Tahap 2 tidak butuh `migrate` di erp; sebelum K-102 hook tidak berbuat apa-apa bila tidak ada penugasan pinjam.
+
+## 8. Koreksi asumsi dan batasan yang diketahui
+
+- Koreksi: "Disetujui" dan "Terkirim" adalah status HRIS Raw Log, bukan status Working Hour. Penguncian ditentukan oleh `period_lock.is_locked`, yaitu HRIS Payroll Period berstatus Final.
+- Penanda di periode Final memakai `db.set_value`, sehingga tidak masuk Audit Trail (`Version`); jejaknya ada di teks `review_reason`.
+- Baris `Sudah Ditinjau` yang ditandai kembali menjadi `Menunggu`.
+- Perubahan Department milik Grup belum memicu hitung ulang (keputusan terpisah).
+- Filter Department di hitung ulang massal (`working_hour_batch._employees`) masih memakai Department Employee ERPNext (keputusan terpisah).
+- Belum diuji dengan baris Final dan Sudah Ditinjau dari data produksi; alur uji memakai data uji dengan rollback.
+- Tahap 3 (slip memakai `rule_department`, baris kosong jatuh ke Department karyawan) belum dirancang.
