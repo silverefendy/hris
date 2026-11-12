@@ -1,6 +1,6 @@
 # K-138: Peminjaman karyawan (P9), aturan khusus per karyawan, dan komponen aturan
 
-Tanggal: 12 Nov 2026. Status: keputusan Efendy (sesi 12 Nov); **tahap 1 dan 2 selesai dan teruji di hris-uji (13 Nov); tahap 3 belum**. Lanjutan K-136 dan K-137.
+Tanggal: 12 Nov 2026. Status: keputusan Efendy (sesi 12 Nov); **tahap 1, 2, dan 3 selesai dan teruji di hris-uji (13 Nov)**. Lanjutan K-136 dan K-137.
 
 ## 1. Jawaban Efendy
 
@@ -85,4 +85,15 @@ Tahap 2 tidak butuh `migrate` di erp; sebelum K-102 hook tidak berbuat apa-apa b
 - Perubahan Department milik Grup belum memicu hitung ulang (keputusan terpisah).
 - Filter Department di hitung ulang massal (`working_hour_batch._employees`) masih memakai Department Employee ERPNext (keputusan terpisah).
 - Belum diuji dengan baris Final dan Sudah Ditinjau dari data produksi; alur uji memakai data uji dengan rollback.
-- Tahap 3 (slip memakai `rule_department`, baris kosong jatuh ke Department karyawan) belum dirancang.
+
+## 9. Tahap 3: slip memakai rule_department (13 Nov 2026)
+
+| Butir | Keputusan atau hasil |
+|---|---|
+| Baris `needs_review=1` | Tetap dihitung dengan nilai tersimpan |
+| `rule_department` kosong | Jatuh ke Department karyawan, lalu akar (angka slip lama tidak bergeser) |
+| `_pengali_lembur` (satu pengali per slip) | Tidak diubah; field `overtime_multiplier` di slip tetap pengali Department karyawan, pengali per hari tampil di rincian komponen |
+| Perubahan kode (`655300a`) | `payroll_slip.py`: kolom `rule_department` ikut dibaca bila ada (`has_column`, aman sebelum migrate); `_pasang_pengali_harian` memakai Department per hari, kunci cache (Department, tanggal) |
+| Uji baru | `uji_p9_slip` OK 6 (S1 satu hari dipinjam: lembur 463.918; S2 dan S3 identik dengan sebelum tahap 3: 432.990) |
+| Regresi | slip utuh OK 16, BPJS OK 68, PPh 21 OK 22, slip OK 77, massal OK 19, tahap 1/2/alur OK 17/11/9 |
+| Belum terverifikasi | Teks catatan "Pengali lembur berubah di periode ini" belum diperiksa lewat uji (angka lembur sudah membuktikan logikanya) |
