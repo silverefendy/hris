@@ -95,9 +95,11 @@ def _pasang_pengali_harian(department, baris):
         if int(b.get("overtime_minutes") or 0) <= 0 or not b.get("work_date"):
             continue
         tgl = getdate(b["work_date"])
-        if tgl not in cache:
+        dept_hari = b.get("rule_department") or dept
+        kunci = (dept_hari, tgl)
+        if kunci not in cache:
             try:
-                hasil = resolve(dept, tgl, "overtime_multiplier")
+                hasil = resolve(dept_hari, tgl, "overtime_multiplier")
             except frappe.ValidationError as e:
                 return _("Pengali lembur tanggal {0}: {1}").format(tgl, cstr(e))
             except Exception as e:  # noqa: BLE001 - dilaporkan sebagai pesan
@@ -105,8 +107,8 @@ def _pasang_pengali_harian(department, baris):
             nilai = flt(hasil.get("nilai")) if isinstance(hasil, dict) else 0
             if nilai <= 0:
                 return _("Hasil pengali lembur tanggal {0} tidak valid: {1}").format(tgl, cstr(hasil))
-            cache[tgl] = nilai
-        b["pengali"] = cache[tgl]
+            cache[kunci] = nilai
+        b["pengali"] = cache[kunci]
     return None
 
 
@@ -310,7 +312,8 @@ def proses_karyawan(period, he_name):
         WH,
         filters={"employee": he.erpnext_employee, "work_date": ["between", [str(awal), str(akhir)]]},
         fields=["status", "scheduled_hours", "late_deduction_hours", "early_leave_deduction_hours",
-                "overtime_minutes", "absence_deducted", "absence_class", "work_date"],
+                "overtime_minutes", "absence_deducted", "absence_class", "work_date"]
+        + (["rule_department"] if frappe.db.has_column(WH, "rule_department") else []),
     )
     if not rows:
         return "dilewati", _("Tidak ada data Working Hour pada periode ini (belum dihitung).")
