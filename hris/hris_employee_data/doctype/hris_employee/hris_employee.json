@@ -170,6 +170,14 @@
             "in_standard_filter": 1
         },
         {
+            "default": "Department",
+            "description": "Dipakai hanya bila peminjaman Department dan Grup sama-sama terisi dan berbeda",
+            "fieldname": "rule_follow",
+            "fieldtype": "Select",
+            "label": "Aturan Mengikuti",
+            "options": "Department\nGrup"
+        },
+        {
             "fieldname": "date_of_joining",
             "fieldtype": "Date",
             "label": "Tanggal Bergabung",

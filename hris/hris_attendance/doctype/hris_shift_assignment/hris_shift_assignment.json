@@ -105,6 +105,12 @@
    "description": "Opsional. Isi bila karyawan dipinjam oleh grup/bagian lain."
   },
   {
+   "fieldname": "borrowed_for_department",
+   "fieldtype": "Link",
+   "label": "Dipinjam ke Department",
+   "options": "HRIS Department"
+  },
+  {
    "fieldname": "audit_trail_tab",
    "fieldtype": "Tab Break",
    "label": "Audit Trail HRIS",
@@ -129,6 +135,7 @@
   "reason_section",
   "reason",
   "borrowed_for_group",
+  "borrowed_for_department",
   "audit_trail_tab",
   "audit_trail_html"
  ],

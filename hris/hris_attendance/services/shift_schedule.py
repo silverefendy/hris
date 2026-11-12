@@ -57,6 +57,13 @@ def _holiday(day, company):
 	return None
 
 
+def _kolom_pinjam_department():
+	"""K-138: kolom borrowed_for_department baru ada setelah migrate; aman sebelum itu."""
+	if frappe.get_meta("HRIS Shift Assignment").has_field("borrowed_for_department"):
+		return ["borrowed_for_department"]
+	return []
+
+
 def get_schedule_for_date(employee, date):
 	day = getdate(date)
 	group_field = _group_fieldname()
@@ -77,19 +84,21 @@ def get_schedule_for_date(employee, date):
 		"day_number": None,
 		"assignment": None,
 		"borrowed_for_group": None,
+		"borrowed_for_department": None,
 	}
 
 	# 1. Shift Assignment aktif
 	assignment = frappe.get_all(
 		"HRIS Shift Assignment",
 		filters={"employee": employee, "is_active": 1, "from_date": ["<=", day], "to_date": [">=", day]},
-		fields=["name", "shift", "borrowed_for_group"],
+		fields=["name", "shift", "borrowed_for_group"] + _kolom_pinjam_department(),
 		limit=1,
 	)
 	if assignment:
 		a = assignment[0]
 		result.update({"source": "Shift Assignment", "shift": a.shift, "assignment": a.name,
-					   "borrowed_for_group": a.borrowed_for_group, "is_required": 1})
+					   "borrowed_for_group": a.borrowed_for_group, "is_required": 1,
+					   "borrowed_for_department": a.get("borrowed_for_department")})
 	elif result["group"]:
 		group = frappe.get_doc("HRIS Employee Group", result["group"])
 		if group.is_active:

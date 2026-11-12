@@ -16,6 +16,7 @@
   "emp_copy_section",
   "employee_group",
   "department",
+  "rule_department",
   "emp_copy_break",
   "borrowed_for_group",
   "schedule_section",
@@ -163,6 +164,13 @@
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
+   "options": "HRIS Department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rule_department",
+   "fieldtype": "Link",
+   "label": "Department Aturan",
    "options": "HRIS Department",
    "read_only": 1
   },

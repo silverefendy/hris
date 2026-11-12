@@ -48,9 +48,11 @@ class HRISShiftAssignment(Document):
 	def validate_borrowed_group(self):
 		if not self.borrowed_for_group:
 			return
-		if not frappe.db.get_value("HRIS Employee Group", self.borrowed_for_group, "is_active"):
+		grup = frappe.db.get_value("HRIS Employee Group", self.borrowed_for_group, ["is_active", "department"], as_dict=True)
+		if not grup or not grup.is_active:
 			frappe.throw(_("Grup {0} tidak aktif.").format(self.borrowed_for_group))
-
+		if not self.get("borrowed_for_department") and not grup.department:
+			frappe.throw(_("Grup {0} belum punya Department. Pilih Dipinjam ke Department, atau isi Department pada Grup itu.").format(self.borrowed_for_group))
 	def validate_overlap(self):
 		if not (self.is_active and self.employee and self.from_date and self.to_date):
 			return
