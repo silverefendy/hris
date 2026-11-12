@@ -3,6 +3,7 @@
 Pemakaian (dari folder sites):
   ../env/bin/python ../apps/hris/hris/hris_employee_data/services/migrasi_department.py coba
   ../env/bin/python ../apps/hris/hris/hris_employee_data/services/migrasi_department.py salin
+Setelah salinan, aturan akar HRIS Department Rule dibuat (patch idempoten) dalam transaksi yang sama.
 Variabel SITE menentukan site (bawaan hris-uji.local). Site lain ditolak
 kecuali IZINKAN_SITE_LAIN=ya.
 """
@@ -98,6 +99,23 @@ def jalankan(mode):
         hitung = frappe.db.count(DT)
         print("Baris HRIS Department: %d (harapan %d termasuk akar)" % (hitung, harapan + 1))
         ok = lap["salin"] == harapan and not lap["nama_beda"] and hitung == harapan + 1
+        if ok:
+            # K-136: aturan akar dibuat dalam transaksi yang sama dengan salinan.
+            # Patch idempoten; hasil harus tepat 1 aturan akar aktif.
+            try:
+                from hris.patches.v1_0.buat_aturan_akar_department import execute as buat_aturan_akar
+
+                buat_aturan_akar()
+                n_akar = frappe.db.sql(
+                    "select count(*) from `tabHRIS Department Rule` "
+                    "where department=%s and is_active=1 and overtime_multiplier>0",
+                    (ROOT,),
+                )[0][0]
+            except Exception as e:
+                n_akar = -1
+                print("Galat membuat aturan akar: %s" % e)
+            print("Aturan akar aktif   : %d (harapan 1)" % n_akar)
+            ok = n_akar == 1
         print("HASIL: " + ("OK" if ok else "GAGAL"))
         if mode == "salin" and ok:
             frappe.db.commit()
