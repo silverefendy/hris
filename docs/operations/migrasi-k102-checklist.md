@@ -1,6 +1,6 @@
 # Checklist Malam Migrasi K-102 (produksi)
 
-Diperbarui: 7 November 2026
+Diperbarui: 12 November 2026
 
 Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`. Penjelasan lengkap: [deployment.md](deployment.md) dan [../progress/go-live.md](../progress/go-live.md) bagian 9.
 
@@ -34,8 +34,10 @@ Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`
 - Cadangan 6 Nov 2026 hanya untuk gladi resik; migrasi memerlukan cadangan baru.
 - Durasi tiap langkah di produksi belum diketahui (log gladi resik: `/home/it/runbook_k102/jalankan_*.txt`).
 - `migrate` produksi juga membuat tabel `HRIS Employee Pay` (K-127, kosong) karena kodenya sudah ada di folder app yang sama. Ini tambahan murni; gladi resik K-102 dilakukan sebelum DocType ini ada. Setelah migrasi, role dan tabel baru ada di produksi.
+- `migrate` produksi juga membuat tabel `HRIS Department` dan `HRIS Department Rule` (K-136) dan menjalankan patch aturan akar (1 aturan: Department "All Departments", pengali lembur 1.0). Kode `payroll_slip.py` (4b) toleran: sebelum tabel ada memakai konstanta 1.0, sesudahnya membaca Department Rule. Patch bersifat idempoten, tetapi migrate kedua belum terbukti tanpa duplikasi.
 - Bila ragu di tengah jalan, berhenti dan simpan keluaran terminal.
 
 ## Setelah migrasi
 - [ ] Catat hasil (jumlah dibuat, jumlah berhasil, galat bila ada) di session log.
+- [ ] Pastikan `HRIS Department Rule` di erp berisi tepat 1 aturan akar (pengali lembur 1.0). Bila 0 atau lebih dari 1, jangan membuat slip; selidiki dulu.
 - [ ] Lanjut ke uji per peran, lihat [../progress/status.md](../progress/status.md) langkah berikutnya.

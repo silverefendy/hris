@@ -124,3 +124,16 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 | Audit Trail | Field `audit_trail_tab` dan `audit_trail_html` ditambah; JS form memanggil `hris.audit.render(frm)` |
 | Catatan teknis | Perubahan DocType di JSON perlu menaikkan `modified`, kalau tidak sinkron migrate bisa melewatkannya |
 | Cek browser form (sebelum pindah) | Daftar dan form OK; pesan "Isi minimal satu parameter" dan "duplikat aktif" tampil benar |
+| Cek browser Audit Trail (12 Nov 2026) | Lulus di hris-uji.local: tab tampil; baris "(dokumen dibuat)" tercatat; ubah Pengali Lembur 1 → 1,50 → 1 tercatat 2 baris; nilai dikembalikan ke 1,00. Activity bawaan Frappe mencatat perubahan yang sama |
+
+## 15. Tahap 4b: pengali lembur dari Department Rule (12 Nov 2026)
+
+| Hal | Keputusan / hasil |
+|---|---|
+| Pilihan | A: kode toleran. Bila tabel `HRIS Department Rule` belum ada, memakai konstanta `PENGALI_LEMBUR` (1.0); bila ada, membaca Department Rule |
+| Fungsi | `_pengali_lembur(department, period_end)` di `hris/hris_payroll/services/payroll_slip.py`; mengembalikan `(nilai, None)` atau `(None, pesan)` |
+| Aturan | Tanpa Department memakai akar "All Departments"; `period_end` kosong membuat slip dilewati; `resolve` gagal membuat slip dilewati dengan pesan (tidak diam-diam 1.0) |
+| Titik sambung | Dihitung sekali sebelum `hitung_komponen`, dipakai juga untuk salinan `overtime_multiplier` ke slip |
+| Uji | `hris/hris_payroll/tests/uji_department_rule_slip.py` (site uji, data uji dihapus sesudahnya) |
+| Alasan Pilihan A | Folder kode dipakai bersama erp; erp belum punya tabel Department Rule sampai K-102, jadi kode wajib tahan terhadap ketiadaan tabel |
+| Tindak lanjut | Setelah K-102 selesai dan stabil, cabang "tabel tidak ada" boleh dihapus. Belum diuji: migrate kedua tanpa duplikasi aturan akar, nomor DR- lintas bulan, perilaku untuk Department yang tidak ada di HRIS Department |
