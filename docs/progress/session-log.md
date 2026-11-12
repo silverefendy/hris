@@ -183,3 +183,10 @@
   - Perubahan role lewat UI tidak masuk repo; izin yang harus bertahan dibuat lewat kode.
   - K-119 dan K-120 di-commit setelah uji lulus.
 - Belum: uji browser per peran, tarikan nyata oleh Operator, `migrate` ke site kerja, sinkron ke Employee ERPNext (3c), fitur Dokumen Karyawan, `HRIS Employee Pay` dan `HRIS Payroll Period`.
+
+## 2026-11-12
+- K-136 tahap 4b: perbaikan `_pengali_lembur` terbukti di tingkat slip (uji slip utuh OK 16).
+- Risiko urutan patch aturan akar di erp ditemukan dan ditutup: `migrasi_department.py` membuat aturan akar dalam transaksi yang sama; langkah 2b ditambahkan ke runbook K-102 (di luar repo).
+- Gladi K-102 di hris-uji lulus (fase 1 dan 2), Audit Trail bersih. Belum dijalankan di erp.
+- Commit: 66b4825, 7020e37, 297dc6a, dd3c1ea. Docs: bagian 17 keputusan Department, checklist K-102.
+- Tertunda: ukur slip massal, akun Operator/Supervisor, DR- Desember, E1/E2/E7/E8 ke HRD, jadwal K-102, pembaruan status.md.

@@ -143,7 +143,23 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 | Hal | Hasil |
 |---|---|
 | Temuan | Uji `uji_department_rule_slip.py` pada commit 5d0f06a: S0, T4, T6, T7a-d lulus; T1, T2, T3 GAGAL (nilai 0.0, seharusnya 1.0 / 1.5 / 1.0); T5 (Department tidak dikenal) melempar TypeError. Penyebab dugaan: nilai balik `resolve` bukan angka, sedangkan helper memakai `flt(...)` yang mengubah nilai non-angka menjadi 0.0 tanpa galat |
-| Status | **4b BELUM BENAR.** Bagian 15 di atas menggambarkan rancangan, bukan hasil yang sudah terbukti |
+| Status | ~~4b belum benar~~ (kedaluwarsa; diperbaiki di 66b4825, hasil akhir di bagian 17). Bagian 15 di atas menggambarkan rancangan, bukan hasil yang sudah terbukti |
 | Aman | erp: tabel Department Rule belum ada, `_pengali_lembur` mengembalikan (1.0, None), terbukti 12 Nov 2026. Regresi di hris-uji.local: department_rule 13 OK, payroll_slip 77 OK, slip_massal 19 OK (belum tentu memeriksa nilai pengali pada slip utuh) |
-| Larangan | Jangan migrasi K-102 sebelum 4b diperbaiki dan seluruh uji baru lulus |
+| Larangan | (dicabut, lihat bagian 17) Jangan migrasi K-102 sebelum 4b diperbaiki dan seluruh uji baru lulus |
 | Perbaikan | Baca isi `resolve`, sesuaikan helper, tolak nilai kosong atau tidak positif dengan pesan, periksa Department ada sebelum `resolve`, tambah uji; lalu perbarui bagian ini |
+
+## 17. Hasil akhir tahap 4b dan langkah Department di runbook (12 Nov 2026)
+
+| Hal | Hasil | Commit |
+|---|---|---|
+| Perbaikan 4b | `_pengali_lembur` membaca dict hasil `resolve`, menolak nilai tidak valid dan Department tidak dikenal. `uji_department_rule_slip.py` OK 15 GAGAL 0 | 66b4825 |
+| Uji slip utuh | `uji_department_rule_slip_utuh.py` OK 16 GAGAL 0 di hris-uji: pengali slip 1.0 (hanya aturan akar), 1.0 (aturan 2099 belum berlaku), 1.75, 2.0 (setelah hitung ulang); komponen Lembur sesuai tarif jam x 2 jam x pengali (selisih di bawah 1 rupiah, pembulatan) | 297dc6a |
+| Patch aturan akar | Idempoten; migrate kedua tidak menggandakan aturan (8 uji OK) | 7020e37 |
+| Risiko urutan (terbukti di gladi) | `migrate` pada database tanpa pohon Department membuat patch aturan akar "dilewati" dan Patch Log tetap mencatatnya selesai, sehingga aturan akar tidak terbentuk lewat migrate | |
+| Penanganan (opsi B) | `migrasi_department.py` memanggil `execute()` patch dalam transaksi yang sama dengan salinan; hasil harus tepat 1 aturan akar aktif, kalau tidak rollback total | dd3c1ea |
+| Runbook (di luar repo, `/home/it/runbook_k102/`) | Perintah `department <site> coba\|salin`; langkah 2b di `produksi_k102.sh` dan `gladi_k102.sh` | tidak di repo |
+| Gladi di hris-uji (cadangan produksi pra-migrate) | Langkah 2b: salin 164 Department, aturan akar 1, commit. Lalu cek SAMA, migrasi 1078 HRIS Employee, Employee ERPNext tidak berubah; Audit Trail 3 HRIS Employee bersih (browser, dilaporkan Efendy); restore mengembalikan ke 0 | |
+
+Urutan malam K-102: maintenance ON, migrate, **2b (department coba lalu salin)**, restart, kondisi awal dan cek, jalankan migrasi, maintenance OFF.
+
+Belum terbukti: langkah 2b di erp sungguhan (hanya di hris-uji dengan cadangan erp); waktu proses slip massal untuk 1078 karyawan; uji browser dengan akun Operator/Supervisor; nomor DR- lintas bulan (Desember); jawaban HRD untuk E1, E2, E7, E8 dan pengali 1.0.
