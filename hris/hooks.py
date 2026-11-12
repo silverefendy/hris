@@ -273,6 +273,10 @@ after_migrate = [
 ]
 
 doc_events = {
+	"HRIS Shift Assignment": {
+	    "on_update": "hris.hris_attendance.services.department_aturan.setelah_simpan_penugasan",
+	    "after_delete": "hris.hris_attendance.services.department_aturan.setelah_hapus_penugasan",
+	},
 	"Employee": {
 		"validate": "hris.hris_attendance.services.employee_group.validate_employee_group",
 	},

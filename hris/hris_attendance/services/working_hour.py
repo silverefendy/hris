@@ -244,6 +244,8 @@ def calculate_working_hour(employee, work_date):
 	doc.employee_group = sched.get("group")
 	doc.borrowed_for_group = sched.get("borrowed_for_group")
 	doc.department = emp.department
+	from hris.hris_attendance.services.department_aturan import tentukan_rule_department
+	doc.rule_department = tentukan_rule_department(employee, emp.department, sched)
 	doc.schedule_source = sched["source"] if sched["source"] in SOURCES else "Tidak Terjadwal"
 	doc.is_holiday = 1 if sched.get("is_holiday") else 0
 
