@@ -17,7 +17,7 @@ PERIOD = "HRIS Payroll Period"
 WH = "HRIS Working Hour"
 PERAN_PROSES = {"HRIS Payroll Manager", "HRIS Payroll Admin"}
 CAKUPAN = ("Semua", "Karyawan", "Department", "Grup")
-PENGALI_LEMBUR = 1.0  # K-98; DocType pengaturan menyusul
+PENGALI_LEMBUR = 1.0  # K-98; cadangan bila HRIS Department Rule belum ada (K-136 4b)
 SYNC_LIMIT = 150
 STATUS_TTL = 3600
 QUEUE_STALE_AFTER = 60
@@ -43,6 +43,30 @@ def _rp(n):
 
 def _jam(x):
     return "{0:.2f}".format(float(x))
+
+
+DEPT_RULE = "HRIS Department Rule"
+DEPT_AKAR = "All Departments"
+
+
+def _pengali_lembur(department, period_end):
+    """Pengali lembur untuk satu slip dari HRIS Department Rule (K-136 tahap 4b).
+
+    Mengembalikan (nilai, None) bila berhasil, atau (None, pesan) bila slip harus dilewati.
+    Toleran: bila tabel HRIS Department Rule belum ada (erp sebelum migrate K-102),
+    memakai konstanta PENGALI_LEMBUR seperti sebelumnya. Cabang ini boleh dihapus setelah K-102.
+    """
+    if not frappe.db.table_exists(DEPT_RULE):
+        return PENGALI_LEMBUR, None
+    if not period_end:
+        return None, _("Tanggal akhir periode kosong; pengali lembur tidak dapat ditentukan.")
+    from hris.hris_payroll.services.department_rule import resolve
+
+    try:
+        nilai = resolve(department or DEPT_AKAR, getdate(period_end), "overtime_multiplier")
+    except frappe.ValidationError as e:
+        return None, _("Pengali lembur: {0}").format(cstr(e))
+    return flt(nilai), None
 
 
 def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
@@ -217,7 +241,11 @@ def proses_karyawan(period, he_name):
     if not rows:
         return "dilewati", _("Tidak ada data Working Hour pada periode ini (belum dihitung).")
 
-    hasil = hitung_komponen(gaji.pay_type, gaji.amount, [dict(r) for r in rows])
+    pengali_lembur_slip, galat_pengali_lembur = _pengali_lembur(he.department, period.period_end)
+    if galat_pengali_lembur:
+        return "dilewati", galat_pengali_lembur
+
+    hasil = hitung_komponen(gaji.pay_type, gaji.amount, [dict(r) for r in rows], pengali=pengali_lembur_slip)
     if hasil.get("error"):
         return "dilewati", hasil["error"]
 
@@ -258,7 +286,7 @@ def proses_karyawan(period, he_name):
     doc.pay_type = gaji.pay_type
     doc.base_amount = gaji.amount
     doc.hourly_rate = hasil["tarif_jam"]
-    doc.overtime_multiplier = PENGALI_LEMBUR
+    doc.overtime_multiplier = pengali_lembur_slip
     doc.employee_pay = gaji.name
     doc.employee_group = he.employee_group
     doc.department = he.department
