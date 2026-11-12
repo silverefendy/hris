@@ -162,4 +162,8 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 
 Urutan malam K-102: maintenance ON, migrate, **2b (department coba lalu salin)**, restart, kondisi awal dan cek, jalankan migrasi, maintenance OFF.
 
-Belum terbukti: langkah 2b di erp sungguhan (hanya di hris-uji dengan cadangan erp); waktu proses slip massal untuk 1078 karyawan; uji browser dengan akun Operator/Supervisor; nomor DR- lintas bulan (Desember); jawaban HRD untuk E1, E2, E7, E8 dan pengali 1.0.
+Ukur slip massal (p89, hris-uji, 12 Nov 2026): 150 slip Bulanan selesai dalam 1,0 detik (rata-rata 6 ms, p95 7 ms); perkiraan 1078 slip sekitar 7 detik. Ini batas bawah: hanya perhitungan dalam satu transaksi, tanpa antrean, lock, dan commit per karyawan di worker; semua sampel bergaji Bulanan 3.000.000.
+
+Keputusan Efendy (12 Nov 2026): pengali lembur 1.0 untuk semua lembur; nomor DR-YYMM-#### lanjut terus tanpa ulang lintas bulan.
+
+Belum terbukti: langkah 2b di erp sungguhan (hanya di hris-uji dengan cadangan erp); uji akun Operator/Supervisor; jawaban HRD untuk E1, E2, E7, E8.

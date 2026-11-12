@@ -215,7 +215,8 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Risiko urutan di erp (terbukti di gladi) | `migrate` pada database tanpa pohon Department membuat patch aturan akar dilewati dan Patch Log tetap mencatatnya. Penanganan: `migrasi_department.py` membuat aturan akar dalam transaksi yang sama (`dd3c1ea`) |
 | Runbook K-102 | Perintah `department <site> coba|salin` dan langkah 2b ditambahkan; gladi fase 1 dan 2 lulus di hris-uji, Audit Trail 3 HRIS Employee bersih. **Langkah 2b belum pernah jalan di erp** |
 | Larangan "jangan migrasi K-102 sebelum 4b benar" | Dicabut (docs `6f4c126`) |
-| Belum | Ukur waktu slip massal 1078 karyawan; uji browser akun Operator/Supervisor; nomor DR- lintas bulan (Desember); jawaban HRD E1, E2, E7, E8 dan konfirmasi pengali 1.0 |
+| Kinerja | Slip massal (p89, hris-uji): 150 slip 1,0 detik, perkiraan 1078 slip sekitar 7 detik (batas bawah, tanpa antrean dan commit worker) |
+| Belum | Uji akun Operator/Supervisor (izin baca HRIS Department); jawaban HRD E1, E2, E7, E8 |
 | Dokumen | [decisions/keputusan-2026-11-11-hris-department.md](../decisions/keputusan-2026-11-11-hris-department.md) bagian 17 |
 
 ## Langkah berikutnya
