@@ -137,3 +137,13 @@ Peta parameter aturan hitung saat ini: HRIS Shift (toleransi, blok potongan, bat
 | Uji | `hris/hris_payroll/tests/uji_department_rule_slip.py` (site uji, data uji dihapus sesudahnya) |
 | Alasan Pilihan A | Folder kode dipakai bersama erp; erp belum punya tabel Department Rule sampai K-102, jadi kode wajib tahan terhadap ketiadaan tabel |
 | Tindak lanjut | Setelah K-102 selesai dan stabil, cabang "tabel tidak ada" boleh dihapus. Belum diuji: migrate kedua tanpa duplikasi aturan akar, nomor DR- lintas bulan, perilaku untuk Department yang tidak ada di HRIS Department |
+
+## 16. Koreksi tahap 4b (12 Nov 2026)
+
+| Hal | Hasil |
+|---|---|
+| Temuan | Uji `uji_department_rule_slip.py` pada commit 5d0f06a: S0, T4, T6, T7a-d lulus; T1, T2, T3 GAGAL (nilai 0.0, seharusnya 1.0 / 1.5 / 1.0); T5 (Department tidak dikenal) melempar TypeError. Penyebab dugaan: nilai balik `resolve` bukan angka, sedangkan helper memakai `flt(...)` yang mengubah nilai non-angka menjadi 0.0 tanpa galat |
+| Status | **4b BELUM BENAR.** Bagian 15 di atas menggambarkan rancangan, bukan hasil yang sudah terbukti |
+| Aman | erp: tabel Department Rule belum ada, `_pengali_lembur` mengembalikan (1.0, None), terbukti 12 Nov 2026. Regresi di hris-uji.local: department_rule 13 OK, payroll_slip 77 OK, slip_massal 19 OK (belum tentu memeriksa nilai pengali pada slip utuh) |
+| Larangan | Jangan migrasi K-102 sebelum 4b diperbaiki dan seluruh uji baru lulus |
+| Perbaikan | Baca isi `resolve`, sesuaikan helper, tolak nilai kosong atau tidak positif dengan pesan, periksa Department ada sebelum `resolve`, tambah uji; lalu perbarui bagian ini |

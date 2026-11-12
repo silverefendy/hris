@@ -35,6 +35,7 @@ Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`
 - Durasi tiap langkah di produksi belum diketahui (log gladi resik: `/home/it/runbook_k102/jalankan_*.txt`).
 - `migrate` produksi juga membuat tabel `HRIS Employee Pay` (K-127, kosong) karena kodenya sudah ada di folder app yang sama. Ini tambahan murni; gladi resik K-102 dilakukan sebelum DocType ini ada. Setelah migrasi, role dan tabel baru ada di produksi.
 - `migrate` produksi juga membuat tabel `HRIS Department` dan `HRIS Department Rule` (K-136) dan menjalankan patch aturan akar (1 aturan: Department "All Departments", pengali lembur 1.0). Kode `payroll_slip.py` (4b) toleran: sebelum tabel ada memakai konstanta 1.0, sesudahnya membaca Department Rule. Patch bersifat idempoten, tetapi migrate kedua belum terbukti tanpa duplikasi.
+- **JANGAN migrasi K-102 sebelum 4b diperbaiki (12 Nov 2026, 4b BELUM BENAR):** uji menemukan `_pengali_lembur` di `payroll_slip.py` salah membaca nilai balik `resolve` (hasil 0.0). Aman di erp selama tabel Department Rule belum ada, tetapi setelah migrate tabel itu ada dan pengali bisa salah. Lihat bagian 16 di keputusan-2026-11-11-hris-department.md; hapus baris ini setelah bagian itu menyatakan selesai.
 - Bila ragu di tengah jalan, berhenti dan simpan keluaran terminal.
 
 ## Setelah migrasi
