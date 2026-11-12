@@ -47,26 +47,36 @@ def _jam(x):
 
 DEPT_RULE = "HRIS Department Rule"
 DEPT_AKAR = "All Departments"
+DEPT_DOC = "HRIS Department"
 
 
 def _pengali_lembur(department, period_end):
     """Pengali lembur untuk satu slip dari HRIS Department Rule (K-136 tahap 4b).
 
     Mengembalikan (nilai, None) bila berhasil, atau (None, pesan) bila slip harus dilewati.
-    Toleran: bila tabel HRIS Department Rule belum ada (erp sebelum migrate K-102),
-    memakai konstanta PENGALI_LEMBUR seperti sebelumnya. Cabang ini boleh dihapus setelah K-102.
+    Toleran: bila tabel HRIS Department Rule atau HRIS Department belum ada (erp sebelum
+    migrate K-102), memakai konstanta PENGALI_LEMBUR seperti sebelumnya. Cabang ini boleh
+    dihapus setelah K-102. resolve() mengembalikan dict {"nilai", "aturan", "department"}.
     """
-    if not frappe.db.table_exists(DEPT_RULE):
+    if not (frappe.db.table_exists(DEPT_RULE) and frappe.db.table_exists(DEPT_DOC)):
         return PENGALI_LEMBUR, None
     if not period_end:
         return None, _("Tanggal akhir periode kosong; pengali lembur tidak dapat ditentukan.")
+    dept = department or DEPT_AKAR
+    if not frappe.db.exists(DEPT_DOC, dept):
+        return None, _("Department {0} tidak ditemukan di HRIS Department; pengali lembur tidak dapat ditentukan.").format(dept)
     from hris.hris_payroll.services.department_rule import resolve
 
     try:
-        nilai = resolve(department or DEPT_AKAR, getdate(period_end), "overtime_multiplier")
+        hasil = resolve(dept, getdate(period_end), "overtime_multiplier")
     except frappe.ValidationError as e:
         return None, _("Pengali lembur: {0}").format(cstr(e))
-    return flt(nilai), None
+    except Exception as e:  # noqa: BLE001 - dilaporkan sebagai pesan, bukan nilai bawaan
+        return None, _("Pengali lembur gagal dihitung ({0}): {1}").format(type(e).__name__, cstr(e))
+    nilai = flt(hasil.get("nilai")) if isinstance(hasil, dict) else 0
+    if nilai <= 0:
+        return None, _("Hasil pengali lembur tidak valid: {0}").format(cstr(hasil))
+    return nilai, None
 
 
 def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
