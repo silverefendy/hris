@@ -46,6 +46,17 @@
    "in_list_view": 1
   },
   {
+   "fieldname": "sb_components",
+   "fieldtype": "Section Break",
+   "label": "Komponen Gaji"
+  },
+  {
+   "fieldname": "components",
+   "fieldtype": "Table",
+   "label": "Komponen",
+   "options": "HRIS Department Rule Component"
+  },
+  {
    "fieldname": "audit_trail_tab",
    "fieldtype": "Tab Break",
    "label": "Audit Trail"
