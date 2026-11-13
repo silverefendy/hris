@@ -40,3 +40,20 @@ def resolve_komponen(department, tanggal, kode):
     baris = frappe.get_all(ANAK, filters={"parent": ["in", [a["name"] for a in aturan]], "parenttype": RULE, "component": kode},
                            fields=["parent", "component", "status", "amount"])
     return pilih_komponen(rantai, aturan, baris, tanggal)
+
+
+GRUP_ANAK = "HRIS Employee Group Component"
+
+
+def resolve_komponen_karyawan(department, group, rule_follow, tanggal, kode):
+    """rule_follow = Grup: baris Group menimpa Department; tanpa baris, ikut Department."""
+    if rule_follow == "Grup" and group and frappe.db.table_exists(GRUP_ANAK):
+        if frappe.db.get_value("HRIS Employee Group", group, "is_active"):
+            b = frappe.get_all(GRUP_ANAK, filters={"parent": group, "parenttype": "HRIS Employee Group", "component": kode},
+                               fields=["status", "amount"], limit=1)
+            if b:
+                nilai = flt(b[0]["amount"]) if b[0]["status"] == "Berlaku" else 0.0
+                return {"nilai": nilai, "berlaku": b[0]["status"] == "Berlaku", "aturan": group, "department": None, "sumber": "Grup"}
+    hasil = resolve_komponen(department, tanggal, kode)
+    hasil["sumber"] = "Department"
+    return hasil

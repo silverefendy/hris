@@ -119,3 +119,14 @@ Tahap 2 tidak butuh `migrate` di erp; sebelum K-102 hook tidak berbuat apa-apa b
 | Peringatan | Nilai kena pajak dan dasar BPJS adalah tebakan awal; wajib diverifikasi HRD atau pajak sebelum komponen diaktifkan |
 | Deploy | Tabel baru terbentuk saat migrate K-102 di erp; tidak ada migrate terpisah di erp |
 | Belum | Tahap 2 dan 3 (tahap 3 wajib regresi PPh 21 dan BPJS) |
+
+## 12. Komponen E1 tahap 2: nilai per Department dan Grup (13 Nov 2026)
+
+| Butir | Isi |
+|---|---|
+| Tahap 2a (`0a52ac5`) | Tabel anak `HRIS Department Rule Component` (komponen, status Ikut Induk / Berlaku / Tidak Berlaku, nilai) di HRIS Department Rule; validasi: aturan boleh hanya berisi komponen, tidak dobel, Berlaku wajib bernilai. `resolve_komponen` naik ke induk; tanpa baris sampai akar = tidak berlaku (bukan galat). `resolve()` pengali lembur tidak diubah. `uji_e1_tahap2` OK 9 |
+| Tahap 2c | Tabel anak `HRIS Employee Group Component` (Berlaku / Tidak Berlaku, nilai) di HRIS Employee Group, tanpa tanggal berlaku. `resolve_komponen_karyawan` mengikuti `rule_follow` (bawaan Department): Grup menimpa Department hanya bila rule_follow = Grup; tanpa baris Grup, ikut Department. `uji_e1_tahap2c` OK 7 |
+| Audit Trail | Perubahan baris komponen (ditambah dan diubah) tercatat di tab Audit Trail; terbukti di uji A1 |
+| Regresi | slip utuh OK 16, `uji_department_rule_slip` OK 15, `uji_department_rule` OK 13 |
+| Catatan | Penyisipan controller Employee Group memakai tab (berkas memakai tab) |
+| Belum | Tahap 3 (slip memakai komponen aktif; regresi PPh 21 dan BPJS wajib); laporan biaya per Department dan Grup; verifikasi HRD kena pajak dan dasar BPJS |

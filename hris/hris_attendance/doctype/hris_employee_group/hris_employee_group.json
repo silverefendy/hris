@@ -18,6 +18,8 @@
   "rotation_start_date",
   "weekly_section",
   "weekly_schedule",
+  "sb_components",
+  "components",
   "audit_trail_tab",
   "audit_trail_html"
  ],
@@ -105,6 +107,18 @@
    "fieldtype": "Table",
    "label": "Jadwal Mingguan",
    "options": "HRIS Employee Group Day"
+  },
+  {
+   "fieldname": "sb_components",
+   "fieldtype": "Section Break",
+   "label": "Komponen Gaji (menimpa Department)",
+   "description": "Dipakai untuk karyawan yang pengaturan Ikut-nya = Grup. Tanpa baris = ikut Department."
+  },
+  {
+   "fieldname": "components",
+   "fieldtype": "Table",
+   "label": "Komponen",
+   "options": "HRIS Employee Group Component"
   },
   {
    "depends_on": "eval:!doc.__islocal",

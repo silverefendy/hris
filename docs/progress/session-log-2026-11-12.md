@@ -9,3 +9,4 @@
 - Filter Department hitung ulang massal memakai HRIS Employee (cocok persis), `uji_batch_department` OK 4, regresi lulus.
 - Tertunda: gladi 2b, tanggal K-102, komponen E1 (menunggu daftar), Department Grup (ditunda).
 \n- E1 tahap 1: DocType `HRIS Pay Component` dan seed 6 komponen nonaktif, `uji_e1_katalog` OK 5.\n
+- E1 tahap 2a (0a52ac5) dan 2c: komponen di Department Rule dan Employee Group; uji OK 9 dan OK 7; regresi 16/15/13 lulus.

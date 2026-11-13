@@ -10,6 +10,7 @@ class HRISEmployeeGroup(Document):
 		self.validate_schedule_type()
 		self.group_name = (self.group_name or "").strip()
 		self.validate_department()
+		self.validate_komponen()
 		self.validate_weekly_schedule()
 
 	def validate_department(self):
@@ -22,6 +23,19 @@ class HRISEmployeeGroup(Document):
 					self.department, dept_company, self.company
 				)
 			)
+
+	def validate_komponen(self):
+		from frappe.utils import flt
+
+		lihat = set()
+		for r in self.get('components') or []:
+			if r.component in lihat:
+				frappe.throw(_('Komponen {0} dobel dalam satu grup.').format(r.component))
+			lihat.add(r.component)
+			if r.status == 'Berlaku' and flt(r.amount) <= 0:
+				frappe.throw(_('Komponen {0} berstatus Berlaku wajib bernilai lebih dari 0.').format(r.component))
+			if r.status != 'Berlaku':
+				r.amount = 0
 
 	def validate_weekly_schedule(self):
 		used = {}
