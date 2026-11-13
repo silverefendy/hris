@@ -91,7 +91,15 @@ def _employees(params):
 	if scope == "Karyawan":
 		filters["name"] = params["employee"]
 	elif scope == "Department":
-		filters["department"] = params["department"]
+		if frappe.db.table_exists("HRIS Employee"):
+			daftar = frappe.get_all(
+				"HRIS Employee",
+				filters={"department": params["department"], "erpnext_employee": ["is", "set"]},
+				pluck="erpnext_employee",
+			)
+			filters["name"] = ["in", daftar or ["__tidak_ada__"]]
+		else:
+			filters["department"] = params["department"]
 	elif scope == "Grup":
 		filters[_group_fieldname()] = params["employee_group"]
 	rows = frappe.get_all("Employee", filters=filters, fields=["name", "date_of_joining"], order_by="name")

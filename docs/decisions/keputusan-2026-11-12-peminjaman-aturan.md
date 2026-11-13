@@ -97,3 +97,14 @@ Tahap 2 tidak butuh `migrate` di erp; sebelum K-102 hook tidak berbuat apa-apa b
 | Uji baru | `uji_p9_slip` OK 6 (S1 satu hari dipinjam: lembur 463.918; S2 dan S3 identik dengan sebelum tahap 3: 432.990) |
 | Regresi | slip utuh OK 16, BPJS OK 68, PPh 21 OK 22, slip OK 77, massal OK 19, tahap 1/2/alur OK 17/11/9 |
 | Belum terverifikasi | Teks catatan "Pengali lembur berubah di periode ini" belum diperiksa lewat uji (angka lembur sudah membuktikan logikanya) |
+
+## 10. Keputusan lanjutan (13 Nov 2026)
+
+| Butir | Keputusan atau hasil |
+|---|---|
+| Perpindahan karyawan | Bebas waktu. Izin dari atasan lapangan, HRD yang melaksanakan. Normalnya 1 hari (Shift Assignment from_date = to_date); selain itu manual. Tanpa persetujuan di sistem (sesuai P2) |
+| Lembur | Bebas kapan saja selama di atas jam kerja |
+| Migrasi K-102 | Boleh kapan saja (aturan perusahaan); tanggal belum ditentukan; jam sepi tetap disarankan karena ada cadangan dan restart |
+| Filter Department hitung ulang massal | Memakai HRIS Employee, cocok persis (tanpa anak Department). Bila tabel HRIS Employee belum ada, cara lama. Perubahan di `working_hour_batch._employees`. `uji_batch_department` OK 4; regresi `uji_payroll_period` OK 28, `uji_period_regresi` OK 4 |
+| Department Grup memicu hitung ulang | Ditunda |
+| Komponen E1 | Dibuat lengkap dengan pilihan dipakai atau tidak; rancangan menunggu daftar komponen dari Efendy |
