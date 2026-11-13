@@ -108,3 +108,14 @@ Tahap 2 tidak butuh `migrate` di erp; sebelum K-102 hook tidak berbuat apa-apa b
 | Filter Department hitung ulang massal | Memakai HRIS Employee, cocok persis (tanpa anak Department). Bila tabel HRIS Employee belum ada, cara lama. Perubahan di `working_hour_batch._employees`. `uji_batch_department` OK 4; regresi `uji_payroll_period` OK 28, `uji_period_regresi` OK 4 |
 | Department Grup memicu hitung ulang | Ditunda |
 | Komponen E1 | Dibuat lengkap dengan pilihan dipakai atau tidak; rancangan menunggu daftar komponen dari Efendy |
+
+## 11. Komponen E1 tahap 1: katalog (13 Nov 2026)
+
+| Butir | Isi |
+|---|---|
+| Keputusan | Komponen dibuat lengkap, bisa dipilih dipakai atau tidak (centang Aktif). Dikerjakan 3 tahap: (1) katalog, (2) nilai per Department dengan status Ikut Induk / Berlaku / Tidak Berlaku, (3) slip memakai komponen aktif |
+| Tahap 1 | DocType `HRIS Pay Component` (kode UPPER_SNAKE unik dan tidak dapat diubah, nama, jenis, kena pajak, masuk dasar BPJS, Aktif, Audit Trail). Patch `seed_pay_component_e1` mengisi 6 komponen awal, semua nonaktif: TJ_JABATAN, TJ_TRANSPORT, TJ_MAKAN, INSENTIF, BONUS, POT_LAIN |
+| Uji | `uji_e1_katalog` OK 5 di hris-uji.local |
+| Peringatan | Nilai kena pajak dan dasar BPJS adalah tebakan awal; wajib diverifikasi HRD atau pajak sebelum komponen diaktifkan |
+| Deploy | Tabel baru terbentuk saat migrate K-102 di erp; tidak ada migrate terpisah di erp |
+| Belum | Tahap 2 dan 3 (tahap 3 wajib regresi PPh 21 dan BPJS) |

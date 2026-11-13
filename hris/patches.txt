@@ -5,3 +5,4 @@
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
 hris.patches.v1_0.buat_aturan_akar_department
+hris.patches.seed_pay_component_e1

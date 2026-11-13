@@ -8,3 +8,4 @@
 - `655300a`: tahap 3, slip memakai rule_department per hari, `uji_p9_slip` OK 6, regresi lengkap lulus.
 - Filter Department hitung ulang massal memakai HRIS Employee (cocok persis), `uji_batch_department` OK 4, regresi lulus.
 - Tertunda: gladi 2b, tanggal K-102, komponen E1 (menunggu daftar), Department Grup (ditunda).
+\n- E1 tahap 1: DocType `HRIS Pay Component` dan seed 6 komponen nonaktif, `uji_e1_katalog` OK 5.\n

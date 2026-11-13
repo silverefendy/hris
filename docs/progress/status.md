@@ -231,6 +231,14 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Belum | Department Grup memicu hitung ulang; filter Department hitung ulang massal; komponen E1 |
 | Dokumen | [decisions/keputusan-2026-11-12-peminjaman-aturan.md](../decisions/keputusan-2026-11-12-peminjaman-aturan.md) bagian 6 sampai 8; [session-log-2026-11-12.md](session-log-2026-11-12.md) |
 
+## Pembaruan 13 Nov 2026 (E1 tahap 1, filter massal)
+
+| Item | Status |
+|---|---|
+| Komponen E1 tahap 1 | `HRIS Pay Component` plus 6 komponen awal nonaktif; `uji_e1_katalog` OK 5. Belum memengaruhi slip |
+| Filter Department hitung ulang massal | Memakai HRIS Employee, cocok persis (`ca7b0fa`); `uji_batch_department` OK 4 |
+| Belum | E1 tahap 2 dan 3; verifikasi HRD kena pajak dan dasar BPJS; gladi 2b; tanggal K-102 |
+
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` (kini termasuk langkah 2b: `department coba` lalu `salin`) saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
