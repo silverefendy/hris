@@ -24,11 +24,12 @@
   {"fieldname": "column_break_1", "fieldtype": "Column Break"},
   {"fieldname": "is_taxable", "fieldtype": "Check", "label": "Kena Pajak", "default": "0", "description": "Perlu verifikasi HRD atau pajak sebelum diaktifkan."},
   {"fieldname": "in_bpjs_base", "fieldtype": "Check", "label": "Masuk Dasar BPJS", "default": "0", "description": "Perlu verifikasi HRD sebelum diaktifkan."},
+  {"fieldname": "payment_basis", "fieldtype": "Select", "label": "Dibayar", "options": "Per Slip\nPer Bulan\nPer Hari Hadir", "default": "Per Bulan", "reqd": 1, "in_list_view": 1, "description": "Per Slip: tiap slip. Per Bulan: sekali di slip pertama bulan itu. Per Hari Hadir: nilai x jumlah hari Hadir di periode slip."},
   {"fieldname": "notes", "fieldtype": "Small Text", "label": "Keterangan"},
   {"fieldname": "audit_trail_tab", "fieldtype": "Tab Break", "label": "Audit Trail HRIS", "depends_on": "eval:!doc.__islocal"},
   {"fieldname": "audit_trail_html", "fieldtype": "HTML", "label": "Audit Trail"}
  ],
- "field_order": ["details_tab", "component_code", "component_name", "component_type", "is_active", "column_break_1", "is_taxable", "in_bpjs_base", "notes", "audit_trail_tab", "audit_trail_html"],
+ "field_order": ["details_tab", "component_code", "component_name", "component_type", "is_active", "column_break_1", "is_taxable", "in_bpjs_base", "payment_basis", "notes", "audit_trail_tab", "audit_trail_html"],
  "permissions": [
   {"create": 1, "delete": 1, "email": 1, "export": 1, "print": 1, "read": 1, "report": 1, "role": "System Manager", "share": 1, "write": 1},
   {"create": 1, "export": 1, "read": 1, "report": 1, "role": "HRIS Payroll Manager", "write": 1},
