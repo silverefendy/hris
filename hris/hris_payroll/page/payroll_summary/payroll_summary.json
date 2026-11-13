@@ -1,0 +1,15 @@
+{
+ "doctype": "Page",
+ "name": "payroll-summary",
+ "page_name": "payroll-summary",
+ "title": "Payroll Summary",
+ "module": "HRIS Payroll",
+ "standard": "Yes",
+ "system_page": 0,
+ "roles": [
+  {"role": "System Manager"},
+  {"role": "HRIS Payroll Manager"},
+  {"role": "HRIS Payroll Admin"},
+  {"role": "HRIS Direksi"}
+ ]
+}
