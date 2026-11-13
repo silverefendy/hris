@@ -302,8 +302,10 @@ add_to_apps_screen = [
 permission_query_conditions = {
     "HRIS Employee Pay": "hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay.get_permission_query_conditions",
     "HRIS Payroll Slip": "hris.hris_payroll.doctype.hris_payroll_slip.hris_payroll_slip.get_permission_query_conditions",
+    "HRIS Employee Component": "hris.hris_payroll.doctype.hris_employee_component.hris_employee_component.get_permission_query_conditions",
 }
 has_permission = {
     "HRIS Employee Pay": "hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay.has_permission",
     "HRIS Payroll Slip": "hris.hris_payroll.doctype.hris_payroll_slip.hris_payroll_slip.has_permission",
+    "HRIS Employee Component": "hris.hris_payroll.doctype.hris_employee_component.hris_employee_component.has_permission",
 }
