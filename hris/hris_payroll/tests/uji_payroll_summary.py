@@ -42,6 +42,7 @@ def jalankan():
     print("Karyawan=%s Jadwal=%s Periode=%s" % (B, JADWAL, periode.name if periode else None))
 
     asli_roles = frappe.get_roles
+    asli_user = frappe.session.user
     try:
         frappe.db.set_value(KATALOG, "TJ_MAKAN", "is_active", 1)
         frappe.db.set_value(KATALOG, "INSENTIF", "is_active", 1)
@@ -90,6 +91,7 @@ def jalankan():
         frappe.db.set_value(KATALOG, "TJ_MAKAN", "payment_basis", "Per Bulan")
 
         frappe.get_roles = lambda user=None: ["HRIS Payroll Admin"]
+        frappe.session.user = "uji@uji.local"
         ra = ps.ambil_data(mode="Per Tanggal", tanggal=TGL_A, employee=B)
         cek("R1 Payroll Admin tidak melihat karyawan Bulanan", ra["jumlah_baris"] == 0, ra["jumlah_baris"])
         rb = ps.ambil_data(mode="Per Tanggal", tanggal=TGL_A)
@@ -101,5 +103,6 @@ def jalankan():
         gagal("R4 peran lain ditolak", lambda: ps.ambil_data(mode="Per Tanggal", tanggal=TGL_A), "berhak")
     finally:
         frappe.get_roles = asli_roles
+        frappe.session.user = asli_user
         frappe.db.rollback()
     print("OK %d, GAGAL %d (semua data uji di-rollback)" % (sum(hasil), len(hasil) - sum(hasil)))

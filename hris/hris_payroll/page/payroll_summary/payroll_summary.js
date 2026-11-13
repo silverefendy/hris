@@ -109,7 +109,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
             html += "<th title='" + esc(k.basis || "") + "'>" + esc(k.nama) + (k.aktif ? "" : " (" + __("nonaktif") + ")") +
                 "<div class='ps-src'>" + esc(k.basis || "") + "</div></th>";
         });
-        html += "<th>" + __("Total Pendapatan") + "</th><th>" + __("Total Potongan") + "</th><th>" + __("Pajak") + "</th><th>" + __("Iuran BPJS") + "</th><th>" + __("Catatan") + "</th></tr></thead><tbody>";
+        html += "<th>" + __("Total Tunjangan") + "</th><th>" + __("Total Potongan Komponen") + "</th><th>" + __("Pajak") + "</th><th>" + __("Iuran BPJS") + "</th><th>" + __("Catatan") + "</th></tr></thead><tbody>";
 
         d.baris.forEach((b) => {
             html += "<tr class='" + (b.janggal ? "ps-row-janggal" : "") + "'>" +
@@ -177,7 +177,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
                 const periode = d.mode === "Per Periode";
                 const head = ["Karyawan", "Nama", "Department", "Grup", "Jenis Gaji", "Gaji Pokok", "Per Hari", "Per Jam", periode ? "Hari Hadir" : "Kehadiran"];
                 d.komponen.forEach((k) => { head.push(k.nama); head.push(k.nama + " (sumber)"); });
-                head.push("Total Pendapatan", "Total Potongan", "Pajak", "Iuran BPJS", "Catatan");
+                head.push("Total Tunjangan", "Total Potongan Komponen", "Pajak", "Iuran BPJS", "Catatan");
                 const rows = d.baris.map((b) => {
                     const x = [b.employee, b.nama, b.department, b.grup, b.pay_type, b.gaji_pokok, b.per_hari, b.per_jam, periode ? b.hari_hadir : b.kehadiran];
                     d.komponen.forEach((k) => {
