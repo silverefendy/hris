@@ -110,6 +110,8 @@ def _slip_lain(he, period, nama_ada, bebas):
         if b.source == "Otomatis":
             if (b.component or "").strip().lower() in bebas:
                 continue
+            if b.taxable is not None and not b.taxable:
+                continue  # 3b (K1): komponen bertanda taxable = 0 tidak ikut bruto
         elif not b.taxable:
             continue
         bruto += _dec(b.amount)
@@ -119,6 +121,16 @@ def _slip_lain(he, period, nama_ada, bebas):
         (tuple(slip), SLIP, NAMA),
     )
     return len(slip), bruto, (pembawa[0][0] if pembawa else None)
+
+
+def _bruto_sendiri(komponen, bebas):
+    """Bruto kena pajak dari komponen otomatis slip ini. Komponen bertanda taxable = 0 (3b, K1) tidak dihitung;
+    komponen tanpa kunci taxable (gaji pokok, lembur, BPJS) dihitung seperti sebelumnya."""
+    return sum(
+        (_dec(k["jumlah"]) for k in komponen
+         if k["tipe"] == "Pendapatan" and (k["nama"] or "").strip().lower() not in bebas and k.get("taxable", 1)),
+        Decimal(0),
+    )
 
 
 # ---------- gabungan ----------
@@ -174,11 +186,7 @@ def hitung_pph21_slip(he, period, gaji, hasil):
         return {"komponen": [], "catatan": catatan}
 
     jumlah_lain, bruto_lain, _pembawa = _slip_lain(he, period, nama_ada, bebas)
-    bruto_sendiri = sum(
-        (_dec(k["jumlah"]) for k in hasil["komponen"]
-         if k["tipe"] == "Pendapatan" and (k["nama"] or "").strip().lower() not in bebas),
-        Decimal(0),
-    )
+    bruto_sendiri = _bruto_sendiri(hasil["komponen"], bebas)
     bruto = bruto_sendiri + bruto_manual + bruto_lain
     n_slip = 1 + jumlah_lain
 

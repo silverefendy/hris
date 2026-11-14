@@ -11,6 +11,13 @@ from frappe.utils import cstr, flt, getdate, now_datetime
 from hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay import boleh_baris
 from hris.hris_payroll.services.payroll_bpjs import hitung_bpjs_slip
 from hris.hris_payroll.services.payroll_pph21 import hitung_pph21_slip
+from hris.hris_payroll.services.tunjangan_slip import (
+    catat,
+    kirim_ringkasan,
+    mulai_ringkasan,
+    pesan_galat,
+    susun_tunjangan,
+)
 
 SLIP = "HRIS Payroll Slip"
 PERIOD = "HRIS Payroll Period"
@@ -330,6 +337,14 @@ def proses_karyawan(period, he_name):
     if hasil.get("error"):
         return "dilewati", hasil["error"]
 
+    tunj = susun_tunjangan(he, gaji.pay_type, awal, akhir, baris_hitung)
+    if tunj["galat"]:
+        pesan = pesan_galat(tunj["galat"])
+        catat("galat", he.name, pesan)
+        return "dilewati", pesan
+    hasil["komponen"].extend(tunj["komponen"])
+    hasil["catatan"].extend(tunj["catatan"])
+
     bpjs = hitung_bpjs_slip(he, period, gaji, hasil)
     if bpjs.get("dilewati"):
         return "dilewati", bpjs["dilewati"]
@@ -383,6 +398,7 @@ def proses_karyawan(period, he_name):
         doc.append("components", {
             "component": k["nama"], "component_type": k["tipe"], "amount": k["jumlah"],
             "basis": k["dasar"], "source": "Otomatis", "reason": "",
+            "taxable": k.get("taxable", 1),
         })
     baris_urut = sorted(doc.components, key=lambda r: 0 if r.source == "Otomatis" else 1)
     for nomor, r in enumerate(baris_urut, 1):
@@ -393,6 +409,8 @@ def proses_karyawan(period, he_name):
         doc.insert(ignore_permissions=True)
     else:
         doc.save(ignore_permissions=True)
+    if tunj["periksa"]:
+        catat("periksa", doc.name)
     return jenis, doc.name
 
 
@@ -459,6 +477,7 @@ def _load(run_id):
 
 def _proses(period, names, run_id=None, status=None, commit=False):
     hasil = {"total": len(names), "dibuat": 0, "diperbarui": 0, "dilewati": 0, "gagal": 0, "alasan": {}, "errors": []}
+    mulai_ringkasan()
     for i, n in enumerate(names, 1):
         frappe.db.savepoint(SAVEPOINT)
         try:
@@ -483,6 +502,9 @@ def _proses(period, names, run_id=None, status=None, commit=False):
             status.update(done=i, dibuat=hasil["dibuat"], diperbarui=hasil["diperbarui"], dilewati=hasil["dilewati"],
                           gagal=hasil["gagal"], alasan=hasil["alasan"], errors=list(hasil["errors"]))
             _save(run_id, status)
+    kirim_ringkasan(period)
+    if commit:
+        frappe.db.commit()
     return hasil
 
 
