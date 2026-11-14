@@ -121,5 +121,6 @@ Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
 | K-133 (BPJS pada slip; K-132 masih usulan di status.md) | [keputusan-2026-11-10-bpjs.md](keputusan-2026-11-10-bpjs.md) |
 | K-134 (PPh 21 tahap 2a, TER bulanan; disetujui dan diimplementasikan 10 Nov, `84b093c` dan `9ad4fcf`) | [keputusan-2026-11-10-pph21.md](keputusan-2026-11-10-pph21.md) |
 | Laporan biaya tenaga kerja (13 Nov 2026, opsi A) | [keputusan-2026-11-13-laporan-biaya.md](keputusan-2026-11-13-laporan-biaya.md) |
+| K-139 (tunjangan dan potongan komponen masuk Payroll Slip, 3b; 14 Nov 2026, `307f4c2` dan `e001a92`) | [keputusan-2026-11-14-tunjangan-slip.md](keputusan-2026-11-14-tunjangan-slip.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).

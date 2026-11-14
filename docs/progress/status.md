@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 12 November 2026
+Diperbarui: 14 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
@@ -240,6 +240,13 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Komponen E1 tahap 2 | Nilai per Department (2a, `0a52ac5`, OK 9) dan per Employee Group (2c, OK 7); Group menimpa Department sesuai rule_follow; Audit Trail baris komponen terbukti |
 | Laporan biaya | Script Report `HRIS Biaya Tenaga Kerja` (`454d396`): bruto per Department atau Employee Group, hari pinjam dibebankan ke tujuan; `uji_biaya_laporan` OK 8, regresi slip OK 77. BPJS perusahaan tidak ada datanya. Belum teruji: Harian, lembur hari pinjam, akses per peran. Keputusan: [keputusan-2026-11-13-laporan-biaya.md](../decisions/keputusan-2026-11-13-laporan-biaya.md) |
 | Belum | E1 tahap 3 (slip); BPJS perusahaan pada laporan biaya; verifikasi HRD kena pajak dan dasar BPJS; gladi 2b; tanggal K-102 |
+
+## Pembaruan 14 Nov 2026 (K-139: tunjangan dan potongan komponen masuk Payroll Slip, 3b)
+- Komponen aktif di `HRIS Pay Component` kini masuk `HRIS Payroll Slip` sebagai baris `Otomatis` (Pendapatan atau Potongan), disisipkan sebelum BPJS dan PPh 21. Kode: `services/tunjangan_slip.py`, perubahan di `payroll_slip.py` dan `payroll_pph21.py`. Rincian di [keputusan-2026-11-14-tunjangan-slip.md](../decisions/keputusan-2026-11-14-tunjangan-slip.md).
+- Commit: `307f4c2` (3b) dan `e001a92` (peringatan nama ganda), keduanya sudah di `origin main`.
+- Uji di `hris-uji.local`: `uji_tunjangan_slip_integrasi` OK 34, GAGAL 0; regresi 40 uji SAMA dengan patokan (13 uji + 27 uji), dan 8 uji slip SAMA setelah K7.
+- Saklar `hris_tunjangan_ikut_pajak` di `site_config.json` (bawaan mati): tunjangan tidak ikut bruto PPh 21 kecuali saklar hidup.
+- Tertunda: aturan "Bulanan + Per Hari Hadir" (fitur tersendiri), uji kecepatan pada banyak karyawan (1078 Employee Active), uji data nyata setelah K-102, nilai tunjangan sungguhan dan `is_taxable` dari HRD dan konsultan pajak.
 
 ## Langkah berikutnya
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` (kini termasuk langkah 2b: `department coba` lalu `salin`) saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.

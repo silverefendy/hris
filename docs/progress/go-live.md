@@ -238,6 +238,11 @@ Status: **Selesai**, **Sebagian**, **Belum**, **Perlu verifikasi**. Sumber: `sta
 | 2026-11-10 | Uji slip massal (`uji_slip_massal.py` OK 19, `d645b00`) dan uji jadwal PPh 21 (`uji_pph21_jadwal.py` OK 9, `e5c22e0`; `uji_pph21_mingguan.py` OK 16, `705fc4e`); dokumen di [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) bagian 12 |
 | 2026-11-11 | Uji izin per peran PPh 21 (`uji_izin_pph21.py` OK 30): field PTKP, HRIS PPh21 Settings, HRIS PPh21 TER Rate; izin tidak diubah; daftar permintaan ke HRD di [permintaan-ke-hrd-2026-11-10.md](../operations/permintaan-ke-hrd-2026-11-10.md) (`91387bb`); dokumen di [keputusan-2026-11-10-pph21.md](../decisions/keputusan-2026-11-10-pph21.md) bagian 13 |
 
+Catatan 14 Nov 2026 (K-139, tunjangan pada slip):
+- Saat go-live, aktifkan komponen berbasis **Per Bulan** atau **Per Slip** dulu. Jangan aktifkan komponen **Per Hari Hadir** selama aturan untuk karyawan Bulanan belum diputuskan: seluruh karyawan Bulanan akan dilewati dan hanya notifikasi ringkasan yang muncul.
+- Saklar `hris_tunjangan_ikut_pajak` di `site_config.json` bawaannya mati. Putuskan nilainya bersama HRD dan konsultan pajak sebelum slip nyata dihitung.
+- Sebelum aktif di produksi: ukur kecepatan pada 1078 karyawan dengan banyak komponen aktif.
+
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
 Tidak ada tanggal tetap. Dikerjakan saat Efendy diminta masuk di luar jam kerja (dihitung lembur). Efendy memberi tahu Claude sebelum mulai. Rincian langkah ada di `operations/deployment.md` dan versi satu halaman di `operations/migrasi-k102-checklist.md`; berikut ringkasannya.
