@@ -82,6 +82,16 @@ def pesan_galat(galat):
     ).format(rinci, BERWENANG)
 
 
+def nama_ganda(komponen, baris_slip):
+    """K7: peringatan bila ada baris Manual dengan nama dan jenis sama dengan komponen otomatis (risiko terbayar dua kali)."""
+    manual = {((r.component or "").strip().lower(), r.component_type) for r in baris_slip if r.source == "Manual"}
+    catatan = []
+    for k in komponen:
+        if ((k["nama"] or "").strip().lower(), k["tipe"]) in manual:
+            catatan.append(_("Peringatan: ada baris Manual {0} dan komponen otomatis {0} dengan nama dan jenis sama; periksa agar tidak terbayar dua kali.").format(k["nama"]))
+    return catatan
+
+
 # ---------- ringkasan untuk notifikasi (D2) ----------
 def mulai_ringkasan():
     frappe.flags[KUNCI] = {"periksa": [], "galat": []}

@@ -15,6 +15,7 @@ from hris.hris_payroll.services.tunjangan_slip import (
     catat,
     kirim_ringkasan,
     mulai_ringkasan,
+    nama_ganda,
     pesan_galat,
     susun_tunjangan,
 )
@@ -388,6 +389,10 @@ def proses_karyawan(period, he_name):
     doc.department = he.department
     for fieldname, nilai in hasil["ringkasan"].items():
         doc.set(fieldname, nilai)
+    ganda = nama_ganda(tunj["komponen"], doc.components)
+    if ganda:
+        hasil["catatan"].extend(ganda)
+        tunj["periksa"] = True
     doc.calc_notes = "\n".join(hasil["catatan"])
     doc.calculated_on = now_datetime()
     doc.calculated_by = frappe.session.user

@@ -107,6 +107,8 @@ def uji_database(cek, lewati):
         all(r.component not in (nama_bonus, nama_pot) for r in baris0 if r.source == "Otomatis"),
         [(r.component, r.source) for r in baris0])
 
+    cek("U1b tanpa komponen otomatis: tidak ada peringatan nama ganda", "ada baris Manual" not in (total0.calc_notes or ""))
+
     # ---- U2 tunjangan masuk, saklar mati ----
     buat("BONUS", "Berlaku", 12345)
     aktif("BONUS")
@@ -124,6 +126,9 @@ def uji_database(cek, lewati):
     manual0 = [(r.component, flt(r.amount)) for r in baris0 if r.source == "Manual"]
     cek("U2e baris Manual tidak tersentuh (nama boleh sama dengan komponen otomatis)",
         [(r.component, flt(r.amount)) for r in baris if r.source == "Manual"] == manual0, manual0)
+
+    cek("U2f peringatan nama ganda (K7): Manual Bonus dan Bonus otomatis",
+        "ada baris Manual" in (t.calc_notes or ""), (t.calc_notes or "")[:200])
 
     # ---- U3 saklar hidup ----
     frappe.conf[SAKLAR] = 1
@@ -157,6 +162,9 @@ def uji_database(cek, lewati):
         all(r.component not in (nama_bonus, nama_pot) for r in baca(nama) if r.source == "Otomatis")
         and flt(t.total_earning) == flt(total0.total_earning) and flt(t.total_deduction) == flt(total0.total_deduction),
         (t.total_earning, total0.total_earning))
+
+    cek("U5b tanpa komponen otomatis: tidak ada peringatan nama ganda",
+        "ada baris Manual" not in (total(nama).calc_notes or ""))
 
     # ---- U6 janggal (K5) + notifikasi ringkasan (D2) ----
     janggal_ok = True
