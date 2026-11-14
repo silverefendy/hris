@@ -13,6 +13,12 @@ frappe.ui.form.on("HRIS Component Assignment", {
             );
         }
     },
+    department(frm) {
+        hris_hca_isi_company(frm, "HRIS Department", frm.doc.department);
+    },
+    employee_group(frm) {
+        hris_hca_isi_company(frm, "HRIS Employee Group", frm.doc.employee_group);
+    },
     scope_type(frm) {
         if (frm.doc.scope_type === "Department") {
             frm.set_value("employee_group", null);
@@ -62,5 +68,15 @@ function hris_hca_pratinjau(frm) {
                     `<p class="text-muted">${__("Maksimal 40 nama per kelompok ditampilkan. Penetapan karyawan (HRIS Employee Component) selalu menang atas penetapan ini.")}</p>`,
             });
         },
+    });
+}
+
+function hris_hca_isi_company(frm, doctype, nama) {
+    if (!nama) {
+        frm.set_value("company", null);
+        return;
+    }
+    frappe.db.get_value(doctype, nama, "company").then((r) => {
+        frm.set_value("company", (r.message || {}).company || null);
     });
 }
