@@ -173,10 +173,13 @@ def hitung_tunjangan_karyawan(employee, kode, pay_type, awal, akhir, tanggal_had
     if not he:
         return {"error": _("Karyawan {0} tidak ditemukan.").format(employee)}
     dasar = resolve_komponen_karyawan(he.department, he.employee_group, he.rule_follow, getdate(akhir), kode)
-    hasil = hitung_tunjangan(
-        pay_type, komp.payment_basis, dasar, ambil_pengecualian(employee, kode, awal, akhir),
-        awal, akhir, tanggal_hadir,
+    from hris.hris_payroll.services.cakupan_komponen import ambil_tingkat, gabung_semua
+
+    pengecualian = gabung_semua(
+        [dict(h) for h in ambil_pengecualian(employee, kode, awal, akhir)],
+        ambil_tingkat(he.department, he.employee_group, he.rule_follow, kode, awal, akhir),
     )
+    hasil = hitung_tunjangan(pay_type, komp.payment_basis, dasar, pengecualian, awal, akhir, tanggal_hadir)
     if not hasil.get("error"):
         hasil.update({"kode": kode, "nama": komp.component_name or kode,
                       "tipe": komp.component_type, "sumber": dasar.get("sumber")})

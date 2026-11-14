@@ -236,6 +236,10 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
         ):
             hec.setdefault((h.employee, h.component), []).append(h)
 
+    from hris.hris_payroll.services.cakupan_komponen import muat_hca
+
+    hec = muat_hca(hec, karyawan, kode_list, awal, akhir)
+
     erp = [k.erpnext_employee for k in karyawan if k.erpnext_employee]
     wh = {}
     if erp:
