@@ -95,6 +95,45 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
         );
     };
 
+    const bukaDialog = (emp, nama, kode, namaKomp) => {
+        const dt = state.data || {};
+        const periode = dt.mode === "Per Periode";
+        const d = new frappe.ui.Dialog({
+            title: __("Pengecualian Tunjangan"),
+            fields: [
+                { fieldname: "info", fieldtype: "HTML" },
+                { fieldname: "aksi", label: __("Aksi"), fieldtype: "Select", options: "Berlaku\nTidak Berlaku\nHapus", default: "Tidak Berlaku", reqd: 1 },
+                { fieldname: "amount", label: __("Nominal Khusus (kosong = pakai nilai dasar)"), fieldtype: "Currency", depends_on: "eval:doc.aksi=='Berlaku'" },
+                { fieldname: "date_from", label: __("Dari"), fieldtype: "Date", reqd: 1, default: periode ? dt.awal : dt.akhir },
+                { fieldname: "date_to", label: __("Sampai"), fieldtype: "Date", reqd: 1, default: dt.akhir },
+                { fieldname: "reason", label: __("Alasan"), fieldtype: "Small Text", reqd: 1 },
+            ],
+            primary_action_label: __("Simpan"),
+            primary_action: (v) => {
+                frappe.call({
+                    method: "hris.hris_payroll.services.pengecualian.simpan_pengecualian",
+                    args: {
+                        employee: emp, component: kode, aksi: v.aksi,
+                        date_from: v.date_from, date_to: v.date_to,
+                        reason: v.reason, amount: v.amount || 0,
+                    },
+                    freeze: true,
+                    freeze_message: __("Menyimpan..."),
+                    callback: (r) => {
+                        const m = r.message || {};
+                        d.hide();
+                        frappe.show_alert({ message: (m.pesan || "") + (m.catatan ? " " + m.catatan : ""), indicator: "green" }, 8);
+                        load();
+                    },
+                });
+            },
+        });
+        d.fields_dict.info.$wrapper.html(
+            "<div class='ps-info'><b>" + esc(nama || emp) + "</b> (" + esc(emp) + ")<br>" + esc(namaKomp || kode) + "</div>"
+        );
+        d.show();
+    };
+
     const render = () => {
         const d = state.data;
         if (!d) return;
@@ -104,6 +143,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
             html += "<div class='ps-info'><b>" + __("Tidak ada komponen untuk ditampilkan. Aktifkan komponen di HRIS Pay Component, atau centang 'Tampilkan komponen nonaktif'.") + "</b></div>";
         }
         const periode = d.mode === "Per Periode";
+        html += "<div class='ps-info'>" + __("Klik sel komponen untuk mengatur pengecualian.") + "</div>";
         html += "<div class='table-responsive'><table class='table table-bordered table-sm'><thead><tr>" +
             "<th>" + __("Karyawan") + "</th><th>" + __("Department") + "</th><th>" + __("Grup") + "</th><th>" + __("Jenis") + "</th>" +
             "<th>" + __("Gaji Pokok") + "</th><th>" + __("Per Hari") + "</th><th>" + __("Per Jam") + "</th>" +
@@ -120,7 +160,10 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
                 "<td>" + esc(b.department || "") + "</td><td>" + esc(b.grup || "") + "</td><td>" + esc(b.pay_type || "-") + "</td>" +
                 "<td class='ps-num'>" + rp(b.gaji_pokok) + "</td><td class='ps-num'>" + rp(b.per_hari) + "</td><td class='ps-num'>" + rp(b.per_jam) + "</td>" +
                 "<td>" + esc(periode ? (b.hari_hadir === null ? "-" : b.hari_hadir) : (b.kehadiran || "-")) + "</td>";
-            d.komponen.forEach((k) => (html += cell((b.sel || {})[k.kode])));
+            d.komponen.forEach((k) => {
+                const attr = " data-emp='" + esc(b.employee) + "' data-nama='" + esc(b.nama || "") + "' data-komp='" + esc(k.kode) + "' data-knama='" + esc(k.nama) + "' style='cursor:pointer'";
+                html += cell((b.sel || {})[k.kode]).replace("<td", "<td" + attr);
+            });
             html += "<td class='ps-num'>" + rp(b.total_pendapatan) + "</td><td class='ps-num'>" + rp(b.total_potongan) + "</td>" +
                 "<td>" + esc(b.pajak) + "</td><td class='ps-num'>" + rp(b.bpjs || null) + "</td>" +
                 "<td style='min-width:200px'>" + (b.catatan || []).map(esc).join("<br>") + "</td></tr>";
@@ -139,6 +182,10 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
             "<span class='text-muted'>" + __("Halaman") + " " + state.halaman + " / " + halaman + "</span> " +
             "<button class='btn btn-xs btn-default ps-next' " + (state.halaman >= halaman ? "disabled" : "") + ">" + __("Berikutnya") + "</button></div>";
         $body.html(html);
+        $body.find("td[data-komp]").on("click", function () {
+            const t = $(this);
+            bukaDialog(t.attr("data-emp"), t.attr("data-nama"), t.attr("data-komp"), t.attr("data-knama"));
+        });
         $body.find(".ps-prev").on("click", () => { state.halaman -= 1; load(); });
         $body.find(".ps-next").on("click", () => { state.halaman += 1; load(); });
     };
