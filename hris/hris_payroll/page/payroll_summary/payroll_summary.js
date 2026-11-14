@@ -177,9 +177,9 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
 
         const halaman = Math.max(1, Math.ceil(d.jumlah_baris / state.ukuran));
         html += "<div style='margin:8px 0'>" +
-            "<button class='btn btn-xs btn-default ps-prev' " + (state.halaman <= 1 ? "disabled" : "") + ">" + __("Sebelumnya") + "</button> " +
-            "<span class='text-muted'>" + __("Halaman") + " " + state.halaman + " / " + halaman + "</span> " +
-            "<button class='btn btn-xs btn-default ps-next' " + (state.halaman >= halaman ? "disabled" : "") + ">" + __("Berikutnya") + "</button></div>";
+            "<button class='btn btn-xs btn-default ps-first' " + (state.halaman <= 1 ? "disabled" : "") + ">" + __("Pertama") + "</button> " + "<button class='btn btn-xs btn-default ps-prev' " + (state.halaman <= 1 ? "disabled" : "") + ">" + __("Sebelumnya") + "</button> " +
+            "<span class='text-muted'>" + __("Halaman") + " <input type='number' class='ps-goto' min='1' max='" + halaman + "' value='" + state.halaman + "' style='width:70px;display:inline-block;height:24px;padding:0 4px'> / " + halaman + "</span> <button class='btn btn-xs btn-default ps-go'>" + __("Buka") + "</button> " +
+            "<button class='btn btn-xs btn-default ps-next' " + (state.halaman >= halaman ? "disabled" : "") + ">" + __("Berikutnya") + "</button> " + "<button class='btn btn-xs btn-default ps-last' " + (state.halaman >= halaman ? "disabled" : "") + ">" + __("Terakhir") + "</button></div>";
         $body.html(html);
         $body.find("td[data-komp]").on("click", function () {
             const t = $(this);
@@ -187,6 +187,16 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
         });
         $body.find(".ps-prev").on("click", () => { state.halaman -= 1; load(); });
         $body.find(".ps-next").on("click", () => { state.halaman += 1; load(); });
+        $body.find(".ps-first").on("click", () => { state.halaman = 1; load(); });
+        $body.find(".ps-last").on("click", () => { state.halaman = halaman; load(); });
+        const ke = () => {
+            const n = parseInt($body.find(".ps-goto").val(), 10);
+            if (!n) return;
+            state.halaman = Math.min(Math.max(n, 1), halaman);
+            load();
+        };
+        $body.find(".ps-go").on("click", ke);
+        $body.find(".ps-goto").on("keydown", (e) => { if (e.key === "Enter") ke(); });
     };
 
     const load = () => {
