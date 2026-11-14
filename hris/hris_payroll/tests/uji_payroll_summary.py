@@ -44,6 +44,7 @@ def jalankan():
     asli_roles = frappe.get_roles
     asli_user = frappe.session.user
     try:
+        frappe.db.sql("update `tabHRIS Employee Component` set is_active = 0 where employee = %s", (B,))
         frappe.db.set_value(KATALOG, "TJ_MAKAN", "is_active", 1)
         frappe.db.set_value(KATALOG, "INSENTIF", "is_active", 1)
         frappe.db.set_value(KATALOG, "TJ_JABATAN", "is_active", 0)
