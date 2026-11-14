@@ -181,7 +181,7 @@ def _satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir
 @frappe.whitelist()
 def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, department=None,
                employee_group=None, employee=None, pay_type=None, tampilkan_nonaktif=0,
-               termasuk_resign=0, halaman=1, ukuran=50, semua=0):
+               termasuk_resign=0, halaman=1, ukuran=50, semua=0, tampilkan_tanpa_gaji=0):
     jenis_izin = _jenis_diizinkan()
     per_periode = mode == "Per Periode"
     info = []
@@ -255,6 +255,7 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
         return memo[kunci]
 
     semua_baris = []
+    disembunyi = 0
     for he in karyawan:
         rows = gaji.get(he.name, [])
         jenis = rows[0].pay_type if rows else ""
@@ -262,9 +263,14 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
             continue
         if pay_type and jenis != pay_type:
             continue
+        if per_periode and not jenis and not cint(tampilkan_tanpa_gaji):
+            disembunyi += 1
+            continue
         whr = wh.get(he.erpnext_employee, []) if he.erpnext_employee else []
         semua_baris.append(_satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir))
 
+    if disembunyi:
+        info.append(_("{0} karyawan tanpa baris gaji pada jadwal periode ini disembunyikan. Centang 'Tampilkan yang belum punya gaji' untuk melihatnya.").format(disembunyi))
     total = {"per_komponen": {k.name: 0 for k in komponen}, "pendapatan": 0, "potongan": 0}
     jumlah_janggal = 0
     for b in semua_baris:

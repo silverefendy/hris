@@ -38,6 +38,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
         const periode = f.mode.get_value() === "Per Periode";
         f.tanggal.$wrapper.toggle(!periode);
         f.periode.$wrapper.toggle(periode);
+        f.tanpa_gaji.$wrapper.toggle(periode);
     };
 
     add({ fieldname: "mode", label: __("Tampilan"), fieldtype: "Select", options: "Per Tanggal\nPer Periode", change: () => { toggle(); reload(); } });
@@ -50,6 +51,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
     add({ fieldname: "pay_type", label: __("Jenis Gaji"), fieldtype: "Select", options: "\nBulanan\nHarian", change: reload });
     add({ fieldname: "nonaktif", label: __("Tampilkan komponen nonaktif"), fieldtype: "Check", change: reload });
     add({ fieldname: "resign", label: __("Termasuk Resign"), fieldtype: "Check", change: reload });
+    add({ fieldname: "tanpa_gaji", label: __("Tampilkan yang belum punya gaji"), fieldtype: "Check", change: reload });
 
     f.mode.set_value("Per Tanggal");
     f.tanggal.set_value(frappe.datetime.get_today());
@@ -68,6 +70,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
         pay_type: f.pay_type.get_value(),
         tampilkan_nonaktif: f.nonaktif.get_value() ? 1 : 0,
         termasuk_resign: f.resign.get_value() ? 1 : 0,
+        tampilkan_tanpa_gaji: f.tanpa_gaji.get_value() ? 1 : 0,
         halaman: state.halaman,
         ukuran: state.ukuran,
         semua: semua ? 1 : 0,
@@ -109,7 +112,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
             html += "<th title='" + esc(k.basis || "") + "'>" + esc(k.nama) + (k.aktif ? "" : " (" + __("nonaktif") + ")") +
                 "<div class='ps-src'>" + esc(k.basis || "") + "</div></th>";
         });
-        html += "<th>" + __("Total Tunjangan") + "</th><th>" + __("Total Potongan Komponen") + "</th><th>" + __("Pajak") + "</th><th>" + __("Iuran BPJS") + "</th><th>" + __("Catatan") + "</th></tr></thead><tbody>";
+        html += "<th>" + __("Total Tunjangan") + "</th><th>" + __("Total Potongan Komponen") + "</th><th>" + __("Peserta PPh 21") + "</th><th>" + __("Iuran BPJS") + "</th><th>" + __("Catatan") + "</th></tr></thead><tbody>";
 
         d.baris.forEach((b) => {
             html += "<tr class='" + (b.janggal ? "ps-row-janggal" : "") + "'>" +
@@ -177,7 +180,7 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
                 const periode = d.mode === "Per Periode";
                 const head = ["Karyawan", "Nama", "Department", "Grup", "Jenis Gaji", "Gaji Pokok", "Per Hari", "Per Jam", periode ? "Hari Hadir" : "Kehadiran"];
                 d.komponen.forEach((k) => { head.push(k.nama); head.push(k.nama + " (sumber)"); });
-                head.push("Total Tunjangan", "Total Potongan Komponen", "Pajak", "Iuran BPJS", "Catatan");
+                head.push("Total Tunjangan", "Total Potongan Komponen", "Peserta PPh 21", "Iuran BPJS", "Catatan");
                 const rows = d.baris.map((b) => {
                     const x = [b.employee, b.nama, b.department, b.grup, b.pay_type, b.gaji_pokok, b.per_hari, b.per_jam, periode ? b.hari_hadir : b.kehadiran];
                     d.komponen.forEach((k) => {
