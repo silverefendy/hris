@@ -38,7 +38,6 @@ frappe.pages["payroll-summary"].on_page_load = function (wrapper) {
         const periode = f.mode.get_value() === "Per Periode";
         f.tanggal.$wrapper.toggle(!periode);
         f.periode.$wrapper.toggle(periode);
-        f.tanpa_gaji.$wrapper.toggle(periode);
     };
 
     add({ fieldname: "mode", label: __("Tampilan"), fieldtype: "Select", options: "Per Tanggal\nPer Periode", change: () => { toggle(); reload(); } });

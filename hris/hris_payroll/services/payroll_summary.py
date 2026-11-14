@@ -263,14 +263,15 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
             continue
         if pay_type and jenis != pay_type:
             continue
-        if per_periode and not jenis and not cint(tampilkan_tanpa_gaji):
+        if not jenis and not cint(tampilkan_tanpa_gaji):
             disembunyi += 1
             continue
         whr = wh.get(he.erpnext_employee, []) if he.erpnext_employee else []
         semua_baris.append(_satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir))
 
     if disembunyi:
-        info.append(_("{0} karyawan tanpa baris gaji pada jadwal periode ini disembunyikan. Centang 'Tampilkan yang belum punya gaji' untuk melihatnya.").format(disembunyi))
+        info.append(_("{0} karyawan tanpa baris gaji pada {1} disembunyikan. Centang 'Tampilkan yang belum punya gaji' untuk melihatnya.").format(
+            disembunyi, _("jadwal periode ini") if per_periode else _("tanggal ini")))
     total = {"per_komponen": {k.name: 0 for k in komponen}, "pendapatan": 0, "potongan": 0}
     jumlah_janggal = 0
     for b in semua_baris:
