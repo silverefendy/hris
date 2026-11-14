@@ -6,7 +6,7 @@ frappe.ui.form.on("HRIS Employee Component", {
         frm.set_df_property("component", "read_only", baru ? 0 : 1);
         if (!baru) {
             frm.set_intro(
-                __("Untuk mengubah, ubah tanggal, status, atau nominal lalu isi Alasan yang baru. Untuk membatalkan, matikan Aktif."),
+                __("Untuk mengubah, ubah tanggal, status, atau nominal lalu isi Alasan yang baru. Untuk mengeluarkan karyawan dari komponen, ubah Status menjadi Tidak Berlaku."),
                 "blue"
             );
         }
