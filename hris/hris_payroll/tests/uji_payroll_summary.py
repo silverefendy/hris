@@ -88,7 +88,7 @@ def jalankan():
 
         frappe.db.set_value(KATALOG, "TJ_MAKAN", "payment_basis", "Per Hari Hadir")
         r7 = ps.ambil_data(mode="Per Tanggal", tanggal=TGL_A, employee=B)
-        cek("T10 Bulanan + Per Hari Hadir: galat di sel, tidak mogok", "error" in r7["baris"][0]["sel"]["TJ_MAKAN"] and r7["baris"][0]["janggal"])
+        cek("T10 Bulanan + Per Hari Hadir: dihitung tanpa galat (K-140)", "error" not in r7["baris"][0]["sel"]["TJ_MAKAN"], r7["baris"][0]["sel"]["TJ_MAKAN"])
         frappe.db.set_value(KATALOG, "TJ_MAKAN", "payment_basis", "Per Bulan")
 
         frappe.get_roles = lambda user=None: ["HRIS Payroll Admin"]

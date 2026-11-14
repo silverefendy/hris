@@ -1,13 +1,15 @@
 """E1 tahap 3a: penelusuran nilai tunjangan per komponen, termasuk pengecualian HRIS Employee Component (HEC).
 
-BELUM disambung ke slip (proses_karyawan). hitung_tunjangan() murni (tanpa database).
+Dipakai slip (tunjangan_slip.py) dan Payroll Summary. hitung_tunjangan() murni (tanpa database).
 
 Aturan (keputusan 13 Nov 2026):
-- Per Hari Hadir (Harian): dihitung per hari Hadir. HEC Tidak Berlaku = 0 hari itu; HEC Berlaku + nominal =
+- Per Hari Hadir (Harian dan Bulanan, K-140): dihitung per hari Hadir. HEC Tidak Berlaku = 0 hari itu; HEC Berlaku + nominal =
   nominal; HEC Berlaku tanpa nominal = nilai dasar, dan bila nilai dasar nol = 0 ditandai janggal.
 - Per Bulan / Per Slip: satu nilai per periode, tetap penuh. Hanya HEC yang menutup seluruh periode yang
   mengubah nilai; HEC sebagian hari hanya menghasilkan peringatan.
-- Bulanan + Per Hari Hadir: belum didukung (mengembalikan error).
+- Default tidak dapat (K-140): komponen hanya dibayar bila ada HEC Berlaku yang mencakup hari itu (Per Hari Hadir)
+  atau menyentuh periode (Per Bulan / Per Slip). Tanpa HEC = Rp0. HEC Berlaku yang hanya mencakup sebagian periode:
+  nilai per periode dibayar penuh disertai peringatan.
 """
 from decimal import ROUND_HALF_UP, Decimal
 
@@ -37,14 +39,12 @@ def _hari_tumpang(dari, sampai, awal, akhir):
 
 def _per_hari(dasar, hec, tanggal_hadir):
     total = Decimal(0)
-    n_dasar = n_khusus = n_tidak = n_janggal = 0
+    n_dasar = n_khusus = n_tidak = n_janggal = n_tanpa = 0
     nama_janggal = set()
     for tgl in sorted(set(getdate(t) for t in tanggal_hadir)):
         h = next((x for x in hec if x["dari"] <= tgl <= x["sampai"]), None)
         if h is None:
-            if dasar > 0:
-                total += dasar
-                n_dasar += 1
+            n_tanpa += 1
         elif h["status"] == "Tidak Berlaku":
             n_tidak += 1
         elif h["amount"] > 0:
@@ -63,6 +63,8 @@ def _per_hari(dasar, hec, tanggal_hadir):
         bagian.append(_("{0} hari nominal khusus").format(n_khusus))
     if n_tidak:
         bagian.append(_("{0} hari Tidak Berlaku (pengecualian)").format(n_tidak))
+    if n_tanpa:
+        bagian.append(_("{0} hari tanpa penetapan (tidak dibayar)").format(n_tanpa))
     janggal = []
     if n_janggal:
         janggal.append(
@@ -94,8 +96,17 @@ def _per_periode(dasar, hec, awal, akhir):
             teks = _("Pengecualian {0} Berlaku tanpa nominal, nilai dasar nol").format(h["name"])
             janggal.append(_("Berlaku tanpa nominal dan nilai dasar nol ({0}): dihitung Rp0.").format(h["name"]))
     else:
-        jumlah = dasar
-        teks = _("Nilai dasar per periode") if dasar > 0 else _("Tidak berlaku (tidak ada nilai dasar)")
+        ada_berlaku = any(x["status"] == "Berlaku" for x in sebagian)
+        if ada_berlaku and dasar > 0:
+            jumlah = dasar
+            teks = _("Nilai dasar per periode (penetapan hanya mencakup sebagian periode)")
+            peringatan.append(_("Penetapan Berlaku hanya mencakup sebagian periode; nilai per periode dibayar penuh."))
+        elif ada_berlaku:
+            jumlah = Decimal(0)
+            teks = _("Tidak berlaku (tidak ada nilai dasar)")
+        else:
+            jumlah = Decimal(0)
+            teks = _("Tidak berlaku (tidak ada penetapan Berlaku)")
     for x in sebagian:
         hari = _hari_tumpang(x["dari"], x["sampai"], awal, akhir)
         if x["status"] == "Tidak Berlaku":
@@ -123,8 +134,6 @@ def hitung_tunjangan(pay_type, payment_basis, nilai_dasar, pengecualian, awal, a
     """
     if pay_type not in ("Bulanan", "Harian"):
         return {"error": _("Jenis gaji tidak dikenal: {0}.").format(pay_type)}
-    if pay_type == "Bulanan" and payment_basis == "Per Hari Hadir":
-        return {"error": _("Komponen Per Hari Hadir untuk karyawan Bulanan belum didukung (perlu keputusan).")}
     awal, akhir = getdate(awal), getdate(akhir)
     dasar = _d(nilai_dasar.get("nilai")) if nilai_dasar.get("berlaku") else Decimal(0)
     hec = sorted(

@@ -192,10 +192,18 @@ def uji_database(cek, lewati):
     # ---- U7 galat: karyawan dilewati dengan pesan jelas (D1), hanya Bulanan ----
     if tipe == "Bulanan":
         sebelum = ringkas(nama)
-        frappe.db.set_value(KATALOG, "BONUS", "payment_basis", "Per Hari Hadir")
+        from hris.hris_payroll.services import komponen_slip as ks
+
+        asli = [(m, m.hitung_tunjangan) for m in (ks, ts) if hasattr(m, "hitung_tunjangan")]
         aktif("BONUS")
         ts.mulai_ringkasan()
-        jenis, info = hitung_ulang()
+        for m, _f in asli:
+            m.hitung_tunjangan = lambda *a, **k: {"error": "galat buatan uji K-140"}
+        try:
+            jenis, info = hitung_ulang()
+        finally:
+            for m, f in asli:
+                m.hitung_tunjangan = f
         s = frappe.flags.get(ts.KUNCI)
         cek("U7 komponen galat: dilewati dengan pesan Masalah yang menyebut komponen",
             jenis == "dilewati" and info.startswith("Masalah") and "BONUS" in info, (jenis, str(info)[:200]))
