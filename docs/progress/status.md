@@ -4,6 +4,8 @@ Diperbarui: 15 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
+Serah terima terbaru: [handoff-2026-11-15.md](handoff-2026-11-15.md).
+
 ## Kondisi terkini
 - App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`). Pembaruan setelahnya: lihat bagian 4 sampai 9 November di bawah.
 - Modul HRIS Attendance berisi DocType terpasang: `HRIS Device`, `HRIS Raw Log`, `HRIS Shift`, `HRIS Employee Group` (+ tabel anak), `HRIS Holiday`, `HRIS Shift Rotation` (+ tabel anak), `HRIS Shift Assignment`, `HRIS Working Hour`, `HRIS Pull Run`, dan `HRIS Attendance Settings` (Single), serta Page `Konsol Mesin`. Custom Field dan hook validasi di `Employee` untuk grup karyawan (`hris_employee_group`).
