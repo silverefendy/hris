@@ -1,6 +1,6 @@
 # Status Proyek
 
-Diperbarui: 14 November 2026
+Diperbarui: 15 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
@@ -15,6 +15,7 @@ Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 - Cara server berjalan: `bench start` (honcho) di terminal, `frappe serve --port 8000`, `developer_mode` menyala, tanpa nginx dan HTTPS (hanya LAN). Worker antrean aktif (1 worker, terbukti 31 Okt). Scheduler tidak aktif (`pause_scheduler` di konfigurasi). Site uji `hris-uji.local` dan produksi berbagi satu bench dan satu folder app.
 - **Data nyata pertama:** 2.306 Raw Log `PLTB 220` untuk 25 sampai 31 Okt 2026 (sumber `Pull pyzk`, semua berstatus `Tidak Cocok`). Catatan lama "belum ada Employee Active" sudah usang untuk Employee ERPNext: per 7 Nov 2026 produksi memiliki 1078 Employee Active (lihat Pembaruan 7 Nov). Belum ada working hour nyata; semua uji working hour memakai karyawan sementara yang di-rollback. Sejak itu isi Raw Log berubah karena uji tarik dan hapus (31 Okt); lihat "Celah data tarikan" pada bagian Pembaruan 31 Okt.
 - **Update 10 Nov 2026 (payroll):** BPJS pada slip memakai angka tetap per program (K-133, `f6f837b`, dipotong sekali sebulan pada slip pertama bulan itu). Baris komponen Otomatis di `HRIS Payroll Slip Item` kini terkunci per baris dan Alasan ikut dibandingkan di server (`f9a6601`, lanjutan K-130; skrip OK 77, browser lulus). PPh 21 TER pada slip (K-134, langkah 1 sampai 4) selesai dan teruji di site uji dengan tarif fiktif (`84b093c`, `9ad4fcf`); tarif resmi diisi HRD setelah diverifikasi. Sisa kecil: tombol hapus di form baris slip Draft belum dikunci di tampilan (server tetap menolak), `validate_bpjs` masih membandingkan field rincian lama.
+- **Update 14 sampai 15 Nov 2026 (K-140, komponen gaji):** komponen hanya dibayar bila ada penetapan: `HRIS Employee Component` (HEC) per karyawan atau `HRIS Component Assignment` (HCA) per Grup atau Department; tanpa keduanya Rp0. Karyawan Bulanan dengan komponen Per Hari Hadir kini dihitung per hari Hadir. Tombol massal HEC dan pratinjau HCA tersedia. Tahap A sampai E4b di-push (`b84f5c1`); alat ukur C dan C2 masih lokal. Uji browser HCA lulus (W1 sampai W5); W6 menunggu restart. Detail: [keputusan-2026-11-14-default-tidak-dapat.md](../decisions/keputusan-2026-11-14-default-tidak-dapat.md). Site kerja belum dimigrasi: tabel HCA baru ada di `hris-uji.local` (wajib ikut K-102).
 - Data di site: 1 Company, 8 HRIS Shift aktif (Kantor, Lapangan, Security Pagi dan Malam; lihat `data-model.md`), grup nyata `Lapangan Harian` (jadwal mingguan Senin sampai Sabtu), sebagian sisa uji lama (lihat Tertunda).
 
 ## Selesai
