@@ -162,7 +162,7 @@ def hitung_tunjangan(pay_type, payment_basis, nilai_dasar, pengecualian, awal, a
         key=lambda x: (x["dari"], str(x["name"] or "")),
     )
     if payment_basis == "Per Bulan" and _bukan_giliran(waktu_bayar, giliran):
-        return {"jumlah": 0, "dasar": _teks_bukan_giliran(waktu_bayar), "janggal": [], "peringatan": []}
+        return {"jumlah": 0, "dasar": _teks_bukan_giliran(waktu_bayar), "janggal": [], "peringatan": [], "bukan_giliran": True}
     if payment_basis == "Per Hari Hadir":
         return _per_hari(dasar, hec, tanggal_hadir)
     return _per_periode(dasar, hec, awal, akhir)

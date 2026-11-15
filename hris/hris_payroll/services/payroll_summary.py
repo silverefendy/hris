@@ -9,6 +9,7 @@ from frappe.utils import cint, flt, getdate
 
 from hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay import PERAN_ADMIN, _akses_penuh, _peran
 from hris.hris_payroll.services.department_komponen import resolve_komponen_karyawan
+from hris.hris_payroll.services.giliran_bulan import giliran_bulan
 from hris.hris_payroll.services.komponen_slip import hitung_tunjangan
 
 EMP = "HRIS Employee"
@@ -45,7 +46,7 @@ def _komponen(tampilkan_nonaktif):
     filters = {} if tampilkan_nonaktif else {"is_active": 1}
     return frappe.get_all(
         KATALOG, filters=filters,
-        fields=["name", "component_name", "component_type", "payment_basis", "is_active"],
+        fields=["name", "component_name", "component_type", "payment_basis", "monthly_timing", "is_active"],
         order_by="name asc",
     )
 
@@ -101,7 +102,7 @@ def _sumber(dasar, daftar_hec):
     return "Tidak ada nilai"
 
 
-def _satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir):
+def _satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir, giliran=None):
     masalah, peringatan = [], []
     pay = rows[0] if rows else None
     pay_type = pay.pay_type if pay else ""
@@ -150,6 +151,7 @@ def _satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir
         hasil = hitung_tunjangan(
             pay_type, k.payment_basis, dasar, daftar, awal, akhir,
             tgl_hadir if per_periode else [akhir],
+            giliran, k.monthly_timing or "Slip Pertama",
         )
         if hasil.get("error"):
             sel[kode] = {"error": hasil["error"]}
@@ -186,6 +188,7 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
     per_periode = mode == "Per Periode"
     info = []
     jadwal = None
+    giliran = None
 
     if per_periode:
         if not periode:
@@ -196,6 +199,7 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
             frappe.throw(_("Periode Gaji tidak ditemukan."))
         awal, akhir = getdate(p.period_start), getdate(p.period_end)
         jadwal = p.payroll_schedule
+        giliran = giliran_bulan(frappe.get_doc(PERIODE, periode))
         company = company or p.company
         info.append(_("Periode {0}: {1} sampai {2}, status {3}.").format(periode, awal, akhir, p.status))
     else:
@@ -271,7 +275,7 @@ def ambil_data(mode="Per Tanggal", tanggal=None, periode=None, company=None, dep
             disembunyi += 1
             continue
         whr = wh.get(he.erpnext_employee, []) if he.erpnext_employee else []
-        semua_baris.append(_satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir))
+        semua_baris.append(_satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir, giliran))
 
     if disembunyi:
         info.append(_("{0} karyawan tanpa baris gaji pada {1} disembunyikan. Centang 'Tampilkan yang belum punya gaji' untuk melihatnya.").format(

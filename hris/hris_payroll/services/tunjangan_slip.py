@@ -59,6 +59,8 @@ def susun_tunjangan(he, pay_type, awal, akhir, baris_hitung, giliran=None):
         for p in r.get("peringatan") or []:
             hasil["catatan"].append(_("Komponen {0}: {1}").format(k.name, _teks(p)))
             hasil["periksa"] = True
+        if r.get("bukan_giliran"):
+            hasil["catatan"].append(_("Komponen {0}: {1}.").format(k.name, cstr(r.get("dasar"))))
         jumlah = _rupiah(r.get("jumlah"))
         if jumlah <= 0:
             continue

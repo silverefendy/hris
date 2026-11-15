@@ -9,6 +9,7 @@ from frappe import _
 from frappe.utils import cstr, flt, getdate, now_datetime
 
 from hris.hris_payroll.doctype.hris_employee_pay.hris_employee_pay import boleh_baris
+from hris.hris_payroll.services.giliran_bulan import giliran_bulan
 from hris.hris_payroll.services.payroll_bpjs import hitung_bpjs_slip
 from hris.hris_payroll.services.payroll_pph21 import hitung_pph21_slip
 from hris.hris_payroll.services.tunjangan_slip import (
@@ -338,7 +339,7 @@ def proses_karyawan(period, he_name):
     if hasil.get("error"):
         return "dilewati", hasil["error"]
 
-    tunj = susun_tunjangan(he, gaji.pay_type, awal, akhir, baris_hitung)
+    tunj = susun_tunjangan(he, gaji.pay_type, awal, akhir, baris_hitung, giliran_bulan(period))
     if tunj["galat"]:
         pesan = pesan_galat(tunj["galat"])
         catat("galat", he.name, pesan)
