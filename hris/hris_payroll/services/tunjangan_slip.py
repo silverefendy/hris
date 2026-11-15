@@ -34,7 +34,7 @@ def _teks(x):
     return x if isinstance(x, str) else frappe.as_json(x)
 
 
-def susun_tunjangan(he, pay_type, awal, akhir, baris_hitung):
+def susun_tunjangan(he, pay_type, awal, akhir, baris_hitung, giliran=None):
     """Menghitung semua komponen aktif untuk satu karyawan.
 
     Mengembalikan {"komponen": [dict seperti keluaran hitung_komponen + kunci taxable],
@@ -49,7 +49,7 @@ def susun_tunjangan(he, pay_type, awal, akhir, baris_hitung):
     })
     ikut_pajak = saklar_pajak_hidup()
     for k in daftar:
-        r = hitung_tunjangan_karyawan(he.name, k.name, pay_type, str(awal), str(akhir), tanggal_hadir)
+        r = hitung_tunjangan_karyawan(he.name, k.name, pay_type, str(awal), str(akhir), tanggal_hadir, giliran)
         if r.get("error"):
             hasil["galat"].append((k.name, cstr(r["error"])))
             continue

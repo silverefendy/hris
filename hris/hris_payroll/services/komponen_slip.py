@@ -5,7 +5,8 @@ Dipakai slip (tunjangan_slip.py) dan Payroll Summary. hitung_tunjangan() murni (
 Aturan (keputusan 13 Nov 2026):
 - Per Hari Hadir (Harian dan Bulanan, K-140): dihitung per hari Hadir. HEC Tidak Berlaku = 0 hari itu; HEC Berlaku + nominal =
   nominal; HEC Berlaku tanpa nominal = nilai dasar, dan bila nilai dasar nol = 0 ditandai janggal.
-- Per Bulan / Per Slip: satu nilai per periode, tetap penuh. Hanya HEC yang menutup seluruh periode yang
+- Per Bulan / Per Slip: satu nilai per periode, tetap penuh. Per Bulan hanya dibayar di slip pertama atau terakhir
+  bulan bayar (Waktu Bayar di katalog) bila pemanggil memberi giliran; tanpa giliran = tiap slip (perilaku lama). Hanya HEC yang menutup seluruh periode yang
   mengubah nilai; HEC sebagian hari hanya menghasilkan peringatan.
 - Default tidak dapat (K-140): komponen hanya dibayar bila ada HEC Berlaku yang mencakup hari itu (Per Hari Hadir)
   atau menyentuh periode (Per Bulan / Per Slip). Tanpa HEC = Rp0. HEC Berlaku yang hanya mencakup sebagian periode:
@@ -125,11 +126,27 @@ def _per_periode(dasar, hec, awal, akhir):
     return {"jumlah": _rupiah(jumlah), "dasar": teks, "janggal": janggal, "peringatan": peringatan}
 
 
-def hitung_tunjangan(pay_type, payment_basis, nilai_dasar, pengecualian, awal, akhir, tanggal_hadir):
+def _bukan_giliran(waktu_bayar, giliran):
+    """Per Bulan sekali sebulan: True bila slip ini bukan giliran bayar. giliran=None = perilaku lama (tiap slip)."""
+    if giliran is None:
+        return False
+    kunci = "terakhir" if waktu_bayar == "Slip Terakhir" else "pertama"
+    return not giliran.get(kunci)
+
+
+def _teks_bukan_giliran(waktu_bayar):
+    if waktu_bayar == "Slip Terakhir":
+        return _("Dibayar sekali sebulan di slip terakhir bulan bayar; bukan slip ini")
+    return _("Dibayar sekali sebulan di slip pertama bulan bayar; bukan slip ini")
+
+
+def hitung_tunjangan(pay_type, payment_basis, nilai_dasar, pengecualian, awal, akhir, tanggal_hadir,
+                     giliran=None, waktu_bayar="Slip Pertama"):
     """Fungsi murni.
     nilai_dasar = {"nilai": angka, "berlaku": bool}
     pengecualian = [{name, status, amount, date_from, date_to}]
     tanggal_hadir = daftar tanggal berstatus Hadir (dipakai hanya untuk Per Hari Hadir).
+    giliran = {"pertama": bool, "terakhir": bool} atau None; waktu_bayar = "Slip Pertama" atau "Slip Terakhir" (hanya Per Bulan).
     Mengembalikan {"error"} atau {"jumlah" (rupiah bulat), "dasar", "janggal": [], "peringatan": []}.
     """
     if pay_type not in ("Bulanan", "Harian"):
@@ -144,6 +161,8 @@ def hitung_tunjangan(pay_type, payment_basis, nilai_dasar, pengecualian, awal, a
         ),
         key=lambda x: (x["dari"], str(x["name"] or "")),
     )
+    if payment_basis == "Per Bulan" and _bukan_giliran(waktu_bayar, giliran):
+        return {"jumlah": 0, "dasar": _teks_bukan_giliran(waktu_bayar), "janggal": [], "peringatan": []}
     if payment_basis == "Per Hari Hadir":
         return _per_hari(dasar, hec, tanggal_hadir)
     return _per_periode(dasar, hec, awal, akhir)
@@ -162,11 +181,11 @@ def ambil_pengecualian(employee, kode, awal, akhir):
     )
 
 
-def hitung_tunjangan_karyawan(employee, kode, pay_type, awal, akhir, tanggal_hadir):
+def hitung_tunjangan_karyawan(employee, kode, pay_type, awal, akhir, tanggal_hadir, giliran=None):
     """Membungkus: baca katalog, nilai dasar (Grup atau Department), dan HEC, lalu hitung."""
     from hris.hris_payroll.services.department_komponen import resolve_komponen_karyawan
 
-    komp = frappe.db.get_value(KATALOG, kode, ["component_name", "component_type", "payment_basis"], as_dict=True)
+    komp = frappe.db.get_value(KATALOG, kode, ["component_name", "component_type", "payment_basis", "monthly_timing"], as_dict=True)
     if not komp:
         return {"error": _("Komponen {0} tidak ada di katalog.").format(kode)}
     he = frappe.db.get_value("HRIS Employee", employee, ["department", "employee_group", "rule_follow"], as_dict=True)
@@ -179,7 +198,8 @@ def hitung_tunjangan_karyawan(employee, kode, pay_type, awal, akhir, tanggal_had
         [dict(h) for h in ambil_pengecualian(employee, kode, awal, akhir)],
         ambil_tingkat(he.department, he.employee_group, he.rule_follow, kode, awal, akhir),
     )
-    hasil = hitung_tunjangan(pay_type, komp.payment_basis, dasar, pengecualian, awal, akhir, tanggal_hadir)
+    hasil = hitung_tunjangan(pay_type, komp.payment_basis, dasar, pengecualian, awal, akhir, tanggal_hadir,
+                             giliran, komp.monthly_timing or "Slip Pertama")
     if not hasil.get("error"):
         hasil.update({"kode": kode, "nama": komp.component_name or kode,
                       "tipe": komp.component_type, "sumber": dasar.get("sumber")})
