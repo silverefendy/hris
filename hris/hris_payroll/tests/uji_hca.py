@@ -3,6 +3,8 @@
 Jalankan:
 bench --site hris-uji.local execute hris.hris_payroll.tests.uji_hca.jalankan
 """
+import re
+
 import frappe
 
 TABEL = "HRIS Component Assignment"
@@ -45,7 +47,7 @@ def jalankan():
 
     try:
         h1 = buat()
-        cek("A1 Grup valid: penamaan HCA dan Company dari Grup", h1.name.startswith("HCA-") and h1.company == GC, (h1.name, h1.company))
+        cek("A1 Grup valid: penamaan HCA dan Company dari Grup", re.match(r"^HCA-\d{4}-\d{4}$", h1.name) and h1.company == GC, (h1.name, h1.company))
         h2 = buat(scope_type="Department", department=D, employee_group=None)
         cek("A2 Department valid: Company dari Department dan termasuk anak bawaan aktif",
             h2.company == DC and int(h2.include_children) == 1, (h2.company, h2.include_children))

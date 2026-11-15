@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:HCA-{#####}",
+ "autoname": "format:HCA-{YY}{MM}-{####}",
  "creation": "2026-11-14 12:00:00.000000",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -148,7 +148,8 @@
   {
    "fieldname": "audit_trail_tab",
    "fieldtype": "Tab Break",
-   "label": "Audit Trail"
+   "label": "Audit Trail",
+   "depends_on": "eval:!doc.__islocal"
   },
   {
    "fieldname": "audit_trail_html",
@@ -158,7 +159,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-14 23:05:02.512685",
+ "modified": "2026-11-15 05:42:03.308692",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS Component Assignment",

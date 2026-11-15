@@ -90,6 +90,7 @@ Bila hitung massal terasa lambat, opsi optimasi: cache per Department dalam satu
 | E2 (DocType HCA) | `f2a122f` |
 | E3 (sambung ke slip dan Payroll Summary) | `adf5ef1` |
 | E4 dan E4b (pratinjau, indikator, company diisi otomatis) | `0098966`, `b84f5c1` |
+| E5 (penomoran HCA mengikuti K-30, tab audit) | lihat `git log` |
 | C dan C2 (alat ukur) | `f111a1f`, `47783d5` |
 
 ## 7. Pelajaran
@@ -99,7 +100,7 @@ Bila hitung massal terasa lambat, opsi optimasi: cache per Department dalam satu
 | Field wajib hanya-baca yang diisi server lolos uji skrip tetapi gagal di browser | Browser memeriksa kewajiban sebelum mengirim. DocType baru harus diuji di browser sekali. `company` HCA dibuat tidak wajib di browser, controller tetap menolak bila kosong, dan form mengisinya saat Department atau Grup dipilih |
 | Uji yang mengaktifkan komponen untuk pengujian browser mengganggu uji 3b | 3b menolak bagian database bila ada komponen aktif. Nonaktifkan lagi setelah uji browser |
 | Pengukuran dengan sampel kecil menyesatkan | Pengukuran pertama (2 karyawan ber-gaji) menunjukkan tambahan 14 ms yang ternyata derau. Pengukuran kedua memakai gaji sintetis ber-rollback |
-| Penomoran HCA melompat (misalnya `HCA-02213`) | Dugaan: nomor tidak ikut dibatalkan saat uji di-rollback. Kosmetik, belum diverifikasi |
+| Penomoran HCA tidak memuat YYMM (misalnya `HCA-02213`) | Melanggar butir 2 checklist DocType (K-30). Diperbaiki di E5 menjadi `HCA-YYMM-NNNN`; tab Audit Trail juga diberi `depends_on` (butir 4). Ditemukan saat membaca checklist, bukan oleh uji |
 
 ## 8. Tertunda
 
