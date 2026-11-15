@@ -16,3 +16,6 @@
 - Uji 3b melewati bagian database saat ada komponen aktif (diaktifkan untuk uji browser); setelah dinonaktifkan semua hijau (3b OK 34).
 - Pengukuran kecepatan: C (`f111a1f`) menyesatkan (2 karyawan ber-gaji); C2 (`47783d5`) dengan gaji sintetis: Payroll Summary 1078 baris sekitar 1,0 detik; slip sekitar 22 ms per karyawan (proyeksi 24 sampai 25 detik untuk 1078).
 - Belum: W6, memasukkan HCA ke K-102, K6, D3, Per Bulan pada slip mingguan, TER, PTKP, NPWP.
+- E5 (`4d686db`): HCA mengikuti checklist DocType (penomoran `HCA-YYMM-NNNN`, `depends_on` tab audit). Uji browser: nama `HCA-2611-2214` (nomor urut melanjutkan hitungan lama, tidak mulai dari 0001); Audit Trail mencatat pembuatan dan penonaktifan.
+- Dugaan nomor HCA melompat: hitungan seri tidak ikut di-rollback (alat ukur membuat sekitar 170 HCA); belum diverifikasi.
+- Tertunda: penamaan HEC (`HEC-{#####}` tanpa YYMM, tidak sesuai butir 2 checklist DocType), W6 (Payroll Summary lewat browser setelah restart).
