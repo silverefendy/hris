@@ -1,6 +1,6 @@
 # Checklist Malam Migrasi K-102 (produksi)
 
-Diperbarui: 12 November 2026
+Diperbarui: 15 November 2026
 
 Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`. Penjelasan lengkap: [deployment.md](deployment.md) dan [../progress/go-live.md](../progress/go-live.md) bagian 9.
 
@@ -35,10 +35,12 @@ Satu halaman untuk dibuka saat migrasi `HRIS Employee` di `erp.ciptamebel.co.id`
 - Durasi tiap langkah di produksi belum diketahui (log gladi resik: `/home/it/runbook_k102/jalankan_*.txt`).
 - `migrate` produksi juga membuat tabel `HRIS Employee Pay` (K-127, kosong) karena kodenya sudah ada di folder app yang sama. Ini tambahan murni; gladi resik K-102 dilakukan sebelum DocType ini ada. Setelah migrasi, role dan tabel baru ada di produksi.
 - `migrate` produksi juga membuat tabel `HRIS Department` dan `HRIS Department Rule` (K-136) dan menjalankan patch aturan akar (1 aturan: Department "All Departments", pengali lembur 1.0). Kode `payroll_slip.py` (4b) toleran: sebelum tabel ada memakai konstanta 1.0, sesudahnya membaca Department Rule. Patch bersifat idempoten (migrate kedua terbukti tanpa duplikasi). Bila pohon Department masih kosong saat migrate, patch dilewati; aturan akar dibuat oleh langkah 2b (`department salin`).
+- `migrate` produksi juga membuat tabel `HRIS Component Assignment` (HCA, K-140) beserta izinnya (`System Manager`, `HRIS Payroll Manager`, `HRIS Direksi`). Tabel kosong, tambahan murni. Kode K-140 (aturan default tidak dapat dan penggabungan HCA) ikut berlaku di produksi begitu proses web di-restart pada langkah 5; semua komponen masih nonaktif sehingga tidak ada slip yang berubah. Jangan aktifkan komponen sebelum diputuskan bersama HRD.
 - Bila ragu di tengah jalan, berhenti dan simpan keluaran terminal.
 
 ## Setelah migrasi
 - [ ] Catat hasil (jumlah dibuat, jumlah berhasil, galat bila ada) di session log.
 - [ ] Setelah migrate dan sebelum cek: `bash /home/it/runbook_k102/runbook_k102.sh department erp.ciptamebel.co.id coba`, lalu `salin`. Harapan: `HASIL: OK`, `Aturan akar aktif   : 1`, `DISIMPAN (commit)`. (Runbook ada di server, di luar repo.)
 - [ ] Pastikan `HRIS Department Rule` di erp berisi tepat 1 aturan akar (pengali lembur 1.0). Bila 0 atau lebih dari 1, jangan membuat slip; selidiki dulu.
+- [ ] Pastikan tabel `HRIS Component Assignment` ada (kosong) dan semua komponen di katalog `HRIS Pay Component` masih nonaktif.
 - [ ] Lanjut ke uji per peran, lihat [../progress/status.md](../progress/status.md) langkah berikutnya.

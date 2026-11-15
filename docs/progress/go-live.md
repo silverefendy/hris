@@ -243,6 +243,13 @@ Catatan 14 Nov 2026 (K-139, tunjangan pada slip):
 - Saklar `hris_tunjangan_ikut_pajak` di `site_config.json` bawaannya mati. Putuskan nilainya bersama HRD dan konsultan pajak sebelum slip nyata dihitung.
 - Sebelum aktif di produksi: ukur kecepatan pada 1078 karyawan dengan banyak komponen aktif.
 
+Catatan 15 Nov 2026 (K-140, komponen gaji):
+- Catatan 14 Nov di atas tentang Per Hari Hadir untuk karyawan Bulanan sudah usang: karyawan Bulanan dengan komponen Per Hari Hadir kini dihitung per hari Hadir (hari Hadir x nilai per hari).
+- Komponen dibayar hanya bila ada penetapan (HEC per karyawan atau HCA per Grup atau Department). Tanpa penetapan Rp0. Anggota baru Grup atau Department otomatis menerima bila HCA-nya berlaku.
+- Ukur kecepatan 1078 karyawan sudah dilakukan (data sintetis, site uji): Payroll Summary sekitar 1,0 detik; slip sekitar 22 ms per karyawan (proyeksi 24 sampai 25 detik). Ulangi di produksi setelah K-102 dengan komponen nyata.
+- Per Bulan dan Per Slip diperlakukan sama; karyawan slip mingguan menerima Per Bulan di setiap slip (belum diuji).
+- Tabel HCA wajib ikut `migrate` produksi (lihat [../operations/migrasi-k102-checklist.md](../operations/migrasi-k102-checklist.md)). Detail: [keputusan-2026-11-14-default-tidak-dapat.md](../decisions/keputusan-2026-11-14-default-tidak-dapat.md).
+
 ## 9. Migrasi produksi K-102 (menunggu jadwal)
 
 Tidak ada tanggal tetap. Dikerjakan saat Efendy diminta masuk di luar jam kerja (dihitung lembur). Efendy memberi tahu Claude sebelum mulai. Rincian langkah ada di `operations/deployment.md` dan versi satu halaman di `operations/migrasi-k102-checklist.md`; berikut ringkasannya.

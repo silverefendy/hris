@@ -1,6 +1,6 @@
 # Checklist DocType HRIS Baru
 
-Diperbarui: 28 Oktober 2026
+Diperbarui: 15 November 2026
 
 Aturan tetap untuk setiap DocType baru di app `hris`. Berlaku sejak K-29 dan K-30 (lihat [decisions/README.md](../decisions/README.md)).
 
@@ -17,3 +17,4 @@ Aturan tetap untuk setiap DocType baru di app `hris`. Berlaku sejak K-29 dan K-3
 | 9 | `mandatory_depends_on` tidak cukup | Hanya berlaku di browser. Wajib bersyarat harus dicek lagi di controller. |
 | 10 | Perubahan JSON DocType | Ubah `modified`, lalu `migrate` dan `clear-cache` dalam satu blok. Backup dulu. |
 | 11 | Uji lewat form di browser, termasuk tab audit | Uji skrip saja tidak cukup |
+| 12 | Field wajib (`reqd`) yang diisi otomatis oleh controller jangan dibuat hanya-baca dan wajib sekaligus | Browser memeriksa field wajib sebelum mengirim, jadi form tidak pernah tersimpan walau controller mengisinya. Buat tidak wajib di JSON (controller tetap menolak bila kosong), dan isi di form lewat `frm.set_value` saat field sumbernya dipilih. Ditemukan di HCA (K-140, E4b) |
