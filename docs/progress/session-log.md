@@ -190,3 +190,11 @@
 - Gladi K-102 di hris-uji lulus (fase 1 dan 2), Audit Trail bersih. Belum dijalankan di erp.
 - Commit: 66b4825, 7020e37, 297dc6a, dd3c1ea. Docs: bagian 17 keputusan Department, checklist K-102.
 - Tertunda: ukur slip massal, akun Operator/Supervisor, DR- Desember, E1/E2/E7/E8 ke HRD, jadwal K-102, pembaruan status.md.
+
+## 2026-11-16
+- Penamaan HEC mengikuti checklist DocType: `HEC-{YY}{MM}-{####}` (commit `9749707`). Nomor lama tidak diubah.
+- K-102: runbook di folder runbook dibaca. Temuan: gladi perlu diulang dengan cadangan produksi baru (cukup `fase1`); `cadangan` sebaiknya langsung disusul `mulai`; app `wms` di server berada di cabang fitur dan ikut `migrate` (diputuskan dibiarkan). `cek_pasca.sh` (hanya membaca) dibuat di folder runbook di luar repo dan lulus di `hris-uji.local`.
+- Per Bulan (K-141) selesai dan teruji: lihat [keputusan-2026-11-16-per-bulan.md](../decisions/keputusan-2026-11-16-per-bulan.md).
+- Riset peraturan PPh 21 (sumber sekunder: portal DJP dan media pajak; verifikasi ke HRD atau konsultan pajak): TER dipakai Januari sampai November dan Desember dihitung ulang dengan tarif Pasal 17; premi BPJS bagian pemberi kerja (Kesehatan, JKK, JKM) masuk bruto; tarif lebih tinggi tanpa NPWP tidak berlaku bila NIK valid; pekerja harian memakai TER harian (0% sampai Rp450.000 per hari); pengurang tahunan: biaya jabatan 5% (maksimal Rp6 juta setahun) dan iuran JHT/JP pegawai.
+- Keputusan Efendy: Harian dan Mingguan tidak dipotong pajak (toggle `pph21_enrolled` per karyawan sudah ada, bawaan mati); BPJS bagian perusahaan diinput manual per karyawan (opsi A; kolomnya belum ada); rekonsiliasi Desember "coba dulu"; saklar tunjangan ikut pajak dipindah ke pengaturan; tarif TER, PTKP, dan NPWP dibuat bisa diinput (termasuk impor CSV).
+- Belum: uji browser katalog Per Bulan; sesi 3 dan 4 PPh 21; gladi ulang dan K-102 (bersama W6); push commit lokal.

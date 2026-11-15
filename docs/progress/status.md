@@ -259,3 +259,8 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 5. Pembersihan site uji (hapus setelah migrasi aman, K-117; data gaji, periode, jadwal, dan user uji K-128 sudah dibersihkan 9 Nov; sisa site uji dibersihkan setelah migrasi aman) dan penghentian server dev port 8001 bila masih berjalan.
 6. Sebelum produksi: daftar di agent-api.md. Butir daftar 31 Oktober yang belum dilaporkan selesai (tarik celah data, perapian kecil, agen Windows, uji browser 5c-1) tetap berlaku.
 7. Permintaan ke HRD yang belum dikirim: slip contoh, format bank, daftar laporan, aturan cut-off, potongan, cuti, saldo awal; konfirmasi Kepala HRD soal lembur x1,0 (K-98).
+
+## Pembaruan 16 Nov 2026 (K-141)
+- Komponen Per Bulan kini dibayar sekali sebulan di slip pertama atau terakhir bulan bayar (pilihan Waktu Bayar per komponen). Selesai dan teruji di `hris-uji.local`; keputusan: [keputusan-2026-11-16-per-bulan.md](../decisions/keputusan-2026-11-16-per-bulan.md).
+- Berikutnya: pengaturan PPh 21 (sesi 3), impor tarif TER (sesi 4), gladi ulang dan K-102.
+- Bagian "Langkah berikutnya" di atas belum disesuaikan; dirapikan saat serah terima akhir sesi.
