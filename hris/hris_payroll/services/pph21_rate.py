@@ -45,9 +45,8 @@ def set_pasal17(on_date=None):
     """Baris tarif Pasal 17 pada set yang berlaku di on_date (Berlaku Sejak terbaru yang <= on_date), urut bruto_from."""
     on_date = getdate(on_date or today())
     baris = frappe.get_all(
-        "HRIS PPh21 Pasal17 Row",
-        filters={"parent": "HRIS PPh21 Settings", "parenttype": "HRIS PPh21 Settings",
-                 "parentfield": "pasal17_rates", "effective_from": ["<=", on_date]},
+        "HRIS PPh21 Pasal17 Rate",
+        filters={"enabled": 1, "effective_from": ["<=", on_date]},
         fields=["name", "effective_from", "bruto_from", "bruto_to", "open_ended", "rate_percent"],
         order_by="effective_from desc, bruto_from asc",
     )
