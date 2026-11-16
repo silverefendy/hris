@@ -1,0 +1,4 @@
+Berlaku Sejak,Aktif,Bruto Dari,Tanpa Batas Atas,Bruto Sampai,Tarif (%)
+01-01-2030,1,0,0,60000000,5
+01-01-2030,1,60000001,0,250000000,15
+01-01-2030,1,250000001,1,,25
