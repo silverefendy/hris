@@ -19,6 +19,8 @@
   "biaya_jabatan_persen",
   "column_break_2",
   "biaya_jabatan_maks_tahun",
+  "pasal17_tab",
+  "pasal17_rates",
   "audit_trail_tab",
   "audit_trail_html"
  ],
@@ -115,6 +117,18 @@
    "label": "Batas Biaya Jabatan Setahun"
   },
   {
+   "fieldname": "pasal17_tab",
+   "fieldtype": "Tab Break",
+   "label": "Tarif Pasal 17"
+  },
+  {
+   "description": "Tarif progresif Pasal 17 untuk rekonsiliasi Desember. Satu set = semua baris dengan Berlaku Sejak yang sama. Yang berlaku adalah set dengan Berlaku Sejak terbaru yang tidak melewati tanggal acuan; set lama tetap tersimpan. Isi dari peraturan yang sudah diverifikasi HRD atau konsultan pajak. Belum dipakai rumus slip.",
+   "fieldname": "pasal17_rates",
+   "fieldtype": "Table",
+   "label": "Tarif Progresif Pasal 17",
+   "options": "HRIS PPh21 Pasal17 Row"
+  },
+  {
    "fieldname": "audit_trail_tab",
    "fieldtype": "Tab Break",
    "label": "Audit Trail"
@@ -126,7 +140,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-16 17:00:00.000000",
+ "modified": "2026-11-16 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS PPh21 Settings",

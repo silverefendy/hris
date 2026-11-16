@@ -1,0 +1,68 @@
+{
+ "actions": [],
+ "creation": "2026-11-16 18:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "effective_from",
+  "bruto_from",
+  "open_ended",
+  "bruto_to",
+  "rate_percent"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "description": "Baris dengan tanggal yang sama membentuk satu set tarif.",
+   "fieldname": "effective_from",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Berlaku Sejak",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "description": "Penghasilan kena pajak setahun, batas bawah.",
+   "fieldname": "bruto_from",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Bruto Dari",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "open_ended",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Tanpa Batas Atas"
+  },
+  {
+   "columns": 2,
+   "depends_on": "eval:!doc.open_ended",
+   "fieldname": "bruto_to",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Bruto Sampai"
+  },
+  {
+   "columns": 1,
+   "fieldname": "rate_percent",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Tarif (%)",
+   "precision": "4",
+   "reqd": 1
+  }
+ ],
+ "istable": 1,
+ "modified": "2026-11-16 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Payroll",
+ "name": "HRIS PPh21 Pasal17 Row",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

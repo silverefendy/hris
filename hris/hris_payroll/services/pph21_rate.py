@@ -39,3 +39,29 @@ def find_rate(ter_category, bruto, on_date=None):
         if bruto >= flt(r.bruto_from) and atas_ok:
             return r
     return None
+
+
+def set_pasal17(on_date=None):
+    """Baris tarif Pasal 17 pada set yang berlaku di on_date (Berlaku Sejak terbaru yang <= on_date), urut bruto_from."""
+    on_date = getdate(on_date or today())
+    baris = frappe.get_all(
+        "HRIS PPh21 Pasal17 Row",
+        filters={"parent": "HRIS PPh21 Settings", "parenttype": "HRIS PPh21 Settings",
+                 "parentfield": "pasal17_rates", "effective_from": ["<=", on_date]},
+        fields=["name", "effective_from", "bruto_from", "bruto_to", "open_ended", "rate_percent"],
+        order_by="effective_from desc, bruto_from asc",
+    )
+    if not baris:
+        return []
+    set_berlaku = baris[0].effective_from
+    return [x for x in baris if x.effective_from == set_berlaku]
+
+
+def find_rate17(bruto, on_date=None):
+    """Kembalikan baris tarif Pasal 17 yang mencakup bruto setahun pada on_date, atau None."""
+    bruto = flt(bruto)
+    for x in set_pasal17(on_date):
+        atas_ok = bool(x.open_ended) or bruto <= flt(x.bruto_to)
+        if bruto >= flt(x.bruto_from) and atas_ok:
+            return x
+    return None
