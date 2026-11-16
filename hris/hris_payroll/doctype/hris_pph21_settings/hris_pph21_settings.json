@@ -9,6 +9,7 @@
   "ptkp_map",
   "section_npwp",
   "no_npwp_multiplier",
+  "nik_as_npwp",
   "column_break_1",
   "rounding",
   "section_exempt",
@@ -50,6 +51,13 @@
    "reqd": 1
   },
   {
+   "default": "1",
+   "description": "Bila NPWP kosong tetapi No KTP terisi, karyawan dianggap punya NPWP sehingga pengali tarif tanpa NPWP tidak dipakai. Verifikasi ke HRD atau konsultan pajak. Simpan pengaturan ini sekali agar pilihan tersimpan.",
+   "fieldname": "nik_as_npwp",
+   "fieldtype": "Check",
+   "label": "KTP Terisi Dianggap Punya NPWP"
+  },
+  {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
   },
@@ -84,7 +92,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-10 15:40:00.000000",
+ "modified": "2026-11-16 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS PPh21 Settings",

@@ -9,7 +9,7 @@ from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal
 
 import frappe
 from frappe import _
-from frappe.utils import get_first_day, get_last_day, getdate
+from frappe.utils import cint, get_first_day, get_last_day, getdate
 
 from hris.hris_payroll.services import payroll_bpjs as bp
 from hris.hris_payroll.services.pph21_rate import find_rate
@@ -34,9 +34,15 @@ def _lewati(pesan_teks):
 
 
 # ---------- data ----------
+def _nik_setara_npwp(st):
+    """Pengaturan 'KTP Terisi Dianggap Punya NPWP'. Belum pernah disimpan (None) = bawaan hidup."""
+    nilai = st.get("nik_as_npwp")
+    return True if nilai is None else bool(cint(nilai))
+
+
 def _data_karyawan(he):
     # Query langsung agar tidak terhalang izin field (permlevel) pemanggil.
-    return frappe.db.get_value("HRIS Employee", he.name, ["pph21_enrolled", "ptkp_status", "npwp"], as_dict=True) or {}
+    return frappe.db.get_value("HRIS Employee", he.name, ["pph21_enrolled", "ptkp_status", "npwp", "ktp_number"], as_dict=True) or {}
 
 
 def _slip_terakhir(period):
@@ -201,12 +207,18 @@ def hitung_pph21_slip(he, period, gaji, hasil):
 
     tarif = _dec(baris_tarif.rate_percent)
     punya_npwp = bool((data.get("npwp") or "").strip())
+    pakai_nik = False
+    if not punya_npwp and _nik_setara_npwp(st) and (data.get("ktp_number") or "").strip():
+        punya_npwp = True
+        pakai_nik = True
     pengali = Decimal(1) if punya_npwp else _dec(st.no_npwp_multiplier if st.no_npwp_multiplier else 1)
     mentah = bruto * tarif / Decimal(100) * pengali
     mode = ROUND_FLOOR if (st.rounding or "Ke Bawah") == "Ke Bawah" else ROUND_HALF_UP
     pajak = int(mentah.quantize(Decimal(1), rounding=mode))
     tarif_txt = format(tarif.normalize(), "f")
     pengali_txt = "" if pengali == 1 else _(" x pengali tanpa NPWP {0}").format(format(pengali.normalize(), "f"))
+    if pakai_nik and _dec(st.no_npwp_multiplier if st.no_npwp_multiplier else 1) != 1:
+        pengali_txt = _(" (NIK dipakai sebagai pengganti NPWP)")
 
     komponen = []
     if pajak > 0:
