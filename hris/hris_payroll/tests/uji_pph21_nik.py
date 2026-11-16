@@ -45,10 +45,10 @@ def jalankan():
         st.enabled = 1
         st.no_npwp_multiplier = 1.2
         st.nik_as_npwp = 1
-        st.append("ptkp_map", {"ptkp_status": "ZZ/0", "ter_category": "UJINIK"})
-        st.save(ignore_permissions=True)
         frappe.get_doc({"doctype": RATE, "ter_category": "UJINIK", "effective_from": "2030-03-01",
                         "enabled": 1, "bruto_from": 0, "open_ended": 1, "rate_percent": 5}).insert(ignore_permissions=True)
+        st.append("ptkp_map", {"ptkp_status": "ZZ/0", "ter_category": "UJINIK"})
+        st.save(ignore_permissions=True)
         pph._slip_saat_ini = lambda he, period: (None, Decimal(0))
         pph._slip_lain = lambda he, period, nama_ada, bebas: (0, Decimal(0), None)
         pph._slip_terakhir = lambda period: True

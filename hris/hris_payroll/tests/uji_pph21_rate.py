@@ -84,6 +84,7 @@ try:
     s = frappe.get_doc("HRIS PPh21 Settings")
     s.set("ptkp_map", [])
     s.append("ptkp_map", {"ptkp_status": "tk/0", "ter_category": "a"})
+    baris("A", 0, None, 1, terbuka=1)
     s.no_npwp_multiplier = 1.25
     s.save()
     s.reload()

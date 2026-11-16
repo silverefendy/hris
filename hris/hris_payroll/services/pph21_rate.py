@@ -64,3 +64,9 @@ def find_rate17(bruto, on_date=None):
         if bruto >= flt(x.bruto_from) and atas_ok:
             return x
     return None
+
+
+def kategori_ter_aktif():
+    """Himpunan kategori TER (huruf besar) yang punya baris tarif aktif."""
+    daftar = frappe.get_all("HRIS PPh21 TER Rate", filters={"enabled": 1}, pluck="ter_category")
+    return {(k or "").strip().upper() for k in daftar if (k or "").strip()}

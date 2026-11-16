@@ -41,6 +41,8 @@ def jalankan():
     persen0 = frappe.db.get_single_value(SETTINGS, "biaya_jabatan_persen")
     maks0 = frappe.db.get_single_value(SETTINGS, "biaya_jabatan_maks_tahun")
     try:
+        frappe.get_doc({"doctype": "HRIS PPh21 TER Rate", "ter_category": "UJIP", "effective_from": "2030-01-01",
+                        "enabled": 1, "bruto_from": 0, "open_ended": 1, "rate_percent": 1}).insert(ignore_permissions=True)
         simpan(baris=[{"ptkp_status": "ZZ/0", "ter_category": "UJIP", "ptkp_amount": 1000000}])
         r = frappe.get_doc(SETTINGS).ptkp_map
         cek("P1 PTKP nominal tersimpan dan terbaca kembali", len(r) == 1 and flt(r[0].ptkp_amount) == 1000000, [x.as_dict().get("ptkp_amount") for x in r])

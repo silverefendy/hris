@@ -2,7 +2,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
 
-from hris.hris_payroll.services.pph21_rate import pesan
+from hris.hris_payroll.services.pph21_rate import kategori_ter_aktif, pesan
 
 BERWENANG = "HRD (HRIS HR Admin) atau System Manager"
 
@@ -18,6 +18,7 @@ class HRISPPh21Settings(Document):
                       f"Nilai yang diisi: {self.no_npwp_multiplier}.",
                       "Isi 1 bila NPWP tidak memengaruhi tarif.", BERWENANG),
                 title="Pengaturan PPh 21 tidak valid")
+        self._cek_kategori_ter()
 
     def _cek_pemetaan(self):
         terlihat = set()
@@ -63,3 +64,21 @@ class HRISPPh21Settings(Document):
                 pesan("Batas biaya jabatan setahun negatif.", f"Nilai: {self.biaya_jabatan_maks_tahun}.",
                       "Isi 0 atau lebih, atau kosongkan.", BERWENANG),
                 title="Biaya jabatan tidak valid")
+
+    def _cek_kategori_ter(self):
+        ada = kategori_ter_aktif()
+        for row in self.ptkp_map or []:
+            if row.ter_category not in ada:
+                frappe.throw(
+                    pesan(f"Kategori TER {row.ter_category} pada baris {row.idx} tidak ada di Tarif TER yang aktif.",
+                          "Yang tersedia: " + (", ".join(sorted(ada)) or "(belum ada tarif TER aktif)") + ".",
+                          "Isi Tarif TER lebih dulu, lalu pilih kategori yang ada.", BERWENANG),
+                    title="Kategori TER tidak dikenal")
+
+
+@frappe.whitelist()
+def kategori_ter():
+    """Daftar kategori TER aktif untuk dropdown di form Settings."""
+    if not frappe.has_permission("HRIS PPh21 TER Rate", "read"):
+        frappe.throw("Tidak berwenang membaca Tarif TER.", frappe.PermissionError)
+    return sorted(kategori_ter_aktif())

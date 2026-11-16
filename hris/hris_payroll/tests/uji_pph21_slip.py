@@ -128,7 +128,9 @@ try:
     cek("U9 tarif 0%: tanpa potongan, catatan menyebut tidak ada potongan",
         not h["komponen"] and "tidak ada potongan" in h["catatan"][0], h)
 
+    tarif("UJIZ", 0, None, 1, terbuka=1)
     atur(peta={"TK/0": "UJIZ"})
+    frappe.db.set_value("HRIS PPh21 TER Rate", {"ter_category": "UJIZ"}, "enabled", 0)
     baru(lain=(3, 7500000, None), jadwal=4)
     h = pp.hitung_pph21_slip(HE, PERIODE, None, H4)
     cek("U10 tarif tidak ketemu: dilewati dengan pesan", "Tarif TER tidak ditemukan" in h.get("dilewati", ""), h)
