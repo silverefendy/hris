@@ -11,6 +11,7 @@ class HRISPPh21Settings(Document):
     def validate(self):
         self._cek_pemetaan()
         self._cek_komponen()
+        self._cek_biaya_jabatan()
         if flt(self.no_npwp_multiplier) <= 0:
             frappe.throw(
                 pesan("Pengali tarif tanpa NPWP harus lebih dari 0.",
@@ -29,6 +30,12 @@ class HRISPPh21Settings(Document):
                           "Satu status hanya boleh dipetakan ke satu kategori.",
                           "Hapus baris ganda dan simpan lagi.", BERWENANG),
                     title="Pemetaan PTKP ganda")
+            if flt(row.ptkp_amount) < 0:
+                frappe.throw(
+                    pesan(f"PTKP Nominal negatif pada status {row.ptkp_status} (baris {row.idx}).",
+                          f"Nilai: {row.ptkp_amount}.",
+                          "Isi 0 atau lebih, atau kosongkan.", BERWENANG),
+                    title="PTKP nominal tidak valid")
             terlihat.add(row.ptkp_status)
 
     def _cek_komponen(self):
@@ -43,3 +50,16 @@ class HRISPPh21Settings(Document):
                           "Hapus baris ganda dan simpan lagi.", BERWENANG),
                     title="Komponen ganda")
             terlihat.add(kunci)
+
+    def _cek_biaya_jabatan(self):
+        persen = flt(self.biaya_jabatan_persen)
+        if persen < 0 or persen > 100:
+            frappe.throw(
+                pesan("Biaya jabatan (%) harus antara 0 dan 100.", f"Nilai: {self.biaya_jabatan_persen}.",
+                      "Isi persen, misalnya 5 untuk 5%, atau kosongkan.", BERWENANG),
+                title="Biaya jabatan tidak valid")
+        if flt(self.biaya_jabatan_maks_tahun) < 0:
+            frappe.throw(
+                pesan("Batas biaya jabatan setahun negatif.", f"Nilai: {self.biaya_jabatan_maks_tahun}.",
+                      "Isi 0 atau lebih, atau kosongkan.", BERWENANG),
+                title="Biaya jabatan tidak valid")

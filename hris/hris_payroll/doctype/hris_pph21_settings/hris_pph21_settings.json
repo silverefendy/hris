@@ -15,6 +15,10 @@
   "rounding",
   "section_exempt",
   "exempt_components",
+  "section_pengurang",
+  "biaya_jabatan_persen",
+  "column_break_2",
+  "biaya_jabatan_maks_tahun",
   "audit_trail_tab",
   "audit_trail_html"
  ],
@@ -89,6 +93,28 @@
    "options": "HRIS PPh21 Exempt Item"
   },
   {
+   "fieldname": "section_pengurang",
+   "fieldtype": "Section Break",
+   "label": "Pengurang Tahunan (untuk Rekonsiliasi Desember)"
+  },
+  {
+   "description": "Persen biaya jabatan. Isi dari peraturan yang sudah diverifikasi HRD atau konsultan pajak. Kosong = belum diisi. Belum dipakai rumus slip.",
+   "fieldname": "biaya_jabatan_persen",
+   "fieldtype": "Float",
+   "label": "Biaya Jabatan (%)",
+   "precision": "4"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Batas biaya jabatan dalam setahun (rupiah). Batas bulanan dihitung dari angka ini. Kosong = belum diisi.",
+   "fieldname": "biaya_jabatan_maks_tahun",
+   "fieldtype": "Currency",
+   "label": "Batas Biaya Jabatan Setahun"
+  },
+  {
    "fieldname": "audit_trail_tab",
    "fieldtype": "Tab Break",
    "label": "Audit Trail"
@@ -100,7 +126,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-16 16:00:00.000000",
+ "modified": "2026-11-16 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS PPh21 Settings",

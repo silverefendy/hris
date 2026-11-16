@@ -6,7 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "ptkp_status",
-  "ter_category"
+  "ter_category",
+  "ptkp_amount"
  ],
  "fields": [
   {
@@ -26,10 +27,18 @@
    "in_list_view": 1,
    "label": "Kategori TER",
    "reqd": 1
+  },
+  {
+   "columns": 2,
+   "description": "Nominal PTKP setahun dalam rupiah. Diisi HRD dari peraturan yang sudah diverifikasi. Belum dipakai rumus slip.",
+   "fieldname": "ptkp_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "PTKP Nominal"
   }
  ],
  "istable": 1,
- "modified": "2026-11-10 15:40:00.000000",
+ "modified": "2026-11-16 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS PPh21 PTKP Map",
