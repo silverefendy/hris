@@ -18,7 +18,17 @@ KATALOG = "HRIS Pay Component"
 ITEM = "HRIS Payroll Slip Item"
 PAY = "HRIS Employee Pay"
 EMP = "HRIS Employee"
-SAKLAR = ts.SAKLAR
+SETTINGS = "HRIS PPh21 Settings"
+
+
+def baca_saklar():
+    return frappe.db.get_single_value(SETTINGS, "tunjangan_ikut_pajak")
+
+
+def atur_saklar(nilai):
+    """Tulis saklar ke Settings (di dalam transaksi uji; di-rollback). None, 0, "0" = mati."""
+    hidup = nilai is not None and str(nilai).strip() not in ("", "0")
+    frappe.db.set_single_value(SETTINGS, "tunjangan_ikut_pajak", 1 if hidup else 0)
 
 
 def baca(nama):
@@ -131,7 +141,7 @@ def uji_database(cek, lewati):
         "ada baris Manual" in (t.calc_notes or ""), (t.calc_notes or "")[:200])
 
     # ---- U3 saklar hidup ----
-    frappe.conf[SAKLAR] = 1
+    atur_saklar(1)
     hitung_ulang()
     baris = baca(nama)
     b = [r for r in baris if r.component == nama_bonus and r.source == "Otomatis"]
@@ -139,7 +149,7 @@ def uji_database(cek, lewati):
     lain_hidup = pph._slip_lain(he, period, None, set())[1]
     cek("U3b PPh 21 slip lain: tunjangan ikut bruto, selisih 12.345",
         lain_hidup - lain_mati == 12345 and lain_hidup == bruto_kena_pajak(baris), (lain_hidup, lain_mati))
-    frappe.conf.pop(SAKLAR, None)
+    atur_saklar(None)
 
     # ---- U4 Potongan (K3) ----
     sebelum_pot = total(nama)
@@ -240,15 +250,15 @@ def jalankan():
     awal_item = frappe.db.count(ITEM)
     awal_slip = frappe.db.count(SLIP)
     foto0 = foto()
-    saklar_asli = frappe.conf.get(SAKLAR)
+    saklar_asli = baca_saklar()
     try:
         # ---- murni ----
-        frappe.conf.pop(SAKLAR, None)
+        atur_saklar(None)
         cek("M1 tanpa kunci: saklar mati", ts.saklar_pajak_hidup() is False)
         for nilai, harap in ((1, True), ("1", True), (0, False), ("0", False)):
-            frappe.conf[SAKLAR] = nilai
+            atur_saklar(nilai)
             cek("M2 nilai %r -> %s" % (nilai, harap), ts.saklar_pajak_hidup() is harap)
-        frappe.conf.pop(SAKLAR, None)
+        atur_saklar(None)
         komp = [
             {"nama": "Gaji Pokok", "tipe": "Pendapatan", "jumlah": 3000000},
             {"nama": "Bonus", "tipe": "Pendapatan", "jumlah": 12345, "taxable": 0},
@@ -272,9 +282,9 @@ def jalankan():
         frappe.db.rollback()
         frappe.flags[ts.KUNCI] = None
         if saklar_asli is None:
-            frappe.conf.pop(SAKLAR, None)
+            atur_saklar(None)
         else:
-            frappe.conf[SAKLAR] = saklar_asli
+            atur_saklar(saklar_asli)
 
     cek("Z1 tidak ada sisa HEC uji", frappe.db.count(TABEL) == awal_hec, (frappe.db.count(TABEL), awal_hec))
     cek("Z2 slip dan baris slip kembali seperti semula",

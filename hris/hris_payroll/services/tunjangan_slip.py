@@ -1,7 +1,7 @@
 """Tunjangan dan potongan komponen pada HRIS Payroll Slip (3b).
 
 Memakai hitung_tunjangan_karyawan (komponen_slip.py) untuk tiap komponen aktif di katalog HRIS Pay Component.
-Saklar K1: kunci hris_tunjangan_ikut_pajak di site_config.json (bawaan mati). Mati: tunjangan tidak ikut bruto PPh 21.
+Saklar K1 (dipindah di K-142): centang Tunjangan Ikut Dasar PPh 21 di HRIS PPh21 Settings (bawaan mati). Mati: tunjangan tidak ikut bruto PPh 21.
 """
 
 from decimal import ROUND_HALF_UP, Decimal
@@ -14,7 +14,6 @@ from hris.hris_payroll.services.komponen_slip import hitung_tunjangan_karyawan
 
 KATALOG = "HRIS Pay Component"
 PERIOD = "HRIS Payroll Period"
-SAKLAR = "hris_tunjangan_ikut_pajak"
 PERAN_PEMERIKSA = "HRIS Payroll Manager"
 KUNCI = "hris_slip_tunjangan"
 CONTOH_MAKS = 5
@@ -22,8 +21,8 @@ BERWENANG = "HRD (HRIS HR Admin atau HRIS Employee Admin)"
 
 
 def saklar_pajak_hidup():
-    """True bila tunjangan boleh ikut dasar PPh 21 (kunci site_config hris_tunjangan_ikut_pajak bernilai 1)."""
-    return bool(cint(frappe.conf.get(SAKLAR)))
+    """True bila tunjangan boleh ikut dasar PPh 21 (centang tunjangan_ikut_pajak di HRIS PPh21 Settings)."""
+    return bool(cint(frappe.db.get_single_value("HRIS PPh21 Settings", "tunjangan_ikut_pajak")))
 
 
 def _rupiah(nilai):

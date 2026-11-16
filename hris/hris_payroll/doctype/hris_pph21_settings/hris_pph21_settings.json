@@ -10,6 +10,7 @@
   "section_npwp",
   "no_npwp_multiplier",
   "nik_as_npwp",
+  "tunjangan_ikut_pajak",
   "column_break_1",
   "rounding",
   "section_exempt",
@@ -58,6 +59,13 @@
    "label": "KTP Terisi Dianggap Punya NPWP"
   },
   {
+   "default": "0",
+   "description": "Mati: tunjangan tidak ikut bruto PPh 21 walau komponennya bercentang Kena Pajak. Hidup: komponen bercentang Kena Pajak ikut bruto. Putuskan bersama HRD atau konsultan pajak.",
+   "fieldname": "tunjangan_ikut_pajak",
+   "fieldtype": "Check",
+   "label": "Tunjangan Ikut Dasar PPh 21"
+  },
+  {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
   },
@@ -92,7 +100,7 @@
   }
  ],
  "issingle": 1,
- "modified": "2026-11-16 15:00:00.000000",
+ "modified": "2026-11-16 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "HRIS Payroll",
  "name": "HRIS PPh21 Settings",
