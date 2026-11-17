@@ -108,6 +108,12 @@ cmd_mulai() {
   judul "5/6 Jalankan migrasi"
   bash "$RB" jalankan "$PROD" || henti "jalankan"
 
+  judul "5b/6 Cek pasca (hanya membaca)"
+  if ! bash "$LOG_DIR/cek_pasca.sh" "$PROD"; then
+    echo "Cek pasca menemukan hal yang perlu dicek (lihat di atas)."
+    tanya "Tetap lanjut ke pertanyaan mematikan maintenance?" || { echo "Maintenance tetap ON. Periksa dulu, lalu: bash $RB maintenance $PROD off"; exit 0; }
+  fi
+
   judul "6/6 Maintenance OFF"
   tanya "Semua LULUS. Matikan maintenance sekarang?" || { echo "Maintenance tetap ON. Matikan nanti: bash $RB maintenance $PROD off"; exit 0; }
   bash "$RB" maintenance "$PROD" off || GAGAL "maintenance off"

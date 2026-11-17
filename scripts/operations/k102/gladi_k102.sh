@@ -40,6 +40,12 @@ fase1)
   bash "$RB" department "$UJI" coba || GAGAL "langkah 2b (department coba)"
   bash "$RB" department "$UJI" salin || GAGAL "langkah 2b (department salin)"
 
+  judul "Langkah 2c: cek pasca (tabel K-140 sampai K-142, izin Import, Pasal 17)"
+  if ! bash "$LOG_DIR/cek_pasca.sh" "$UJI"; then
+    read -r -p "Cek pasca menemukan hal yang perlu dicek. Lanjut gladi? (ketik 'ya'): " JAWAB
+    [ "$JAWAB" = "ya" ] || GAGAL "dihentikan di langkah 2c (cek pasca)"
+  fi
+
   judul "Langkah 3/5: kondisi awal $UJI"
   bash "$RB" awal "$UJI" || GAGAL "langkah 3 (awal)"
 
