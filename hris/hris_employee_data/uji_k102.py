@@ -1,4 +1,4 @@
-"""Uji K-102: logika pemetaan dan pembanding. Hanya baca, tidak menulis database.
+"""Uji K-102: logika pemetaan dan pembanding. Menulis satu Employee ZZ sementara (M10, M11), selalu di-rollback.
 
 bench --site hris-uji.local execute hris.hris_employee_data.uji_k102.periksa
 """
@@ -45,6 +45,24 @@ def _emp(**kw):
     }
     isi.update(kw)
     return frappe._dict(isi)
+
+
+def _buat_employee_erp(perusahaan):
+    """Employee ERPNext buatan sendiri (ID ZZ), supaya uji tidak bergantung data nyata. Wajib di-rollback."""
+    doc = frappe.get_doc(
+        {
+            "doctype": "Employee",
+            "first_name": "ZZ Uji K102 ERP",
+            "gender": "Male",
+            "date_of_birth": "1990-05-10",
+            "date_of_joining": "2020-01-01",
+            "company": perusahaan,
+            "status": "Active",
+            "attendance_device_id": "ZZ-K102-ERP",
+        }
+    )
+    doc.insert(ignore_permissions=True)
+    return doc
 
 
 def _ada(teks, daftar):
@@ -112,13 +130,8 @@ def periksa():
         galat or "TIDAK ditolak",
     )
 
-    pemegang = frappe.db.get_value(
-        "Employee",
-        {"attendance_device_id": ["!=", ""]},
-        ["name", "attendance_device_id"],
-        as_dict=True,
-    )
-    if pemegang:
+    try:
+        pemegang = _buat_employee_erp(perusahaan)
         nilai, _ = m.petakan(
             _emp(
                 company=perusahaan,
@@ -135,8 +148,8 @@ def periksa():
             bool(galat) and pemegang.name in galat,
             galat or "TIDAK ditolak",
         )
-    else:
-        _catat("M10/M11 butuh Employee ber-ID Finger", False, "tidak ada data")
+    finally:
+        frappe.db.rollback()
 
     emp = _emp(company=perusahaan, first_name="Uji", last_name="Satu", employee_name="Uji Satu")
     nilai, _ = m.petakan(emp)

@@ -31,7 +31,7 @@ Tidak ada yang menyentuh DocType TER atau Pasal 17. Perbaikan ditangani sebagai 
 | Uji | Hasil 16 November 2026 | Dugaan penyebab | Status bukti |
 |---|---|---|---|
 | `uji_hris_employee`, `uji_sinkron`, `uji_tampilan` | Berhenti dengan galat validasi | Uji lebih tua dari validasi K-122, K-123, K-126 | Dugaan |
-| `uji_k102`, `uji_k126` | 2 gagal masing-masing | ID Finger 11356 kini dipegang `HRE-01097` (Aktif) | Dugaan kuat |
+| `uji_k102`, `uji_k126` | 2 gagal masing-masing | Uji memilih Employee ERPNext pertama ber-ID Finger dari data nyata (`HR-EMP-01078`, ID 11356, tertaut ke `HRE-01097`, orang yang sama) | Terbukti. Diperbaiki 17 November 2026 |
 | `uji_bpjs_peserta` | 1 gagal (S10) | S10 menghitung enam centang termasuk PPh 21. Satu baris (HRE-00335) punya `pph21_enrolled` = 1, diubah 10 November 2026 16:54. Lima centang BPJS bernilai 0. Asal perubahan belum diketahui | Terbukti sebagian (barisnya), penyebab belum |
 | `uji_izin` | 12 gagal | Bukan bug izin. Penjalan tidak memanggil `siapkan` (user uji tidak ada). Dengan `siapkan` lalu `periksa`: 15 OK, 0 GAGAL (17 November 2026) | Terbukti |
 

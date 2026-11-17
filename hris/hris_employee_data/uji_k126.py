@@ -32,6 +32,24 @@ def _buat(perusahaan, **kw):
     return doc
 
 
+def _buat_employee_erp(perusahaan):
+    """Employee ERPNext buatan sendiri (ID ZZ), supaya uji tidak bergantung data nyata. Wajib di-rollback."""
+    doc = frappe.get_doc(
+        {
+            "doctype": "Employee",
+            "first_name": "ZZ Uji K126 ERP",
+            "gender": "Male",
+            "date_of_birth": "1990-05-10",
+            "date_of_joining": "2020-01-01",
+            "company": perusahaan,
+            "status": "Active",
+            "attendance_device_id": "ZZ-K126-ERP",
+        }
+    )
+    doc.insert(ignore_permissions=True)
+    return doc
+
+
 def _harus_ditolak(nama, fungsi, kata_kunci):
     try:
         fungsi()
@@ -56,17 +74,9 @@ def _harus_lolos(nama, fungsi):
 def periksa():
     hasil.clear()
     perusahaan = frappe.get_all("Company", pluck="name", limit=1)[0]
-    pemegang = frappe.db.get_value(
-        "Employee",
-        {"attendance_device_id": ["!=", ""]},
-        ["name", "attendance_device_id"],
-        as_dict=True,
-    )
-    if not pemegang:
-        print("GAGAL  tidak ada Employee ber-ID Finger di site ini, uji V2 tidak bisa jalan")
-        return "batal"
-
     try:
+        pemegang = _buat_employee_erp(perusahaan)
+
         # V1: tanggal
         _harus_ditolak(
             "V1-1 gabung sebelum lahir ditolak",
