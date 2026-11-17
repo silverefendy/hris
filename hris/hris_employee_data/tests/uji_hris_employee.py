@@ -117,20 +117,30 @@ def jalankan():
             status="Resign",
             resign_date="2026-06-01",
         )
-        r2 = _buat(employee_name="Uji Q", attendance_device_id="ZZ-UJI-2")
         cek(
-            "20. ID finger sama dengan karyawan Resign diterima",
-            r1.status == "Resign" and r2.attendance_device_id == "ZZ-UJI-2",
+            "20. ID finger karyawan Resign tidak bisa dipakai ulang (unik di Employee ERPNext, K-126 V2)",
+            _ditolak_pesan(
+                lambda: _buat(employee_name="Uji Q", attendance_device_id="ZZ-UJI-2"),
+                "Employee ERPNext",
+            ),
         )
+        a1.reload()
         a1.save(ignore_permissions=True)
         cek(
             "21. simpan ulang dokumen sendiri tidak dianggap ganda",
             a1.attendance_device_id == "ZZ-UJI-1",
         )
+        r1.reload()
         r1.status = "Aktif"
+        try:
+            r1.save(ignore_permissions=True)
+            reaktivasi_ok = True
+        except Exception as exc:
+            reaktivasi_ok = False
+            print("INFO    galat reaktivasi: %s" % str(exc)[:150])
         cek(
-            "22. mengaktifkan kembali dengan ID yang sudah dipakai ditolak",
-            _ditolak_pesan(lambda: r1.save(ignore_permissions=True), "ID Finger"),
+            "22. mengaktifkan kembali dengan ID miliknya sendiri diterima, tanggal resign dikosongkan",
+            reaktivasi_ok and r1.status == "Aktif" and not r1.resign_date and r1.attendance_device_id == "ZZ-UJI-2",
         )
     finally:
         frappe.db.rollback()

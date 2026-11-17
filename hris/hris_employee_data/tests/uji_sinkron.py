@@ -1,3 +1,5 @@
+from unittest import mock
+
 import frappe
 
 from hris.hris_employee_data.services import employee_sync
@@ -127,11 +129,13 @@ def jalankan():
         )
 
         awal = len(frappe.local.message_log)
-        e = _buat(
-            employee_name="Uji Sinkron E",
-            birth_date="2000-01-01",
-            date_of_joining="1999-01-01",
-        )
+
+        def _galat_simulasi(doc):
+            frappe.throw("Galat simulasi sinkron")
+
+        # K-126: tanggal tidak valid kini ditolak di HRIS, jadi kegagalan sinkron disimulasikan.
+        with mock.patch.object(employee_sync, "_terapkan", side_effect=_galat_simulasi):
+            e = _buat(employee_name="Uji Sinkron E")
         cek(
             "12. galat sinkron: HRIS tersimpan, status Gagal, ada pesan",
             frappe.db.exists("HRIS Employee", e.name)

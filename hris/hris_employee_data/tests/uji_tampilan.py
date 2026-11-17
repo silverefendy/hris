@@ -25,12 +25,15 @@ def siapkan(password):
     _buat_user(USER_HR, "Uji HR", "HR User", password)
     _buat_user(USER_PAY, "Uji Payroll", "HRIS Payroll Admin", password)
     if not frappe.db.exists("HRIS Employee", {"employee_name": DOC_NAMA}):
-        frappe.get_doc({
+        doc = frappe.get_doc({
             "doctype": "HRIS Employee", "employee_name": DOC_NAMA,
             "company": frappe.db.get_value("Company", {}, "name"),
             "date_of_joining": "2026-01-01",
+            "gender": "Laki-laki", "birth_date": "1990-05-10",
             "ktp_number": "9999999999999999", "bank_account_number": "000111222",
-        }).insert(ignore_permissions=True)
+        })
+        doc.flags.skip_sync = True
+        doc.insert(ignore_permissions=True)
     frappe.db.commit()
     print("user dan dokumen uji siap")
     return "siap"
@@ -82,6 +85,7 @@ def periksa_audit():
         return "berhenti"
     d = frappe.get_doc("HRIS Employee", nama)
     d.bank_account_number = "999888777" if d.bank_account_number != "999888777" else "000111222"
+    d.flags.skip_sync = True
     d.save(ignore_permissions=True)
     frappe.db.commit()
 
