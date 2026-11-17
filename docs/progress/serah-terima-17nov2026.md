@@ -67,3 +67,8 @@ Cakupan: K-142 sesi 4 (impor CSV tarif PPh 21) dan perbaikan seluruh uji usang. 
 - Butir 7.4 selesai: hanya tiga modul berfungsi ganda dan ketiganya sudah ditangani.
 - Dokumen keputusan K-142 dibuat: [../decisions/keputusan-2026-11-17-k142.md](../decisions/keputusan-2026-11-17-k142.md).
 - Masih terbuka: butir 7.2 (dokumen `site_config`, runbook K-102 di repo, sidebar), 7.3 (S10b), 7.5 (kredensial Git). Jalur teknis berikutnya: gladi ulang `fase1` dan K-102.
+
+## 9. Pembaruan susulan (17 November 2026, sore)
+
+- W6 lulus, gladi resik K-102 lulus (fase 2 terbukti), regresi SAMA 66 setelah situs uji dipulihkan. Rincian: [status.md](status.md) bagian "Pembaruan 17 Nov 2026, sore".
+- Jalur teknis berikutnya: migrasi produksi K-102 lewat `produksi_k102.sh`.
