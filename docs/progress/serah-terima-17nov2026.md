@@ -59,3 +59,11 @@ Cakupan: K-142 sesi 4 (impor CSV tarif PPh 21) dan perbaikan seluruh uji usang. 
 3. Opsional, S10b: cek `COLUMN_DEFAULT` enam kolom centang di `information_schema` (ditawarkan, belum dipilih).
 4. Opsional: periksa modul uji lain yang punya lebih dari satu fungsi `periksa*`/`jalankan*` (selain `uji_izin`, `uji_tampilan`, `uji_k126`), karena penjalan hanya memanggil satu fungsi. Belum dicek. Perintah: `cd /home/it/erp/apps/hris && for f in $(find hris -name 'uji_*.py'); do c=$(grep -cE '^def (periksa|jalankan)' $f); [ $c -gt 1 ] && echo "$c $f"; done`
 5. Kredensial HTTPS Git diminta setiap push. Opsi: `git config --global credential.helper store` (verifikasi di dokumentasi Git).
+
+
+## 8. Pembaruan susulan (17 November 2026, malam)
+
+- Butir 7.1 selesai: `status.md` dan `session-log.md` diperbarui (`a36362e`).
+- Butir 7.4 selesai: hanya tiga modul berfungsi ganda dan ketiganya sudah ditangani.
+- Dokumen keputusan K-142 dibuat: [../decisions/keputusan-2026-11-17-k142.md](../decisions/keputusan-2026-11-17-k142.md).
+- Masih terbuka: butir 7.2 (dokumen `site_config`, runbook K-102 di repo, sidebar), 7.3 (S10b), 7.5 (kredensial Git). Jalur teknis berikutnya: gladi ulang `fase1` dan K-102.

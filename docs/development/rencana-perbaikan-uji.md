@@ -27,3 +27,8 @@ Dibuat 17 November 2026. Cakupan: hanya berkas `tests/*.py`. Tidak mengubah DocT
 4. `uji_k102`, `uji_k126`: selesai 17 November 2026.
 
 Alur per uji: baca berkas, jelaskan bagian usang, disetujui, script, jalankan regresi, simpan patokan hanya atas perintah.
+
+
+## Pemeriksaan modul berfungsi ganda (17 November 2026)
+
+Perintah: hitung baris `^def (periksa|jalankan)` pada setiap `uji_*.py`. Hasil: hanya `uji_tampilan.py`, `uji_izin.py`, dan `uji_k126.py` yang punya dua fungsi; ketiganya sudah ditangani khusus di penjalan regresi. Batas pemeriksaan: tidak menangkap fungsi bernama lain, fungsi berindentasi, atau satu fungsi yang tidak menjalankan semua skenario. Sisi terakhir dijaga oleh angka patokan (penurunan jumlah OK menjadi `BEDA`).

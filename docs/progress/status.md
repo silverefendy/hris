@@ -69,7 +69,7 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 > Catatan 17 Nov 2026: tabel ini ditulis sekitar akhir Oktober. Beberapa butir sudah selesai di sesi November (misalnya Data Employee lewat `HRIS Employee`, Role `HRIS Employee Admin`, dan pembaruan 14 sampai 15 Nov untuk `status.md` itu sendiri). Belum diverifikasi butir demi butir.
 | Item | Catatan |
 |---|---|
-| **Data Employee** | Input karyawan Active dengan `attendance_device_id`; prasyarat pencocokan 2.306 punch. Rancangan dibahas lebih dulu |
+| **Data Employee** | Input karyawan Active dengan `attendance_device_id`; prasyarat pencocokan 2.306 punch. Rancangan dibahas lebih dulu. **[17 Nov: sebagian besar selesai. Produksi punya 1078 Employee ERPNext Active (7 Nov) dan DocType `HRIS Employee` (K-116) teruji di site uji, tetapi belum ada di produksi sampai K-102. Pencocokan 2.306 punch belum diverifikasi.]** |
 | "Cocokkan Ulang" (jalan 3) | Sesi tersendiri; mencocokkan Raw Log `Tidak Cocok` dengan Employee |
 | Penjadwalan tarikan rutin | `pause_scheduler` aktif; K-55 menetapkan manual dulu |
 | `device_record_no` | Ditunda (K-59); data tetap di `raw_payload` |
@@ -89,12 +89,12 @@ Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi 
 | Konfirmasi asumsi working hour | Lihat "Belum diputuskan" di `decisions/README.md` |
 | Report "HRIS Audit Trail" | Ditunda atas permintaan Efendy |
 | Pemetaan `verify_mode` | Menunggu data mesin nyata |
-| Role `HRIS Employee Admin` | Dibuat di kode (K-120); di site kerja menunggu `migrate` |
+| Role `HRIS Employee Admin` | Dibuat di kode (K-120); di site kerja menunggu `migrate`. **[17 Nov: masih berlaku; ikut migrasi produksi K-102.]** |
 | CI | Pemicu `ci.yml` diubah ke `main` (K-15), belum diterapkan |
 | Lisensi final, pre-commit, judul app | `license.txt` placeholder (MIT sementara); hook pre-commit belum aktif; "HRIS CML" masih di README, `hooks.py`, `pyproject.toml` |
 | Navigasi | Sidebar modul dan Dock menunggu keputusan |
 | Isu ikon desk | Diparkir (lihat `operations/environment.md`) |
-| `docs/architecture/attendance-flow.md` dan `CLAUDE.md` | Perlu dicek dan diperbarui terhadap working hour, K-18, jalur data mesin, dan penamaan Raw Log |
+| `docs/architecture/attendance-flow.md` dan `CLAUDE.md` | Perlu dicek dan diperbarui terhadap working hour, K-18, jalur data mesin, dan penamaan Raw Log. **[17 Nov: berkas alur absensi kini berada di `docs/business/process-flows/attendance-flow.md`, bukan di `architecture/`. Isi belum dicek ulang.]** |
 | Penomoran | Counter `HR-EMP-` kembali ke 0 setelah data contoh dihapus (belum diverifikasi di kode Frappe); penomoran `SAS` tidak tampil di `tabSeries`, penyebab belum diketahui |
 
 ## Pembaruan 31 Okt 2026 (Tarik Log, Hapus Raw Log, Konsol Mesin, Pull Run)
@@ -281,12 +281,12 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Regresi per 17 Nov (15:13 WIB) | 67 modul terukur: SAMA 59, BARU 7 (gagal 0), BEDA 0, ERROR 0, USANG 0, UKUR 1. Patokan tersimpan 66 modul |
 | Alat regresi | `/home/it/runbook_k142/regresi_v2.sh` (di server, di luar repo). Rincian di [serah-terima-17nov2026.md](serah-terima-17nov2026.md) bagian 4 |
 | Hanya di site uji | `allow_import` dan izin Import tarif PPh 21 belum ada di produksi; ikut K-102. Gladi `fase1` harus mencakupnya |
-| Belum ada | Berkas keputusan K-142 di `docs/decisions/` (hanya catatan sesi 4); belum diverifikasi apakah sesi 1 sampai 3 dicatat di tempat lain |
+| Dokumen keputusan | [../decisions/keputusan-2026-11-17-k142.md](../decisions/keputusan-2026-11-17-k142.md) (disusun dari pesan commit dan log; isi sesi 1 dan 2 belum diketahui) |
 
 ## Langkah berikutnya terkini (17 Nov 2026)
 1. Gladi ulang `fase1` K-102 dengan cadangan produksi baru, termasuk `allow_import` dan izin Import K-142 serta tabel HCA. Lalu migrasi produksi (W6 menunggu restart).
 2. Uji browser per peran setelah migrasi produksi.
 3. Dokumen yang belum ada datanya: empat dokumen `site_config`, runbook K-102 di repo (arsip skrip ada di `scripts/operations/k102/`), sidebar.
-4. Opsional: S10b (`COLUMN_DEFAULT` enam kolom centang); cek modul uji dengan lebih dari satu fungsi `periksa*`/`jalankan*`.
+4. Opsional: S10b (`COLUMN_DEFAULT` enam kolom centang). Pemeriksaan modul uji berfungsi ganda selesai 17 Nov: hanya `uji_tampilan`, `uji_izin`, `uji_k126`, dan ketiganya sudah ditangani penjalan.
 5. Verifikasi HRD atau konsultan pajak untuk tarif dan aturan PPh 21; permintaan ke HRD yang belum dikirim (lihat daftar lama butir 7).
 6. Rapikan tabel "Belum teruji" dan "Tertunda" di atas dengan memeriksanya butir demi butir.
