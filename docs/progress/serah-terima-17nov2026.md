@@ -54,7 +54,7 @@ Cakupan: K-142 sesi 4 (impor CSV tarif PPh 21) dan perbaikan seluruh uji usang. 
 
 ## 7. Belum dikerjakan
 
-1. **Penutupan sesi sesuai `CLAUDE.md`**: perbarui `docs/progress/status.md` dan `session-log.md`. Catatan penting: `status.md` saat ini sangat usang (masih menyatakan belum ada kode app). Tulis ulang dari kondisi nyata; jangan menebak.
+1. **Penutupan sesi sesuai `CLAUDE.md`**: perbarui `docs/progress/status.md` dan `session-log.md`. Catatan: `status.md` diperbarui sampai 15 Nov dan sebagian besar akurat (koreksi 17 Nov: dugaan awal bahwa berkas ini sangat usang keliru). Pembaruan 17 Nov sudah ditambahkan; sisanya merapikan tabel Belum teruji dan Tertunda.
 2. Empat dokumen `site_config`, runbook K-102, dan sidebar tertunda: belum ada datanya. Minta Efendy menjalankan `ls /home/it/erp/apps/hris/docs` agar ditulis dari berkas yang ada.
 3. Opsional, S10b: cek `COLUMN_DEFAULT` enam kolom centang di `information_schema` (ditawarkan, belum dipilih).
 4. Opsional: periksa modul uji lain yang punya lebih dari satu fungsi `periksa*`/`jalankan*` (selain `uji_izin`, `uji_tampilan`, `uji_k126`), karena penjalan hanya memanggil satu fungsi. Belum dicek. Perintah: `cd /home/it/erp/apps/hris && for f in $(find hris -name 'uji_*.py'); do c=$(grep -cE '^def (periksa|jalankan)' $f); [ $c -gt 1 ] && echo "$c $f"; done`

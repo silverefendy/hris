@@ -1,13 +1,13 @@
 # Status Proyek
 
-Diperbarui: 15 November 2026
+Diperbarui: 17 November 2026
 
 Acuan utama kesiapan go-live: [go-live.md](go-live.md).
 
-Serah terima terbaru: [handoff-2026-11-15.md](handoff-2026-11-15.md).
+Serah terima terbaru: [serah-terima-17nov2026.md](serah-terima-17nov2026.md). Sebelumnya: [handoff-2026-11-15.md](handoff-2026-11-15.md).
 
 ## Kondisi terkini
-- App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 31 Okt 2026 (malam): `92027bf` (Pull Run, riwayat Status, kosmetik `depends_on`). Pembaruan setelahnya: lihat bagian 4 sampai 9 November di bawah.
+- App `hris` terpasang di site kerja `erp.ciptamebel.co.id` (Frappe 16.53.0, ERPNext 16.52.1, HRMS 16.52.0). Kode terakhir di `origin main` per 17 Nov 2026: `8c51382` (dokumen serah terima). Riwayat per tanggal ada di bagian Pembaruan di bawah; yang terbaru adalah 16 sampai 17 Nov.
 - Modul HRIS Attendance berisi DocType terpasang: `HRIS Device`, `HRIS Raw Log`, `HRIS Shift`, `HRIS Employee Group` (+ tabel anak), `HRIS Holiday`, `HRIS Shift Rotation` (+ tabel anak), `HRIS Shift Assignment`, `HRIS Working Hour`, `HRIS Pull Run`, dan `HRIS Attendance Settings` (Single), serta Page `Konsol Mesin`. Custom Field dan hook validasi di `Employee` untuk grup karyawan (`hris_employee_group`).
 - Service: `shift_schedule.py` (K-33), `working_hour.py` (K-35 sampai K-44), `working_hour_batch.py` (K-45), `audit_trail.py`, `employee_group.py`; jalur data mesin: `punch_ingest.py`, `agent_auth.py`, `pull_device.py`, `delete_raw_log.py`, `pull_run_log.py`, `raw_log_naming.py`; endpoint `integrations/agent_api.py` ([agent-api.md](../architecture/agent-api.md)).
 - **Jalur data mesin (K-46 sampai K-77, [0003](../decisions/0003-jalur-data-mesin.md), [0004](../decisions/0004-pull-pyzk-dan-penamaan-raw-log.md)):** jalur agen (`push_punches`) teruji; jalur Pull pyzk sudah berjalan untuk mesin `PLTB 220`. Form Device dan Konsol Mesin memiliki dialog Tarik Log (Otomatis atau Rentang Tanggal, dengan Cek Dulu), Status (polling) dengan riwayat 10 terakhir, dan Hapus Raw Log. Tombol "Ambil Info dari Mesin" ada di form Device. Agen Windows sudah dibuat sebagai jendela manual dan teruji di satu PC (K-90 sampai K-93, [agen-windows.md](../development/agen-windows.md)).
@@ -42,6 +42,8 @@ Serah terima terbaru: [handoff-2026-11-15.md](handoff-2026-11-15.md).
 | Tarikan satu minggu PLTB 220 | 2.306 baris, 7 tanggal, nama dan `punch_key` valid; job antrean dikerjakan worker; tarikan ulang baru 0 |
 
 ## Belum teruji
+
+> Catatan 17 Nov 2026: tabel ini ditulis sekitar akhir Oktober dan belum diverifikasi ulang butir demi butir. Sebagian mungkin sudah teruji lewat sesi November. Jangan dianggap kondisi terkini tanpa dicek.
 - **Tampilan browser 5c-1**: tombol Hitung Periode dan Status Hitung di list view, dialog, tombol Hitung Ulang di form. Sekarang sudah ada data Raw Log, tetapi menunggu Employee.
 - **Job background working hour** (di atas 300 karyawan-hari lewat antrean). Catatan: job antrean Pull terbukti jalan, tetapi itu job lain.
 - Hari `Libur` dan karyawan dengan grup pada working hour: kode ada, belum diuji dengan data.
@@ -63,6 +65,8 @@ Serah terima terbaru: [handoff-2026-11-15.md](handoff-2026-11-15.md).
 Catatan: field `early_leave_limit_min` dihapus dari DocType `HRIS Shift` tetapi kolomnya masih ada di tabel; tidak berbahaya.
 
 ## Tertunda
+
+> Catatan 17 Nov 2026: tabel ini ditulis sekitar akhir Oktober. Beberapa butir sudah selesai di sesi November (misalnya Data Employee lewat `HRIS Employee`, Role `HRIS Employee Admin`, dan pembaruan 14 sampai 15 Nov untuk `status.md` itu sendiri). Belum diverifikasi butir demi butir.
 | Item | Catatan |
 |---|---|
 | **Data Employee** | Input karyawan Active dengan `attendance_device_id`; prasyarat pencocokan 2.306 punch. Rancangan dibahas lebih dulu |
@@ -251,7 +255,9 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 - Saklar `hris_tunjangan_ikut_pajak` di `site_config.json` (bawaan mati): tunjangan tidak ikut bruto PPh 21 kecuali saklar hidup.
 - Tertunda: aturan "Bulanan + Per Hari Hadir" (fitur tersendiri), uji kecepatan pada banyak karyawan (1078 Employee Active), uji data nyata setelah K-102, nilai tunjangan sungguhan dan `is_taxable` dari HRD dan konsultan pajak.
 
-## Langkah berikutnya
+## Langkah berikutnya (daftar lama, ditulis sebelum 16 Nov)
+
+> Daftar terkini ada di bagian "Langkah berikutnya terkini (17 Nov 2026)" di akhir berkas.
 1. Migrasi produksi K-102 lewat `produksi_k102.sh` (kini termasuk langkah 2b: `department coba` lalu `salin`) saat Efendy diminta masuk di luar jam kerja (cadangan baru, `siap`, `mulai`, restart, uji asap; latihan sudah lulus di site uji). Ulangi diagnosa `diag_db_k102.sh` tepat sebelum mulai karena jumlah Employee dapat berubah. Migrasi juga membuat tabel `HRIS Employee Pay` dan `HRIS Payroll Period` (kosong); izin baru `HRIS Payroll Schedule` (K-129) perlu diverifikasi hasilnya di produksi.
 2. Setelah migrasi produksi: uji browser per peran (`HRIS Employee Admin`, `HRIS Payroll Manager`, `HRIS Direksi`, petugas tarik absensi, Kepala HRD) dan tarikan nyata oleh Operator.
 3. `HRIS Payroll Slip` tahap pertama selesai dan teruji (9 Nov malam); pembuatan slip massal, per kelompok, dan per departemen sudah teruji (10 Nov, `d645b00`); berikutnya tahap 2b PPh 21 (HRIS Department, Department Rule, dan pengali lembur dari Department Rule selesai, lihat Pembaruan 11 sampai 12 Nov) (BPJS K-133 dan PPh 21 K-134 sudah ada di slip, lihat Pembaruan 10 Nov): satu fitur per sesi, dimulai dari diskusi rancangan. `HRIS Payroll Period` sudah dibuat dan teruji (K-128, 9 Nov).
@@ -264,3 +270,23 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 - Komponen Per Bulan kini dibayar sekali sebulan di slip pertama atau terakhir bulan bayar (pilihan Waktu Bayar per komponen). Selesai dan teruji di `hris-uji.local`; keputusan: [keputusan-2026-11-16-per-bulan.md](../decisions/keputusan-2026-11-16-per-bulan.md).
 - Berikutnya: pengaturan PPh 21 (sesi 3), impor tarif TER (sesi 4), gladi ulang dan K-102.
 - Bagian "Langkah berikutnya" di atas belum disesuaikan; dirapikan saat serah terima akhir sesi.
+
+## Pembaruan 16 sampai 17 Nov 2026 (K-142 PPh 21, perbaikan uji usang, alat regresi)
+
+| Item | Status |
+|---|---|
+| K-142 sesi 3 (menurut pesan commit) | `7ae5c71` KTP terisi dianggap punya NPWP; `f27177e` saklar tunjangan ikut pajak dipindah ke `HRIS PPh21 Settings` (site_config dihentikan); `6c1dc05` PTKP nominal dan biaya jabatan di Settings; `c9014c5` lalu `22fc87c` tarif Pasal 17 jadi DocType terpisah `P17-YYMM-NNNN`; `fe0bed6` kategori TER divalidasi dan jadi dropdown |
+| K-142 sesi 4 | `d2f6916` impor CSV tarif TER dan Pasal 17, izin Import hanya System Manager; `43dc860` catatan. Dokumen: [../operations/impor-tarif/catatan-k142-sesi4.md](../operations/impor-tarif/catatan-k142-sesi4.md), [../operations/impor-tarif/panduan-impor-tarif.md](../operations/impor-tarif/panduan-impor-tarif.md) |
+| Perbaikan uji usang | `b2c5a6a`, `2fb0208`, `8673e75`, `e64c8d1`, `5bf9aac`. Rencana: [../development/rencana-perbaikan-uji.md](../development/rencana-perbaikan-uji.md) |
+| Regresi per 17 Nov (15:13 WIB) | 67 modul terukur: SAMA 59, BARU 7 (gagal 0), BEDA 0, ERROR 0, USANG 0, UKUR 1. Patokan tersimpan 66 modul |
+| Alat regresi | `/home/it/runbook_k142/regresi_v2.sh` (di server, di luar repo). Rincian di [serah-terima-17nov2026.md](serah-terima-17nov2026.md) bagian 4 |
+| Hanya di site uji | `allow_import` dan izin Import tarif PPh 21 belum ada di produksi; ikut K-102. Gladi `fase1` harus mencakupnya |
+| Belum ada | Berkas keputusan K-142 di `docs/decisions/` (hanya catatan sesi 4); belum diverifikasi apakah sesi 1 sampai 3 dicatat di tempat lain |
+
+## Langkah berikutnya terkini (17 Nov 2026)
+1. Gladi ulang `fase1` K-102 dengan cadangan produksi baru, termasuk `allow_import` dan izin Import K-142 serta tabel HCA. Lalu migrasi produksi (W6 menunggu restart).
+2. Uji browser per peran setelah migrasi produksi.
+3. Dokumen yang belum ada datanya: empat dokumen `site_config`, runbook K-102 di repo (arsip skrip ada di `scripts/operations/k102/`), sidebar.
+4. Opsional: S10b (`COLUMN_DEFAULT` enam kolom centang); cek modul uji dengan lebih dari satu fungsi `periksa*`/`jalankan*`.
+5. Verifikasi HRD atau konsultan pajak untuk tarif dan aturan PPh 21; permintaan ke HRD yang belum dikirim (lihat daftar lama butir 7).
+6. Rapikan tabel "Belum teruji" dan "Tertunda" di atas dengan memeriksanya butir demi butir.

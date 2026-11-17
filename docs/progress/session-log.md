@@ -198,3 +198,10 @@
 - Riset peraturan PPh 21 (sumber sekunder: portal DJP dan media pajak; verifikasi ke HRD atau konsultan pajak): TER dipakai Januari sampai November dan Desember dihitung ulang dengan tarif Pasal 17; premi BPJS bagian pemberi kerja (Kesehatan, JKK, JKM) masuk bruto; tarif lebih tinggi tanpa NPWP tidak berlaku bila NIK valid; pekerja harian memakai TER harian (0% sampai Rp450.000 per hari); pengurang tahunan: biaya jabatan 5% (maksimal Rp6 juta setahun) dan iuran JHT/JP pegawai.
 - Keputusan Efendy: Harian dan Mingguan tidak dipotong pajak (toggle `pph21_enrolled` per karyawan sudah ada, bawaan mati); BPJS bagian perusahaan diinput manual per karyawan (opsi A; kolomnya belum ada); rekonsiliasi Desember "coba dulu"; saklar tunjangan ikut pajak dipindah ke pengaturan; tarif TER, PTKP, dan NPWP dibuat bisa diinput (termasuk impor CSV).
 - Belum: uji browser katalog Per Bulan; sesi 3 dan 4 PPh 21; gladi ulang dan K-102 (bersama W6); push commit lokal.
+
+## 2026-11-17
+- K-142 sesi 4 selesai: impor CSV tarif TER dan Pasal 17, izin Import hanya System Manager (`d2f6916`, `43dc860`).
+- Perbaikan tujuh modul uji usang (`8673e75`, `e64c8d1`, `5bf9aac`); regresi 67 modul terukur, 66 patokan, ERROR 0, BEDA 0.
+- Dokumen serah terima: [serah-terima-17nov2026.md](serah-terima-17nov2026.md) (`8c51382`).
+- Pembaruan `status.md` ke kondisi 17 Nov (bagian baru di akhir berkas).
+- Catatan indeks: entri 13 dan 14 Nov ada di [session-log-2026-11-13.md](session-log-2026-11-13.md) dan [session-log-2026-11-14.md](session-log-2026-11-14.md); serah terima 15 Nov di [handoff-2026-11-15.md](handoff-2026-11-15.md). Berkas ini tidak memuat entri 13 sampai 15 Nov.
