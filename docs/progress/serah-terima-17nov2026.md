@@ -72,3 +72,8 @@ Cakupan: K-142 sesi 4 (impor CSV tarif PPh 21) dan perbaikan seluruh uji usang. 
 
 - W6 lulus, gladi resik K-102 lulus (fase 2 terbukti), regresi SAMA 66 setelah situs uji dipulihkan. Rincian: [status.md](status.md) bagian "Pembaruan 17 Nov 2026, sore".
 - Jalur teknis berikutnya: migrasi produksi K-102 lewat `produksi_k102.sh`.
+
+## 10. Pembaruan susulan (17 November 2026, malam)
+
+- Migrasi produksi K-102 selesai. Rincian: status.md bagian "Pembaruan 17 Nov 2026, malam (migrasi produksi K-102 selesai)".
+- Jalur teknis berikutnya: import dan export (jalur A lalu B), uji browser per peran, impor tarif TER sebelum PPh 21 diaktifkan.

@@ -206,3 +206,5 @@
 - Pembaruan `status.md` ke kondisi 17 Nov (bagian baru di akhir berkas).
 - Catatan indeks: entri 13 dan 14 Nov ada di [session-log-2026-11-13.md](session-log-2026-11-13.md) dan [session-log-2026-11-14.md](session-log-2026-11-14.md); serah terima 15 Nov di [handoff-2026-11-15.md](handoff-2026-11-15.md). Berkas ini tidak memuat entri 13 sampai 15 Nov.
 - Runbook K-102: `cek_pasca.sh` diperluas dan dipanggil di gladi dan produksi (`3939a64`). W6 lulus di browser. Gladi resik fase 2 terbukti (1078 ke 0); situs uji dipulihkan dari cadangan sebelum gladi; regresi SAMA 66, BEDA 0, ERROR 0. Keluaran fase 1 belum diperiksa Claude. Berikutnya: migrasi produksi.
+
+- Migrasi produksi K-102 selesai (1078 HRIS Employee, tabel Employee tidak berubah, cek_pasca SEMUA OK). Keputusan import dan export: jalur A dulu, lalu jalur B untuk HRIS Employee. Berikutnya: pemeriksaan kesiapan import.

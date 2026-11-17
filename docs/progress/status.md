@@ -304,3 +304,15 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Regresi | `regresi_v2.sh`: SAMA 66, UKUR 1, BEDA 0, ERROR 0, tabel kunci 3, 3, 1, 1, 3. Patokan tidak disimpan ulang |
 | Temuan | `migrate` pada salinan produksi hanya menjalankan dua patch: `buat_aturan_akar_department` (dilewati karena akar belum ada; ditangani langkah 2b) dan `seed_pay_component_e1` (katalog awal nonaktif). `migrate` juga memperbarui DocType app `wms` (cabang fitur, diputuskan dibiarkan) |
 | Berikutnya | Migrasi produksi K-102 dan uji browser per peran |
+
+## Pembaruan 17 Nov 2026, malam (migrasi produksi K-102 selesai)
+
+| Item | Status |
+|---|---|
+| Migrasi produksi K-102 | Selesai di erp.ciptamebel.co.id (mulai 19:50 WIB, hris main e095236). Cadangan 20261117_194933. migrate tanpa galat. Salin Department: 164 disalin, 165 baris termasuk akar, aturan akar DR-2611-0001. jalankan MIGRASI LULUS: 1078 HRIS Employee berstatus Berhasil, tabel Employee tidak berubah. cek_pasca SEMUA OK. Maintenance OFF |
+| Pasca-migrasi | runbook awal dilaporkan OK oleh Efendy. Uji asap (ubah telepon satu karyawan) dan uji browser per peran belum dilaporkan |
+| Data produksi | HRIS PPh21 TER Rate masih 0 baris dan PPh21 Settings nonaktif. Tarif TER harus diimpor (Data Import) sebelum PPh 21 diaktifkan |
+| Keamanan cadangan | Berkas cadangan produksi di /home/it/cadangan_k102 diberi izin 600 |
+| Keputusan import dan export | Jalur A dulu (Data Import bawaan Frappe untuk semua menu yang disepakati), lalu jalur B (tombol impor khusus HRIS Employee dengan pratinjau, kunci ID Finger atau nomor Employee). Import HRIS Employee: HRIS Employee Admin, HRIS HR Admin, Direksi. Export: Employee Admin, HR Admin, Payroll Manager, Direksi |
+| Temuan awal | allow_import menyala hanya pada PPh21 TER Rate dan Pasal17 Rate. HRIS Employee belum punya allow_import dan belum punya izin Export |
+| Berikutnya | Pemeriksaan kesiapan import, rancangan jalur A, uji di hris-uji.local, lalu produksi |
