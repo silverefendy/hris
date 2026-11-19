@@ -9,6 +9,7 @@
   "details_tab",
   "company",
   "device_name",
+  "device_code",
   "location",
   "column_break_1",
   "device_type",
@@ -32,6 +33,7 @@
   "audit_trail_tab",
   "audit_trail_html"
  ],
+ "allow_import": 1,
  "fields": [
   {
    "fieldname": "details_tab",
@@ -53,6 +55,14 @@
    "in_list_view": 1,
    "label": "Device Name",
    "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "Kode singkat untuk awalan nama Raw Log. Kosong = dibuat otomatis dari Device Name. Hanya huruf besar, angka, dan garis bawah (_).",
+   "fieldname": "device_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Device Code",
    "unique": 1
   },
   {
@@ -191,7 +201,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-29 23:41:32.463921",
+ "modified": "2026-11-18 23:16:55.408351",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Device",
@@ -204,7 +214,8 @@
    "create": 1,
    "delete": 1,
    "report": 1,
-   "export": 1
+   "export": 1,
+   "import": 1
   },
   {
    "role": "HRIS Manager",
@@ -213,7 +224,8 @@
    "create": 1,
    "delete": 1,
    "report": 1,
-   "export": 1
+   "export": 1,
+   "import": 1
   },
   {
    "role": "HRIS Attendance Operator",
@@ -236,7 +248,16 @@
   {
    "role": "HRIS Direksi",
    "permlevel": 0,
-   "read": 1
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "import": 1,
+   "export": 1,
+   "report": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
   }
  ],
  "sort_field": "modified",

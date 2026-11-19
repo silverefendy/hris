@@ -12,7 +12,31 @@ class HRISDevice(Document):
 	def validate(self):
 		self.device_name = (self.device_name or "").strip()
 		self.serial_number = (self.serial_number or "").strip()
+		self.set_device_code()
 		self.validate_network()
+
+	def set_device_code(self):
+		code = (self.device_code or "").strip().upper()
+		if not code:
+			code = self.make_device_code()
+		if not re.fullmatch(r"[A-Z0-9_]+", code):
+			frappe.throw(_("Device Code hanya boleh huruf, angka, dan garis bawah (_). Tanpa spasi atau tanda minus (-)."))
+		if frappe.db.exists("HRIS Device", {"device_code": code, "name": ["!=", self.name or ""]}):
+			frappe.throw(_("Device Code {0} sudah dipakai device lain.").format(code))
+		self.device_code = code
+
+	def make_device_code(self):
+		words = re.findall(r"[A-Za-z0-9]+", self.device_name or "")
+		if len(words) == 1:
+			base = words[0][:4].upper()
+		else:
+			base = "".join(w[0] for w in words).upper()
+		base = base or "DEV"
+		code, n = base, 1
+		while frappe.db.exists("HRIS Device", {"device_code": code, "name": ["!=", self.name or ""]}):
+			n += 1
+			code = f"{base}{n}"
+		return code
 
 	def validate_network(self):
 		host = (self.ip_address or "").strip()

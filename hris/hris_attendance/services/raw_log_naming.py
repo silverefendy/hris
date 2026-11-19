@@ -22,6 +22,15 @@ def _part(value):
     return re.sub(r"[\s/]+", "_", str(value or "").strip())
 
 
+def _device_prefix(device):
+    """Awalan nama Raw Log: Device Code bila ada, kalau tidak nama device."""
+    if frappe.db.has_column("HRIS Device", "device_code"):
+        code = frappe.db.get_value("HRIS Device", device, "device_code")
+        if code:
+            return _part(code)
+    return _part(device)
+
+
 def make_punch_key(device, user_id, punch_time):
     stamp = get_datetime(punch_time).strftime("%Y%m%d%H%M%S")
     return f"{device}|{str(user_id or '').strip()}|{stamp}"
@@ -34,6 +43,6 @@ def build_raw_log_name(device, user_id, punch_time):
         raise frappe.DuplicateEntryError("HRIS Raw Log", key)
 
     ts = get_datetime(punch_time)
-    prefix = f"{_part(device)}-{_part(user_id)}"
+    prefix = f"{_device_prefix(device)}-{_part(user_id)}"
     number = getseries(f"{prefix}-{ts.strftime('%y%m')}", SERIES_DIGITS)
     return f"{prefix}-{ts.strftime('%y%m%d')}-{number}", key
