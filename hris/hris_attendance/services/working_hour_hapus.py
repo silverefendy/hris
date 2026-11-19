@@ -42,6 +42,25 @@ _SLIP_JOIN = """from `tabHRIS Working Hour` wh
 _FINAL = "(s.status = 'Final' or ifnull(pp.status, '') = 'Final')"
 _BELUM_FINAL = "(s.status in ('Draft', 'Ditinjau') and ifnull(pp.status, '') != 'Final')"
 
+# 6b-1b: dua sumber blokir. (1) slip Final / Period Final di bawah slip; (2) kunci periode
+# (karyawan punya baris gaji berlaku dan jadwalnya punya Payroll Period Final), sama dengan period_lock.
+_SLIP_FINAL_ADA = """exists (select 1 from `tabHRIS Payroll Slip` s
+    left join `tabHRIS Payroll Period` pp on pp.name = s.payroll_period
+    where s.erpnext_employee = wh.employee
+      and wh.work_date between s.period_start and s.period_end
+      and (s.status = 'Final' or ifnull(pp.status, '') = 'Final'))"""
+
+_KUNCI_PERIODE = """exists (select 1 from `tabHRIS Payroll Period` kp
+    inner join `tabHRIS Employee Pay` kep on kep.payroll_schedule = kp.payroll_schedule
+    inner join `tabHRIS Employee` khe on khe.name = kep.employee
+    where kp.status = 'Final'
+      and kp.period_start <= wh.work_date and kp.period_end >= wh.work_date
+      and kep.effective_from <= wh.work_date
+      and (kep.effective_to is null or kep.effective_to >= wh.work_date)
+      and khe.erpnext_employee = wh.employee)"""
+
+_TERBLOKIR = "(" + _SLIP_FINAL_ADA + " or " + _KUNCI_PERIODE + ")"
+
 
 def _check_access():
     if not HAK_HAPUS & set(frappe.get_roles()):
@@ -112,7 +131,9 @@ def _hitung(where, p):
     }
 
     # --- Blokir: slip Final / Period Final ---
-    n_blokir = _angka("select count(distinct wh.name) " + _SLIP_JOIN + " where " + where + " and " + _FINAL, p)
+    n_blokir = _angka(
+        "select count(*) from `tabHRIS Working Hour` wh where " + where + " and " + _TERBLOKIR, p
+    )
     slip_blokir = frappe.db.sql(
         "select s.name, s.employee_name, s.status, pp.status as status_periode, "
         "s.period_start, s.period_end, count(distinct wh.name) as jumlah "
@@ -212,3 +233,14 @@ def check_delete(date_from, date_to, karyawan=None, status=None, tanpa_gaji=0):
     hasil = _hitung(where, p)
     hasil["filter"] = flt
     return hasil
+
+
+def dokumen_terblokir(employee, work_date):
+    """True bila WH karyawan+tanggal ini terkunci (slip Final / periode Final). Dipakai guard on_trash."""
+    if not employee or not work_date:
+        return False
+    baris = frappe.db.sql(
+        "select 1 from (select %(e)s as employee, %(d)s as work_date) wh where " + _TERBLOKIR + " limit 1",
+        {"e": employee, "d": getdate(work_date)},
+    )
+    return bool(baris)

@@ -168,8 +168,7 @@ def run_delete_job(date_from, date_to, karyawan=None, status=None, tanpa_gaji=0,
                 break
 
             terblokir = svc._angka(
-                "select count(distinct wh.name) " + svc._SLIP_JOIN
-                + " where wh.name in %(n)s and " + svc._FINAL,
+                "select count(*) from `tabHRIS Working Hour` wh where wh.name in %(n)s and " + svc._TERBLOKIR,
                 {"n": tuple(names)},
             )
             if terblokir:

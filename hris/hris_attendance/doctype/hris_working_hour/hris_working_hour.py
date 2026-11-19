@@ -41,6 +41,13 @@ class HRISWorkingHour(Document):
 			)
 		self.name = make_autoname("WH-{0}-.####".format(day.strftime("%y%m%d")))
 
+	def on_trash(self):
+		"""Tolak hapus bawaan bila terkunci slip Final atau periode Final (6b-3b)."""
+		from hris.hris_attendance.services.working_hour_hapus import dokumen_terblokir
+
+		if dokumen_terblokir(self.employee, self.work_date):
+			frappe.throw(_("Working Hour ini berada di periode gaji atau slip yang sudah Final dan tidak dapat dihapus. Minta Payroll Manager membuka kembali periodenya bila perlu."))
+
 	def before_validate(self):
 		if not self.employee:
 			return
