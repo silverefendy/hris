@@ -15,7 +15,7 @@
         {
             "fieldname": "details_tab",
             "fieldtype": "Tab Break",
-            "label": "Details"
+            "label": "Data Pribadi"
         },
         {
             "fieldname": "sec_identitas",
@@ -43,15 +43,15 @@
             "reqd": 1
         },
         {
+            "fieldname": "col_identitas",
+            "fieldtype": "Column Break"
+        },
+        {
             "fieldname": "gender",
             "fieldtype": "Select",
             "label": "Jenis Kelamin",
             "options": "\nLaki-laki\nPerempuan\nTidak Disebutkan",
             "reqd": 1
-        },
-        {
-            "fieldname": "col_identitas",
-            "fieldtype": "Column Break"
         },
         {
             "fieldname": "religion",
@@ -64,6 +64,10 @@
             "fieldtype": "Select",
             "label": "Status Perkawinan",
             "options": "\nBelum Menikah\nMenikah\nCerai Hidup\nCerai Mati"
+        },
+        {
+            "fieldname": "col_identitas_2",
+            "fieldtype": "Column Break"
         },
         {
             "fieldname": "blood_type",
@@ -108,14 +112,23 @@
             "label": "Alamat"
         },
         {
+            "fieldname": "col_kontak_2",
+            "fieldtype": "Column Break"
+        },
+        {
             "fieldname": "postal_code",
             "fieldtype": "Data",
             "label": "Kode Pos"
         },
         {
+            "fieldname": "tab_pekerjaan",
+            "fieldtype": "Tab Break",
+            "label": "Pekerjaan"
+        },
+        {
             "fieldname": "sec_kerja",
             "fieldtype": "Section Break",
-            "label": "Kerja"
+            "label": "Penempatan"
         },
         {
             "fieldname": "company",
@@ -126,34 +139,14 @@
             "in_standard_filter": 1
         },
         {
-            "fieldname": "attendance_device_id",
-            "fieldtype": "Data",
-            "label": "ID Finger",
-            "in_list_view": 1,
-            "search_index": 1
-        },
-        {
-            "fieldname": "fingerprint_method",
-            "fieldtype": "Select",
-            "label": "Metode Fingerprint",
-            "options": "\nJari\nWajah\nKartu\nLainnya"
-        },
-        {
-            "fieldname": "legacy_payroll_code",
-            "fieldtype": "Data",
-            "label": "Kode di Aplikasi Gaji Lama",
-            "description": "Dipakai untuk mencocokkan data dari aplikasi payroll lama.",
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "col_kerja",
-            "fieldtype": "Column Break"
-        },
-        {
             "fieldname": "branch",
             "fieldtype": "Link",
             "label": "Branch",
             "options": "Branch"
+        },
+        {
+            "fieldname": "col_kerja",
+            "fieldtype": "Column Break"
         },
         {
             "fieldname": "department",
@@ -170,6 +163,10 @@
             "in_standard_filter": 1
         },
         {
+            "fieldname": "col_kerja_2",
+            "fieldtype": "Column Break"
+        },
+        {
             "default": "Department",
             "description": "Dipakai hanya bila peminjaman Department dan Grup sama-sama terisi dan berbeda",
             "fieldname": "rule_follow",
@@ -178,10 +175,19 @@
             "options": "Department\nGrup"
         },
         {
+            "fieldname": "sec_masa_kerja",
+            "fieldtype": "Section Break",
+            "label": "Masa Kerja"
+        },
+        {
             "fieldname": "date_of_joining",
             "fieldtype": "Date",
             "label": "Tanggal Bergabung",
             "reqd": 1
+        },
+        {
+            "fieldname": "col_masa_kerja",
+            "fieldtype": "Column Break"
         },
         {
             "fieldname": "probation_passed_date",
@@ -189,14 +195,51 @@
             "label": "Tanggal Lulus Probation"
         },
         {
+            "fieldname": "col_masa_kerja_2",
+            "fieldtype": "Column Break"
+        },
+        {
             "fieldname": "contract_end_date",
             "fieldtype": "Date",
             "label": "Tanggal Akhir Perjanjian Kerja"
         },
         {
+            "fieldname": "sec_absensi",
+            "fieldtype": "Section Break",
+            "label": "Absensi"
+        },
+        {
+            "fieldname": "attendance_device_id",
+            "fieldtype": "Data",
+            "label": "ID Finger",
+            "in_list_view": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "col_absensi",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "fingerprint_method",
+            "fieldtype": "Select",
+            "label": "Metode Fingerprint",
+            "options": "\nJari\nWajah\nKartu\nLainnya"
+        },
+        {
+            "fieldname": "col_absensi_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "legacy_payroll_code",
+            "fieldtype": "Data",
+            "label": "Kode di Aplikasi Gaji Lama",
+            "description": "Dipakai untuk mencocokkan data dari aplikasi payroll lama.",
+            "in_standard_filter": 1
+        },
+        {
             "fieldname": "sec_status",
             "fieldtype": "Section Break",
-            "label": "Status"
+            "label": "Status dan Akun"
         },
         {
             "fieldname": "status",
@@ -214,12 +257,16 @@
             "label": "Tanggal Resign"
         },
         {
+            "fieldname": "col_status",
+            "fieldtype": "Column Break"
+        },
+        {
             "fieldname": "resign_reason",
             "fieldtype": "Small Text",
             "label": "Alasan Resign"
         },
         {
-            "fieldname": "col_status",
+            "fieldname": "col_status_2",
             "fieldtype": "Column Break"
         },
         {
@@ -230,25 +277,10 @@
             "description": "Tidak dibuat otomatis."
         },
         {
-            "fieldname": "sec_kelengkapan",
-            "fieldtype": "Section Break",
-            "label": "Kelengkapan Data"
-        },
-        {
-            "fieldname": "data_status",
-            "fieldtype": "Select",
-            "label": "Status Kelengkapan Data",
-            "options": "\nLengkap\nPerlu Dilengkapi",
-            "in_standard_filter": 1
-        },
-        {
-            "fieldname": "col_kelengkapan",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "data_note",
-            "fieldtype": "Small Text",
-            "label": "Catatan Kelengkapan Data"
+            "fieldname": "tab_payroll",
+            "fieldtype": "Tab Break",
+            "label": "Payroll dan BPJS",
+            "permlevel": 1
         },
         {
             "fieldname": "sec_sensitif",
@@ -271,6 +303,11 @@
             "permlevel": 1
         },
         {
+            "fieldname": "col_sensitif",
+            "fieldtype": "Column Break",
+            "permlevel": 1
+        },
+        {
             "fieldname": "bpjs_tk_no",
             "fieldtype": "Data",
             "label": "No BPJS TK",
@@ -283,7 +320,7 @@
             "permlevel": 1
         },
         {
-            "fieldname": "col_sensitif",
+            "fieldname": "col_sensitif_2",
             "fieldtype": "Column Break",
             "permlevel": 1
         },
@@ -382,6 +419,11 @@
             "read_only_depends_on": "eval:doc.bpjs_tk_enrolled && !doc.bpjs_jkm_enrolled"
         },
         {
+            "fieldname": "col_bpjs_peserta_2",
+            "fieldtype": "Column Break",
+            "permlevel": 1
+        },
+        {
             "fieldname": "bpjs_jkk_risk_class",
             "fieldtype": "Data",
             "label": "Kelas Risiko JKK",
@@ -447,6 +489,11 @@
             "permlevel": 1
         },
         {
+            "fieldname": "col_bpjs_iuran_2",
+            "fieldtype": "Column Break",
+            "permlevel": 1
+        },
+        {
             "fieldname": "bpjs_jkk_amount",
             "fieldtype": "Currency",
             "label": "Iuran JKK",
@@ -461,6 +508,32 @@
             "depends_on": "eval:doc.bpjs_jkm_enrolled",
             "non_negative": 1,
             "permlevel": 1
+        },
+        {
+            "fieldname": "tab_sinkron",
+            "fieldtype": "Tab Break",
+            "label": "Kelengkapan dan Sinkron"
+        },
+        {
+            "fieldname": "sec_kelengkapan",
+            "fieldtype": "Section Break",
+            "label": "Kelengkapan Data"
+        },
+        {
+            "fieldname": "data_status",
+            "fieldtype": "Select",
+            "label": "Status Kelengkapan Data",
+            "options": "\nLengkap\nPerlu Dilengkapi",
+            "in_standard_filter": 1
+        },
+        {
+            "fieldname": "col_kelengkapan",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "data_note",
+            "fieldtype": "Small Text",
+            "label": "Catatan Kelengkapan Data"
         },
         {
             "fieldname": "sec_sinkron",
@@ -492,6 +565,10 @@
             "read_only": 1
         },
         {
+            "fieldname": "col_sinkron_2",
+            "fieldtype": "Column Break"
+        },
+        {
             "fieldname": "sync_error",
             "fieldtype": "Small Text",
             "label": "Pesan Error Sinkron",
@@ -516,7 +593,9 @@
             "read": 1,
             "write": 1,
             "create": 1,
-            "delete": 1
+            "delete": 1,
+            "import": 1,
+            "export": 1
         },
         {
             "role": "HR Manager",
@@ -530,7 +609,9 @@
             "permlevel": 0,
             "read": 1,
             "write": 1,
-            "create": 1
+            "create": 1,
+            "import": 1,
+            "export": 1
         },
         {
             "role": "HR User",
@@ -547,7 +628,8 @@
         {
             "role": "HRIS Payroll Manager",
             "permlevel": 0,
-            "read": 1
+            "read": 1,
+            "export": 1
         },
         {
             "role": "System Manager",
@@ -592,19 +674,31 @@
         {
             "role": "HRIS Direksi",
             "permlevel": 0,
-            "read": 1
+            "read": 1,
+            "write": 1,
+            "create": 1,
+            "delete": 1,
+            "import": 1,
+            "export": 1,
+            "report": 1,
+            "print": 1,
+            "email": 1,
+            "share": 1
         },
         {
             "role": "HRIS Direksi",
             "permlevel": 1,
-            "read": 1
+            "read": 1,
+            "write": 1
         },
         {
             "role": "HRIS Employee Admin",
             "permlevel": 0,
             "read": 1,
             "write": 1,
-            "create": 1
+            "create": 1,
+            "import": 1,
+            "export": 1
         },
         {
             "role": "HRIS Employee Admin",
@@ -613,5 +707,6 @@
             "write": 1
         }
     ],
-    "modified": "2026-11-10 16:45:00.000000"
+    "modified": "2026-11-19 08:58:47.374070",
+    "allow_import": 1
 }

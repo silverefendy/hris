@@ -141,8 +141,8 @@ def periksa_lanjut():
     hasil = [
         ("direksi baca Employee", _baca(dire, "HRIS Employee")),
         ("direksi baca Data Sensitif (L1)", 1 in meta.get_permlevel_access("read", user=dire)),
-        ("direksi TIDAK tulis Employee", not tulis(dire, "HRIS Employee")),
-        ("direksi TIDAK tulis Data Sensitif (L1)", 1 not in meta.get_permlevel_access("write", user=dire)),
+        ("direksi tulis Employee", tulis(dire, "HRIS Employee")),
+        ("direksi tulis Data Sensitif (L1)", 1 in meta.get_permlevel_access("write", user=dire)),
         ("direksi baca Payroll Schedule", _baca(dire, "HRIS Payroll Schedule")),
         ("direksi baca Raw Log", _baca(dire, "HRIS Raw Log")),
         ("direksi TIDAK tulis Raw Log", not tulis(dire, "HRIS Raw Log")),

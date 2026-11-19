@@ -42,8 +42,8 @@ try:
     cek("P6 kolom DB ptkp_status ada", frappe.db.has_column("HRIS Employee", "ptkp_status"))
     cek("P7 HR Admin dan Employee Admin tulis permlevel 1",
         hak(emp, "HRIS HR Admin", "write", 1) and hak(emp, "HRIS Employee Admin", "write", 1))
-    cek("P8 Payroll Admin dan Direksi tidak tulis permlevel 1",
-        not hak(emp, "HRIS Payroll Admin", "write", 1) and not hak(emp, "HRIS Direksi", "write", 1))
+    cek("P8 Payroll Admin tidak tulis permlevel 1, Direksi tulis permlevel 1",
+        not hak(emp, "HRIS Payroll Admin", "write", 1) and hak(emp, "HRIS Direksi", "write", 1))
 
     item = frappe.get_meta("HRIS Payroll Slip Item")
     uf = [x.fieldname for x in item.fields]

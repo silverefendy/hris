@@ -260,9 +260,9 @@ def _jalankan(perusahaan):
 
     # ---- Direksi ----
     _catat("T13a Direksi baca baris Bulanan", _boleh("read", pb.name, u_direksi) is True)
-    _harus_ditolak(
-        "T13b Direksi tidak boleh membuat baris",
-        lambda: _sebagai(u_direksi, lambda: _pay(e).insert()),
+    _catat(
+        "T13b Direksi boleh membuat baris (izin create)",
+        bool(frappe.has_permission("HRIS Employee Pay", "create", user=u_direksi)),
     )
 
     # ---- HR User (tanpa hak gaji) ----
