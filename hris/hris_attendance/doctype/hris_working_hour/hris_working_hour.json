@@ -12,59 +12,47 @@
   "company",
   "identity_break",
   "work_date",
+  "schedule_source",
+  "shift",
+  "identity_break_2",
+  "is_holiday",
   "unique_key",
   "emp_copy_section",
   "employee_group",
   "department",
-  "rule_department",
   "emp_copy_break",
+  "rule_department",
+  "emp_copy_break_2",
   "borrowed_for_group",
-  "schedule_section",
-  "schedule_source",
-  "shift",
-  "schedule_break",
-  "is_holiday",
-  "rules_section",
-  "shift_start",
-  "shift_end",
-  "crosses_midnight",
-  "break_minutes",
-  "scheduled_minutes",
-  "late_tolerance_min",
-  "early_leave_tolerance_min",
-  "rules_break",
-  "window_before_min",
-  "late_limit_min",
-  "window_after_min",
-  "min_out_after_in_min",
-  "overtime_min_minutes",
-  "deduction_block_min",
-  "deduction_hours_per_block",
   "punch_section",
   "check_in",
   "check_out",
   "punch_break",
   "check_in_log",
   "check_out_log",
+  "punch_break_2",
   "punch_count",
   "result_section",
   "status",
   "late_minutes",
   "early_leave_minutes",
-  "late_deduction_hours",
-  "early_leave_deduction_hours",
   "result_break",
   "scheduled_hours",
   "effective_hours",
   "overtime_minutes",
+  "result_break_2",
+  "late_deduction_hours",
+  "early_leave_deduction_hours",
   "has_overtime",
   "overtime_type",
+  "tab_review",
   "review_section",
   "needs_review",
-  "review_reason",
   "review_status",
   "review_break",
+  "review_reason",
   "review_note",
+  "review_break_2",
   "reviewed_by",
   "reviewed_on",
   "absence_section",
@@ -75,6 +63,7 @@
   "absence_break",
   "absence_deducted",
   "absence_note",
+  "absence_break_2",
   "classified_by",
   "classified_on",
   "adjust_section",
@@ -82,6 +71,24 @@
   "adjustment_reason",
   "adjust_break",
   "final_effective_hours",
+  "tab_rules",
+  "rules_section",
+  "shift_start",
+  "shift_end",
+  "crosses_midnight",
+  "break_minutes",
+  "scheduled_minutes",
+  "rules_break",
+  "late_tolerance_min",
+  "early_leave_tolerance_min",
+  "window_before_min",
+  "late_limit_min",
+  "window_after_min",
+  "rules_break_2",
+  "min_out_after_in_min",
+  "overtime_min_minutes",
+  "deduction_block_min",
+  "deduction_hours_per_block",
   "trace_section",
   "calculated_on",
   "trace_break",
@@ -93,12 +100,12 @@
   {
    "fieldname": "details_tab",
    "fieldtype": "Tab Break",
-   "label": "Details"
+   "label": "Ringkasan"
   },
   {
    "fieldname": "identity_section",
    "fieldtype": "Section Break",
-   "label": "Identitas"
+   "label": "Identitas dan Jadwal"
   },
   {
    "fieldname": "employee",
@@ -140,6 +147,32 @@
    "search_index": 1
   },
   {
+   "fieldname": "schedule_source",
+   "fieldtype": "Select",
+   "label": "Sumber Jadwal",
+   "options": "\nShift Assignment\nRotasi\nJadwal Mingguan\nTidak Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Shift",
+   "options": "HRIS Shift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "identity_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "is_holiday",
+   "fieldtype": "Check",
+   "label": "Hari Libur",
+   "read_only": 1
+  },
+  {
    "fieldname": "unique_key",
    "fieldtype": "Data",
    "hidden": 1,
@@ -168,6 +201,10 @@
    "read_only": 1
   },
   {
+   "fieldname": "emp_copy_break",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "rule_department",
    "fieldtype": "Link",
    "label": "Department Aturan",
@@ -175,7 +212,7 @@
    "read_only": 1
   },
   {
-   "fieldname": "emp_copy_break",
+   "fieldname": "emp_copy_break_2",
    "fieldtype": "Column Break"
   },
   {
@@ -183,130 +220,6 @@
    "fieldtype": "Link",
    "label": "Dipinjam untuk Grup",
    "options": "HRIS Employee Group",
-   "read_only": 1
-  },
-  {
-   "fieldname": "schedule_section",
-   "fieldtype": "Section Break",
-   "label": "Jadwal"
-  },
-  {
-   "fieldname": "schedule_source",
-   "fieldtype": "Select",
-   "label": "Sumber Jadwal",
-   "options": "\nShift Assignment\nRotasi\nJadwal Mingguan\nTidak Terjadwal",
-   "read_only": 1
-  },
-  {
-   "fieldname": "shift",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Shift",
-   "options": "HRIS Shift",
-   "read_only": 1
-  },
-  {
-   "fieldname": "schedule_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "is_holiday",
-   "fieldtype": "Check",
-   "label": "Hari Libur",
-   "read_only": 1
-  },
-  {
-   "fieldname": "rules_section",
-   "fieldtype": "Section Break",
-   "label": "Salinan Aturan Shift"
-  },
-  {
-   "fieldname": "shift_start",
-   "fieldtype": "Time",
-   "label": "Jam Mulai",
-   "read_only": 1
-  },
-  {
-   "fieldname": "shift_end",
-   "fieldtype": "Time",
-   "label": "Jam Selesai",
-   "read_only": 1
-  },
-  {
-   "fieldname": "crosses_midnight",
-   "fieldtype": "Check",
-   "label": "Lintas Tengah Malam",
-   "read_only": 1
-  },
-  {
-   "fieldname": "break_minutes",
-   "fieldtype": "Int",
-   "label": "Istirahat (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "scheduled_minutes",
-   "fieldtype": "Int",
-   "label": "Menit Terjadwal",
-   "read_only": 1
-  },
-  {
-   "fieldname": "late_tolerance_min",
-   "fieldtype": "Int",
-   "label": "Toleransi Telat (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "early_leave_tolerance_min",
-   "fieldtype": "Int",
-   "label": "Toleransi Pulang Cepat (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "rules_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "window_before_min",
-   "fieldtype": "Int",
-   "label": "Jendela Sebelum Mulai (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "late_limit_min",
-   "fieldtype": "Int",
-   "label": "Batas Terlambat (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "window_after_min",
-   "fieldtype": "Int",
-   "label": "Jendela Sesudah Selesai (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "min_out_after_in_min",
-   "fieldtype": "Int",
-   "label": "Jarak Minimum Masuk ke Pulang (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "overtime_min_minutes",
-   "fieldtype": "Int",
-   "label": "Lembur Minimal dan Kelipatan (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "deduction_block_min",
-   "fieldtype": "Int",
-   "label": "Blok Potongan (menit)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "deduction_hours_per_block",
-   "fieldtype": "Float",
-   "label": "Jam Dipotong per Blok",
    "read_only": 1
   },
   {
@@ -345,6 +258,10 @@
    "read_only": 1
   },
   {
+   "fieldname": "punch_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "punch_count",
    "fieldtype": "Int",
    "label": "Jumlah Punch",
@@ -377,18 +294,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "late_deduction_hours",
-   "fieldtype": "Float",
-   "label": "Potongan Telat (jam)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "early_leave_deduction_hours",
-   "fieldtype": "Float",
-   "label": "Potongan Pulang Cepat (jam)",
-   "read_only": 1
-  },
-  {
    "fieldname": "result_break",
    "fieldtype": "Column Break"
   },
@@ -412,6 +317,22 @@
    "read_only": 1
   },
   {
+   "fieldname": "result_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "late_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Potongan Telat (jam)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "early_leave_deduction_hours",
+   "fieldtype": "Float",
+   "label": "Potongan Pulang Cepat (jam)",
+   "read_only": 1
+  },
+  {
    "fieldname": "has_overtime",
    "fieldtype": "Check",
    "label": "Ada Lembur",
@@ -423,6 +344,11 @@
    "label": "Jenis Lembur",
    "options": "\nHari Kerja\nHari Libur",
    "read_only": 1
+  },
+  {
+   "fieldname": "tab_review",
+   "fieldtype": "Tab Break",
+   "label": "Tinjauan dan Penyesuaian HRD"
   },
   {
    "fieldname": "review_section",
@@ -438,12 +364,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "review_reason",
-   "fieldtype": "Small Text",
-   "label": "Alasan Tinjauan",
-   "read_only": 1
-  },
-  {
    "default": "Tidak Perlu",
    "fieldname": "review_status",
    "fieldtype": "Select",
@@ -456,9 +376,19 @@
    "fieldtype": "Column Break"
   },
   {
+   "fieldname": "review_reason",
+   "fieldtype": "Small Text",
+   "label": "Alasan Tinjauan",
+   "read_only": 1
+  },
+  {
    "fieldname": "review_note",
    "fieldtype": "Small Text",
    "label": "Catatan Tinjauan"
+  },
+  {
+   "fieldname": "review_break_2",
+   "fieldtype": "Column Break"
   },
   {
    "fieldname": "reviewed_by",
@@ -523,6 +453,10 @@
    "label": "Catatan Klasifikasi"
   },
   {
+   "fieldname": "absence_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "classified_by",
    "fieldtype": "Link",
    "label": "Diklasifikasi Oleh",
@@ -563,6 +497,108 @@
    "read_only": 1
   },
   {
+   "fieldname": "tab_rules",
+   "fieldtype": "Tab Break",
+   "label": "Aturan Shift dan Jejak"
+  },
+  {
+   "fieldname": "rules_section",
+   "fieldtype": "Section Break",
+   "label": "Salinan Aturan Shift"
+  },
+  {
+   "fieldname": "shift_start",
+   "fieldtype": "Time",
+   "label": "Jam Mulai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "shift_end",
+   "fieldtype": "Time",
+   "label": "Jam Selesai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "crosses_midnight",
+   "fieldtype": "Check",
+   "label": "Lintas Tengah Malam",
+   "read_only": 1
+  },
+  {
+   "fieldname": "break_minutes",
+   "fieldtype": "Int",
+   "label": "Istirahat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scheduled_minutes",
+   "fieldtype": "Int",
+   "label": "Menit Terjadwal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rules_break",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "late_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Telat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "early_leave_tolerance_min",
+   "fieldtype": "Int",
+   "label": "Toleransi Pulang Cepat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "window_before_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sebelum Mulai (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "late_limit_min",
+   "fieldtype": "Int",
+   "label": "Batas Terlambat (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "window_after_min",
+   "fieldtype": "Int",
+   "label": "Jendela Sesudah Selesai (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rules_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "min_out_after_in_min",
+   "fieldtype": "Int",
+   "label": "Jarak Minimum Masuk ke Pulang (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "overtime_min_minutes",
+   "fieldtype": "Int",
+   "label": "Lembur Minimal dan Kelipatan (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deduction_block_min",
+   "fieldtype": "Int",
+   "label": "Blok Potongan (menit)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deduction_hours_per_block",
+   "fieldtype": "Float",
+   "label": "Jam Dipotong per Blok",
+   "read_only": 1
+  },
+  {
    "fieldname": "trace_section",
    "fieldtype": "Section Break",
    "label": "Jejak Perhitungan"
@@ -598,7 +634,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-09 08:25:08.080204",
+ "modified": "2026-11-19 01:20:48.574239",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Working Hour",
