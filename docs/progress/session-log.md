@@ -208,3 +208,10 @@
 - Runbook K-102: `cek_pasca.sh` diperluas dan dipanggil di gladi dan produksi (`3939a64`). W6 lulus di browser. Gladi resik fase 2 terbukti (1078 ke 0); situs uji dipulihkan dari cadangan sebelum gladi; regresi SAMA 66, BEDA 0, ERROR 0. Keluaran fase 1 belum diperiksa Claude. Berikutnya: migrasi produksi.
 
 - Migrasi produksi K-102 selesai (1078 HRIS Employee, tabel Employee tidak berubah, cek_pasca SEMUA OK). Keputusan import dan export: jalur A dulu, lalu jalur B untuk HRIS Employee. Berikutnya: pemeriksaan kesiapan import.
+
+## 2026-11-18 sampai 2026-11-19
+- Layout HRIS Employee dan Working Hour dirapikan menjadi bertab; `device_code` ditambahkan di HRIS Device untuk penamaan Raw Log baru.
+- Working Hour kosong (Libur dan Tidak Terjadwal tanpa punch) dilewati; hari ini dan setelahnya tidak dihitung massal; potongan Bulanan untuk Tidak Hadir belum diklasifikasi (saklar, bawaan mati); Harian tanpa hari kerja dilewati dengan pesan jelas.
+- Perbandingan slip HPP-01107 cocok dengan hitungan manual. Regresi: SAMA 63, BEDA 3 (dijelaskan), ERROR 0; patokan 70 modul.
+- Koreksi uji: `uji_biaya_laporan` (total dibandingkan dengan semua slip periode) dan letak `ptkp_status` (uji P5 lulus setelah dipindah).
+- Belum: commit, push, produksi, 6b, slip Harian nyata, pengaruh pajak Potongan Absen.

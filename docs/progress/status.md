@@ -316,3 +316,14 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | Keputusan import dan export | Jalur A dulu (Data Import bawaan Frappe untuk semua menu yang disepakati), lalu jalur B (tombol impor khusus HRIS Employee dengan pratinjau, kunci ID Finger atau nomor Employee). Import HRIS Employee: HRIS Employee Admin, HRIS HR Admin, Direksi. Export: Employee Admin, HR Admin, Payroll Manager, Direksi |
 | Temuan awal | allow_import menyala hanya pada PPh21 TER Rate dan Pasal17 Rate. HRIS Employee belum punya allow_import dan belum punya izin Export |
 | Berikutnya | Pemeriksaan kesiapan import, rancangan jalur A, uji di hris-uji.local, lalu produksi |
+
+## Pembaruan 18-19 Nov 2026 (layout, device_code, Working Hour kosong, 6a)
+
+| Item | Status |
+|---|---|
+| Layout HRIS Employee (5 tab) dan Working Hour (4 tab) | Diterapkan di `hris-uji.local`. `ptkp_status` dipindah ke tepat setelah `pph21_enrolled` (uji P5 lulus, `uji_pph21_field` OK 13). Belum diuji dengan akun HR User |
+| `device_code` HRIS Device | Diterapkan di situs uji, kode otomatis terbukti. Uji validasi karakter terlarang dan kode ganda belum dilaporkan |
+| Working Hour kosong dilewati | Terbukti di situs uji (saklar `hris_skip_hari_kosong`) |
+| 6a potongan Bulanan, Harian opsi A, batas hari depan | Diterapkan di situs uji dan teruji; lihat [keputusan-2026-11-19-absen-6a.md](../decisions/keputusan-2026-11-19-absen-6a.md) |
+| Regresi | SAMA 63, BEDA 3 (dijelaskan), ERROR 0; patokan disimpan ulang, 70 modul |
+| Tertunda | Slip Harian nyata; pengaruh pajak Potongan Absen; produksi (migrate, saklar); 6b hapus Working Hour per batch; commit dan push |
