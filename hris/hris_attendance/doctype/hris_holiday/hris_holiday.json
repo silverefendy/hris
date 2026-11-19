@@ -80,7 +80,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-28 17:30:00.000000",
+ "modified": "2026-11-17 23:16:53.164437",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Holiday",
@@ -97,7 +97,8 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "import": 1
   },
   {
    "create": 1,
@@ -109,7 +110,8 @@
    "report": 1,
    "role": "HRIS Manager",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "import": 1
   },
   {
    "create": 1,
@@ -117,7 +119,8 @@
    "read": 1,
    "report": 1,
    "role": "HRIS HR Admin",
-   "write": 1
+   "write": 1,
+   "import": 1
   },
   {
    "read": 1,
@@ -136,7 +139,16 @@
   {
    "role": "HRIS Direksi",
    "permlevel": 0,
-   "read": 1
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "import": 1,
+   "export": 1,
+   "report": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
   }
  ],
  "row_format": "Dynamic",
@@ -145,5 +157,6 @@
  "states": [],
  "title_field": "holiday_name",
  "track_changes": 1,
- "allow_rename": 0
+ "allow_rename": 0,
+ "allow_import": 1
 }
