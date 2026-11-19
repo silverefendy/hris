@@ -327,3 +327,10 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 | 6a potongan Bulanan, Harian opsi A, batas hari depan | Diterapkan di situs uji dan teruji; lihat [keputusan-2026-11-19-absen-6a.md](../decisions/keputusan-2026-11-19-absen-6a.md) |
 | Regresi | SAMA 63, BEDA 3 (dijelaskan), ERROR 0; patokan disimpan ulang, 70 modul |
 | Tertunda | Slip Harian nyata; pengaruh pajak Potongan Absen; produksi (migrate, saklar); 6b hapus Working Hour per batch; commit dan push |
+
+## Hapus Massal Working Hour (6b) — 20 Nov 2026
+- Selesai dan teruji di situs uji: Cek Dulu (blokir/peringatan/info), job hapus per batch, log audit, dialog di list view, blokir kunci periode, guard `on_trash`.
+- Uji: hitung 20, job 16, kunci 10, on_trash 6. Regresi: SAMA 70, BEDA 0, ERROR 0; patokan 74 modul.
+- Commit `4ec0593` sudah di-push. Bench sudah di-restart (guard `on_trash` aktif di semua situs pada bench ini).
+- Belum: `migrate` produksi (membuat HRIS Hapus WH Log), saklar `hris_hapus_wh_aktif` di produksi, uji hapus pada data produksi.
+- Alur dan aturan: [../business/process-flows/hapus-working-hour.md](../business/process-flows/hapus-working-hour.md). Keputusan: [../decisions/0002-hapus-working-hour.md](../decisions/0002-hapus-working-hour.md).

@@ -215,3 +215,10 @@
 - Perbandingan slip HPP-01107 cocok dengan hitungan manual. Regresi: SAMA 63, BEDA 3 (dijelaskan), ERROR 0; patokan 70 modul.
 - Koreksi uji: `uji_biaya_laporan` (total dibandingkan dengan semua slip periode) dan letak `ptkp_status` (uji P5 lulus setelah dipindah).
 - Belum: commit, push, produksi, 6b, slip Harian nyata, pengaruh pajak Potongan Absen.
+
+## 2026-11-19 s/d 2026-11-20
+- 6b selesai: hapus massal Working Hour (service hitung, job per batch, DocType HRIS Hapus WH Log, dialog list view).
+- Celah ditemukan dan ditutup: blokir hanya lewat slip, padahal kunci periode (`period_lock`) bisa mengunci tanpa slip. Blokir kini gabungan; guard `on_trash` menutup jalur hapus bawaan.
+- Uji tampilan di browser lulus dengan 1.200 data sintetis. Regresi bersih, patokan 74 modul.
+- Push `4ec0593`. Bench di-restart.
+- Berikutnya: persetujuan eksplisit sebelum migrate produksi dan saklar produksi.
