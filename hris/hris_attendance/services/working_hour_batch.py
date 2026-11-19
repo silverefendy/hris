@@ -135,6 +135,12 @@ def _protected_dasar(employees, start, end):
 def _process(employees, params, run_id=None, status=None, commit=False):
 	start, end = getdate(params["from_date"]), getdate(params["to_date"])
 	days = [add_days(start, i) for i in range(date_diff(end, start) + 1)]
+	# Hari ini dan setelahnya belum final (punch belum lengkap, mesin belum ditarik): tidak dihitung.
+	if frappe.conf.get("hris_batasi_hari_depan", 1):
+		from frappe.utils import nowdate
+
+		_hari_ini = getdate(nowdate())
+		days = [d for d in days if d < _hari_ini]
 	protected = _protected(employees, start, end) if params["skip_reviewed"] else set()
 	result = {
 		"total": len(employees) * len(days),

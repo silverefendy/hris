@@ -121,6 +121,15 @@ def _pasang_pengali_harian(department, baris):
     return None
 
 
+def _tgl_ringkas(baris, batas=5):
+    """Tanggal kerja (dd-mm-yyyy), maksimal `batas`, sisanya diringkas."""
+    tgl = sorted({getdate(b["work_date"]) for b in baris if b.get("work_date")})
+    teks = ", ".join(t.strftime("%d-%m-%Y") for t in tgl[:batas])
+    if len(tgl) > batas:
+        teks += " dan %d tanggal lain" % (len(tgl) - batas)
+    return teks or "-"
+
+
 def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     """Fungsi murni. baris = daftar dict hari kerja (status, scheduled_hours, late_deduction_hours,
     early_leave_deduction_hours, overtime_minutes, absence_deducted, absence_class).
@@ -134,6 +143,8 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     absen = [b for b in baris if b.get("status") == "Tidak Hadir"]
     hari_kerja = hadir + tidak_lengkap + absen
     if not hari_kerja:
+        if pay_type == "Harian" and frappe.conf.get("hris_skip_harian_absen", 0):
+            return {"error": _("Karyawan Harian tidak punya hari kerja pada periode ini (Working Hour belum dihitung, atau seluruhnya tidak hadir atau libur); tidak ada upah, slip tidak dibuat.")}
         return {"error": _("Tidak ada hari kerja terjadwal (Hadir, Tidak Lengkap, atau Tidak Hadir) pada periode ini. Working Hour mungkin belum dihitung.")}
 
     jam_total = sum((_d(b.get("scheduled_hours")) for b in hari_kerja), Decimal(0))
@@ -143,6 +154,9 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     menit_lain = sum(int(b.get("overtime_minutes") or 0) for b in baris if b.get("status") != "Hadir")
     dipotong = [b for b in absen if b.get("absence_deducted")]
     belum_klas = [b for b in absen if not cstr(b.get("absence_class"))]
+    if pay_type == "Bulanan" and frappe.conf.get("hris_absen_belum_klas_dipotong", 0):
+        # Default Bulanan: Tidak Hadir tanpa klasifikasi dipotong sementara.
+        dipotong = [b for b in absen if b.get("absence_deducted") or not cstr(b.get("absence_class"))]
 
     komponen = []
     catatan = []
@@ -165,7 +179,12 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
             tambah(
                 "Potongan Absen", "Potongan",
                 gaji / Decimal(len(hari_kerja)) * len(dipotong),
-                "{0} hari x gaji / {1} hari kerja".format(len(dipotong), len(hari_kerja)),
+                "{0} hari x gaji / {1} hari kerja".format(len(dipotong), len(hari_kerja))
+                + (
+                    " ({0} hari belum diklasifikasi, dipotong sementara)".format(
+                        len([x for x in dipotong if not cstr(x.get("absence_class"))]))
+                    if [x for x in dipotong if not cstr(x.get("absence_class"))] else ""
+                ),
             )
         if menit_lembur > 0:
             kelompok = {}
@@ -193,7 +212,9 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
                 catatan.append(_("Pengali lembur berubah di periode ini: {0}.").format("; ".join(rincian)))
         if tidak_lengkap:
             catatan.append(_("{0} hari Tidak Lengkap tidak dipotong (aturan gaji Bulanan untuk hari ini belum diputuskan).").format(len(tidak_lengkap)))
-        if belum_klas:
+        if belum_klas and frappe.conf.get("hris_absen_belum_klas_dipotong", 0):
+            catatan.append(_("{0} hari Tidak Hadir belum diklasifikasi, dipotong sementara sampai HRD mengklasifikasi ({1}).").format(len(belum_klas), _tgl_ringkas(belum_klas)))
+        elif belum_klas:
             catatan.append(_("{0} hari Tidak Hadir belum diklasifikasi: tidak dipotong sampai HRD mengklasifikasi.").format(len(belum_klas)))
     elif pay_type == "Harian":
         tambah("Upah Harian", "Pendapatan", gaji * len(hadir), "{0} hari Hadir x {1}".format(len(hadir), _rp(_rupiah(gaji))))
@@ -325,6 +346,8 @@ def proses_karyawan(period, he_name):
         + (["rule_department"] if frappe.db.has_column(WH, "rule_department") else []),
     )
     if not rows:
+        if gaji.pay_type == "Harian" and frappe.conf.get("hris_skip_harian_absen", 0):
+            return "dilewati", _("Karyawan Harian tidak punya hari kerja pada periode ini (Working Hour belum dihitung, atau seluruhnya tidak hadir atau libur); tidak ada upah, slip tidak dibuat.")
         return "dilewati", _("Tidak ada data Working Hour pada periode ini (belum dihitung).")
 
     pengali_lembur_slip, galat_pengali_lembur = _pengali_lembur(he.department, period.period_end)

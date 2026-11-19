@@ -31,7 +31,9 @@ def jalankan():
         print("BERHENTI: butuh 2 hari Working Hour, 1 Department lain, 1 Employee Group lain")
         return
     harapan = round(flt(s.base_amount) / flt(s.working_days) * 2)
-    total = round(flt(s.total_earning))
+    # jumlah semua slip periode (periode bisa punya lebih dari satu slip)
+    total = round(flt(frappe.db.sql(
+        "select sum(total_earning) from `tabHRIS Payroll Slip` where payroll_period=%s", s.payroll_period)[0][0]))
     print("slip", s.name, "| harapan porsi:", harapan, "| total_earning:", total)
     try:
         for h in hari:

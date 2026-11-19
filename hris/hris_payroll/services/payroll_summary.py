@@ -117,7 +117,7 @@ def _satu_baris(he, rows, whr, komponen, hec, dasar_fn, per_periode, awal, akhir
     tgl_hadir = [getdate(r.work_date) for r in whr if r.status == "Hadir"]
     n_tl = sum(1 for r in whr if r.status == "Tidak Lengkap")
     hari_kerja = [r for r in whr if r.status in HARI_KERJA]
-    if per_periode and not whr:
+    if per_periode and not whr and not (pay_type == "Harian" and frappe.conf.get("hris_skip_harian_absen", 0)):
         masalah.append(_("Working Hour belum ada pada periode ini"))
     if n_tl:
         peringatan.append(_("{0} hari Tidak Lengkap").format(n_tl))

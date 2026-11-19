@@ -335,6 +335,24 @@ def calculate_working_hour(employee, work_date):
 	else:
 		doc.review_status = "Sudah Ditinjau" if previous_review == "Sudah Ditinjau" else "Tidak Perlu"
 
+	# Lewati hari kosong: Libur/Tidak Terjadwal, tanpa punch dan tanpa alasan tinjauan,
+	# dan dokumen belum ada. Dokumen yang sudah ada tetap diperbarui.
+	if (
+		frappe.conf.get("hris_skip_hari_kosong", 1)
+		and not name
+		and doc.status in ("Libur", "Tidak Terjadwal")
+		and not reasons
+		and not cint(doc.punch_count)
+	):
+		return {"name": None, "status": doc.status, "skipped": 1}
+
+	# Harian: hari Tidak Hadir tidak perlu dokumen (tidak digaji). Dokumen yang sudah ada tetap diperbarui.
+	if frappe.conf.get("hris_skip_harian_absen", 0) and not name and doc.status == "Tidak Hadir":
+		from hris.hris_payroll.services.pay_type import pay_type_on
+
+		if pay_type_on(employee, day) == "Harian":
+			return {"name": None, "status": doc.status, "skipped": 1}
+
 	doc.calculated_on = now_datetime()
 	doc.calculated_by = frappe.session.user
 	doc.flags.from_calculation = True
