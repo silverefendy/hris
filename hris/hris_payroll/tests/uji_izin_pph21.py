@@ -20,7 +20,7 @@ PERAN = {
 }
 
 # harapan izin PTKP (permlevel 1): bisa menulis atau hanya membaca
-TULIS_PTKP = {"HR Admin": True, "Payroll Admin": False, "Payroll Manager": False, "Direksi": False}
+TULIS_PTKP = {"HR Admin": True, "Payroll Admin": False, "Payroll Manager": False, "Direksi": True}
 
 # harapan izin DocType: (read, write, create, delete)
 HARAPAN_SETT = {
