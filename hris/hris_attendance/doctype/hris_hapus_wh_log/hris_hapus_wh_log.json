@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "autoname": "format:WHD-{YY}{MM}-{####}",
+ "creation": "2026-11-19 17:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "status",
+  "requested_by",
+  "started_at",
+  "finished_at",
+  "column_break_1",
+  "date_from",
+  "date_to",
+  "karyawan_filter",
+  "status_filter",
+  "tanpa_gaji",
+  "hasil_section",
+  "total_cocok",
+  "jumlah_dihapus",
+  "peringatan_dikonfirmasi",
+  "pesan_error"
+ ],
+ "fields": [
+  {
+   "default": "Antre",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Antre\nBerjalan\nSelesai\nGagal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Diminta Oleh",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "started_at",
+   "fieldtype": "Datetime",
+   "label": "Mulai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finished_at",
+   "fieldtype": "Datetime",
+   "label": "Selesai",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date_from",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Dari Tanggal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "date_to",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Sampai Tanggal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "karyawan_filter",
+   "fieldtype": "Small Text",
+   "label": "Filter Karyawan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "status_filter",
+   "fieldtype": "Small Text",
+   "label": "Filter Status",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "tanpa_gaji",
+   "fieldtype": "Check",
+   "label": "Hanya Karyawan Tanpa Baris Gaji",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hasil_section",
+   "fieldtype": "Section Break",
+   "label": "Hasil"
+  },
+  {
+   "fieldname": "total_cocok",
+   "fieldtype": "Int",
+   "label": "Dokumen Cocok",
+   "read_only": 1
+  },
+  {
+   "fieldname": "jumlah_dihapus",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Jumlah Dihapus",
+   "read_only": 1
+  },
+  {
+   "fieldname": "peringatan_dikonfirmasi",
+   "fieldtype": "Small Text",
+   "label": "Peringatan yang Dikonfirmasi",
+   "read_only": 1
+  },
+  {
+   "fieldname": "pesan_error",
+   "fieldtype": "Small Text",
+   "label": "Pesan Error",
+   "read_only": 1
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-19 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Hapus WH Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1
+  },
+  {
+   "role": "HRIS Direksi",
+   "permlevel": 0,
+   "read": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}
