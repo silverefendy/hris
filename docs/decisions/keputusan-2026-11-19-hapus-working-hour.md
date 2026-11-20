@@ -1,4 +1,4 @@
-# 0005 — Hapus massal Working Hour
+# Keputusan 19 November 2026 — Hapus massal Working Hour
 
 - Tanggal: 2026-11-19
 - Status: disetujui

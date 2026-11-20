@@ -124,5 +124,6 @@ Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
 | K-139 (tunjangan dan potongan komponen masuk Payroll Slip, 3b; 14 Nov 2026, `307f4c2` dan `e001a92`) | [keputusan-2026-11-14-tunjangan-slip.md](keputusan-2026-11-14-tunjangan-slip.md) |
 | K-140 (default tidak dapat; penetapan komponen per karyawan HEC dan per Grup atau Department HCA; 14 sampai 15 Nov 2026, `d7cb11c` sampai `b84f5c1`) | [keputusan-2026-11-14-default-tidak-dapat.md](keputusan-2026-11-14-default-tidak-dapat.md) |
 | K-141 (Per Bulan dibayar sekali sebulan; Waktu Bayar Slip Pertama atau Slip Terakhir per komponen; 16 Nov 2026, `4a37e60` sampai `2120cdb`) | [keputusan-2026-11-16-per-bulan.md](keputusan-2026-11-16-per-bulan.md) |
+| Hapus massal Working Hour (6b; 19 sampai 20 Nov 2026, `b6becc8` sampai `4ec0593`) | [keputusan-2026-11-19-hapus-working-hour.md](keputusan-2026-11-19-hapus-working-hour.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
