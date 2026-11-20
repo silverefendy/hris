@@ -9,7 +9,7 @@ EDIT_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
 EDITABLE = {
 	"review_status", "review_note", "adjustment_hours", "adjustment_reason",
 	"absence_class", "has_doctor_note", "has_supervisor_instruction", "annual_leave_exhausted",
-	"absence_deducted", "absence_note", "incomplete_outcome",
+	"absence_deducted", "absence_note", "incomplete_outcome", "manual_check_in", "manual_check_out",
 }
 # Diisi controller sendiri.
 DERIVED = {
@@ -64,6 +64,7 @@ class HRISWorkingHour(Document):
 		self.validate_numbers()
 		self.apply_adjustment()
 		self.classify_absence()
+		self.check_jam_koreksi()
 		self.check_incomplete_outcome()
 		self.stamp_review()
 
@@ -141,7 +142,7 @@ class HRISWorkingHour(Document):
 			return
 
 		if not self.absence_class:
-			if self.needs_review and self.review_status == "Sudah Ditinjau" and not self.flags.from_calculation:
+			if self.needs_review and self.review_status == "Sudah Ditinjau" and not self.flags.from_calculation and not (self.get("manual_check_in") or self.get("manual_check_out")):
 				frappe.throw(_("Klasifikasi Absen wajib diisi sebelum tinjauan ditandai Sudah Ditinjau."))
 			self.absence_deducted = 0
 			return
@@ -167,6 +168,9 @@ class HRISWorkingHour(Document):
 		if not self.meta.has_field("incomplete_outcome"):
 			return
 		hasil = (self.get("incomplete_outcome") or "").strip()
+		if self.get("manual_check_in") or self.get("manual_check_out"):
+			self.incomplete_outcome = None
+			return
 		if self.status != "Tidak Lengkap":
 			self.incomplete_outcome = None
 			return
@@ -183,6 +187,45 @@ class HRISWorkingHour(Document):
 			frappe.throw(_("Hasil Tinjauan Tidak Lengkap wajib diisi sebelum tinjauan ditandai Sudah Ditinjau: pilih Dihitung Hadir atau Dihitung Tidak Hadir."))
 		if not (self.review_note or "").strip():
 			frappe.throw(_("Catatan Tinjauan wajib diisi: tulis alasan dari karyawan (misalnya lupa tap atau pulang awal) sebelum tinjauan ditandai Sudah Ditinjau."))
+
+	def check_jam_koreksi(self):
+		"""Jam koreksi HRD (C4): jam masuk atau pulang yang dilengkapi HRD untuk hari Tidak Lengkap atau Tidak Hadir."""
+		if not self.meta.has_field("manual_check_in"):
+			return
+		masuk = get_datetime(self.get("manual_check_in")) if self.get("manual_check_in") else None
+		pulang = get_datetime(self.get("manual_check_out")) if self.get("manual_check_out") else None
+		if not masuk and not pulang:
+			return
+		if self.flags.from_calculation:
+			return
+		sebelumnya = self.get_doc_before_save()
+		pernah = bool(sebelumnya and (sebelumnya.get("manual_check_in") or sebelumnya.get("manual_check_out")))
+		if self.status not in ("Tidak Lengkap", "Tidak Hadir") and not pernah:
+			frappe.throw(_("Jam koreksi hanya untuk hari berstatus Tidak Lengkap atau Tidak Hadir."))
+		if (self.get("incomplete_outcome") or "").strip():
+			frappe.throw(_("Pilih salah satu: Hasil Tinjauan Tidak Lengkap atau jam koreksi, tidak keduanya."))
+		if flt(self.adjustment_hours):
+			frappe.throw(_("Penyesuaian (jam) tidak dipakai bersama jam koreksi: kosongkan Penyesuaian atau hapus jam koreksi."))
+		if not self.shift_start:
+			frappe.throw(_("Hari ini tidak punya jadwal shift; jam koreksi tidak dapat dipakai."))
+		from frappe.utils import get_time
+		from hris.hris_attendance.services.jam_koreksi import cek_jam_koreksi
+		rule = {
+			"start_time": get_time(self.shift_start),
+			"duration_minutes": int(self.scheduled_minutes or 0) + int(self.break_minutes or 0),
+			"window_before_min": int(self.window_before_min or 0),
+			"late_limit_min": int(self.late_limit_min or 0),
+			"window_after_min": int(self.window_after_min or 0),
+			"min_out_after_in_min": int(self.min_out_after_in_min or 0),
+		}
+		masuk_asli = get_datetime(self.check_in) if (self.check_in and not pernah) else None
+		galat = cek_jam_koreksi(rule, getdate(self.work_date), masuk, pulang, masuk_asli)
+		if galat:
+			frappe.throw("<br>".join(galat))
+		if not (self.review_note or "").strip():
+			frappe.throw(_("Catatan Tinjauan wajib diisi: tulis alasan jam koreksi (misalnya lupa tap atau mesin bermasalah) sebelum menyimpan."))
+		if self.review_status != "Sudah Ditinjau":
+			self.review_status = "Sudah Ditinjau"
 
 	def stamp_review(self):
 		if self.is_new() or not self.has_value_changed("review_status"):

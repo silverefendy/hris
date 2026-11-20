@@ -53,6 +53,8 @@
   "review_reason",
   "review_note",
   "incomplete_outcome",
+  "manual_check_in",
+  "manual_check_out",
   "review_break_2",
   "reviewed_by",
   "reviewed_on",
@@ -397,6 +399,20 @@
    "options": "\nDihitung Hadir\nDihitung Tidak Hadir"
   },
   {
+   "depends_on": "eval:doc.status=='Tidak Lengkap' || doc.status=='Tidak Hadir' || doc.manual_check_in || doc.manual_check_out",
+   "description": "Isi bila punch masuk tidak ada. Hari dihitung sebagai Hadir. Alasan wajib di Catatan Tinjauan.",
+   "fieldname": "manual_check_in",
+   "fieldtype": "Datetime",
+   "label": "Jam Masuk (Koreksi)"
+  },
+  {
+   "depends_on": "eval:doc.status=='Tidak Lengkap' || doc.status=='Tidak Hadir' || doc.manual_check_in || doc.manual_check_out",
+   "description": "Isi bila punch pulang tidak ada. Tidak boleh melewati akhir shift; lembur tidak dihitung dari jam koreksi.",
+   "fieldname": "manual_check_out",
+   "fieldtype": "Datetime",
+   "label": "Jam Pulang (Koreksi)"
+  },
+  {
    "fieldname": "review_break_2",
    "fieldtype": "Column Break"
   },
@@ -644,7 +660,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-20 15:49:24.115010",
+ "modified": "2026-11-20 23:48:46.924938",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Working Hour",
