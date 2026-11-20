@@ -222,3 +222,11 @@
 - Uji tampilan di browser lulus dengan 1.200 data sintetis. Regresi bersih, patokan 74 modul.
 - Push `4ec0593`. Bench di-restart.
 - Berikutnya: persetujuan eksplisit sebelum migrate produksi dan saklar produksi.
+
+## 2026-11-20 (siang)
+- Migrate produksi selesai (10:54 WIB): backup sebelum migrate, snapshot sebelum dan sesudah tanpa selisih, tabel `HRIS Hapus WH Log` dan kolom `device_code` terverifikasi. Saklar `hris_hapus_wh_aktif` tidak diset di produksi, sehingga menu Hapus tidak muncul (sesuai rancangan).
+- Uji di produksi: simpan HRIS Device lulus; `device_code` terisi otomatis dan dapat diedit manual.
+- `device_code` seluruh HRIS Device produksi diseragamkan dengan situs uji lewat skrip (mode cek dulu, lalu terapkan; rollback bila gagal; backup sebelum terapkan).
+- Penamaan Raw Log: awalan = `device_code` bila ada, kalau tidak nama device. Nomor urut dihitung per awalan + ID + bulan, jadi awalan baru memulai urutan sendiri tanpa bentrok dengan nama lama. `punch_key` memakai nama device, sehingga proteksi duplikat tidak terpengaruh. Jangan mengubah `device_code` sembarangan setelah Raw Log baru terbentuk.
+- Error Log produksi: satu entri gagal koneksi ke satu mesin absensi yang middleware-nya masih dibuat (kendala comm key). Bukan akibat migrate.
+- Belum: restart bench setelah migrate (tidak mendesak; hanya skema DB yang berubah), slip Harian nyata, pengaruh pajak Potongan Absen terhadap PPh 21, aturan Tidak Lengkap (C1).
