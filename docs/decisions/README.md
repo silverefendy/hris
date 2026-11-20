@@ -120,10 +120,16 @@ Keputusan setelah K-77 dicatat per berkas agar README tidak membengkak.
 | K-131 | [keputusan-2026-11-09-absen.md](keputusan-2026-11-09-absen.md) |
 | K-133 (BPJS pada slip; K-132 masih usulan di status.md) | [keputusan-2026-11-10-bpjs.md](keputusan-2026-11-10-bpjs.md) |
 | K-134 (PPh 21 tahap 2a, TER bulanan; disetujui dan diimplementasikan 10 Nov, `84b093c` dan `9ad4fcf`) | [keputusan-2026-11-10-pph21.md](keputusan-2026-11-10-pph21.md) |
+| K-135 (Department Rule; 11 Nov 2026, status tertulis di berkas) | [keputusan-2026-11-11-department-rule.md](keputusan-2026-11-11-department-rule.md) |
+| K-136 (HRIS Department sebagai sumber utama; 11 Nov 2026, arah disetujui) | [keputusan-2026-11-11-hris-department.md](keputusan-2026-11-11-hris-department.md) |
+| K-137 (pengali lembur per tanggal berlaku dan notifikasi slip Draft; 12 Nov 2026) | [keputusan-2026-11-12-pengali-per-tanggal.md](keputusan-2026-11-12-pengali-per-tanggal.md) |
+| K-138 (peminjaman karyawan, aturan khusus per karyawan, komponen aturan; 12 Nov 2026) | [keputusan-2026-11-12-peminjaman-aturan.md](keputusan-2026-11-12-peminjaman-aturan.md) |
 | Laporan biaya tenaga kerja (13 Nov 2026, opsi A) | [keputusan-2026-11-13-laporan-biaya.md](keputusan-2026-11-13-laporan-biaya.md) |
 | K-139 (tunjangan dan potongan komponen masuk Payroll Slip, 3b; 14 Nov 2026, `307f4c2` dan `e001a92`) | [keputusan-2026-11-14-tunjangan-slip.md](keputusan-2026-11-14-tunjangan-slip.md) |
 | K-140 (default tidak dapat; penetapan komponen per karyawan HEC dan per Grup atau Department HCA; 14 sampai 15 Nov 2026, `d7cb11c` sampai `b84f5c1`) | [keputusan-2026-11-14-default-tidak-dapat.md](keputusan-2026-11-14-default-tidak-dapat.md) |
 | K-141 (Per Bulan dibayar sekali sebulan; Waktu Bayar Slip Pertama atau Slip Terakhir per komponen; 16 Nov 2026, `4a37e60` sampai `2120cdb`) | [keputusan-2026-11-16-per-bulan.md](keputusan-2026-11-16-per-bulan.md) |
+| K-142 (pengaturan PPh 21 dapat diinput dan diimpor; 17 Nov 2026) | [keputusan-2026-11-17-k142.md](keputusan-2026-11-17-k142.md) |
+| Working Hour kosong, potongan absen 6a, batas hari depan (19 Nov 2026) | [keputusan-2026-11-19-absen-6a.md](keputusan-2026-11-19-absen-6a.md) |
 | Hapus massal Working Hour (6b; 19 sampai 20 Nov 2026, `b6becc8` sampai `4ec0593`) | [keputusan-2026-11-19-hapus-working-hour.md](keputusan-2026-11-19-hapus-working-hour.md) |
 
 Templat keputusan rinci: [0001-template.md](0001-template.md). Keputusan rinci: [0002](0002-hris-mandiri-dan-bridge-keluar.md), [0003](0003-jalur-data-mesin.md), [0004](0004-pull-pyzk-dan-penamaan-raw-log.md). Checklist DocType baru: [../development/doctype-checklist.md](../development/doctype-checklist.md).
