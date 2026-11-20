@@ -139,9 +139,13 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     gaji = _d(amount)
     kali = _d(pengali)
     hadir = [b for b in baris if b.get("status") == "Hadir"]
-    tidak_lengkap = [b for b in baris if b.get("status") == "Tidak Lengkap"]
+    tidak_lengkap_semua = [b for b in baris if b.get("status") == "Tidak Lengkap"]
+    # C1: hasil tinjauan HRD. Tanpa hasil (belum ditinjau) diperlakukan seperti sebelumnya.
+    tl_hadir = [b for b in tidak_lengkap_semua if b.get("incomplete_outcome") == "Dihitung Hadir"]
+    tl_absen = [b for b in tidak_lengkap_semua if b.get("incomplete_outcome") == "Dihitung Tidak Hadir"]
+    tidak_lengkap = [b for b in tidak_lengkap_semua if b.get("incomplete_outcome") not in ("Dihitung Hadir", "Dihitung Tidak Hadir")]
     absen = [b for b in baris if b.get("status") == "Tidak Hadir"]
-    hari_kerja = hadir + tidak_lengkap + absen
+    hari_kerja = hadir + tidak_lengkap_semua + absen
     if not hari_kerja:
         if pay_type == "Harian" and frappe.conf.get("hris_skip_harian_absen", 0):
             return {"error": _("Karyawan Harian tidak punya hari kerja pada periode ini (Working Hour belum dihitung, atau seluruhnya tidak hadir atau libur); tidak ada upah, slip tidak dibuat.")}
@@ -175,11 +179,12 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
             tambah("Potongan Telat", "Potongan", jam_telat * tarif, "{0} jam x tarif {1}/jam".format(_jam(jam_telat), tarif_teks))
         if jam_cepat > 0:
             tambah("Potongan Pulang Cepat", "Potongan", jam_cepat * tarif, "{0} jam x tarif {1}/jam".format(_jam(jam_cepat), tarif_teks))
-        if dipotong:
+        n_potong = len(dipotong) + len(tl_absen)
+        if n_potong:
             tambah(
                 "Potongan Absen", "Potongan",
-                gaji / Decimal(len(hari_kerja)) * len(dipotong),
-                "{0} hari x gaji / {1} hari kerja".format(len(dipotong), len(hari_kerja))
+                gaji / Decimal(len(hari_kerja)) * n_potong,
+                "{0} hari x gaji / {1} hari kerja".format(n_potong, len(hari_kerja))
                 + (
                     " ({0} hari belum diklasifikasi, dipotong sementara)".format(
                         len([x for x in dipotong if not cstr(x.get("absence_class"))]))
@@ -217,7 +222,8 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
         elif belum_klas:
             catatan.append(_("{0} hari Tidak Hadir belum diklasifikasi: tidak dipotong sampai HRD mengklasifikasi.").format(len(belum_klas)))
     elif pay_type == "Harian":
-        tambah("Upah Harian", "Pendapatan", gaji * len(hadir), "{0} hari Hadir x {1}".format(len(hadir), _rp(_rupiah(gaji))))
+        hari_bayar = len(hadir) + len(tl_hadir)
+        tambah("Upah Harian", "Pendapatan", gaji * hari_bayar, "{0} hari Hadir x {1}".format(hari_bayar, _rp(_rupiah(gaji))))
         telat = cepat = lembur = Decimal(0)
         pengali_dipakai = set()
         tanpa_jam = 0
@@ -258,14 +264,18 @@ def hitung_komponen(pay_type, amount, baris, pengali=PENGALI_LEMBUR):
     else:
         return {"error": _("Jenis gaji tidak dikenal: {0}.").format(pay_type)}
 
+    if tl_hadir:
+        catatan.append(_("{0} hari Tidak Lengkap diputuskan HRD Dihitung Hadir.").format(len(tl_hadir)))
+    if tl_absen:
+        catatan.append(_("{0} hari Tidak Lengkap diputuskan HRD Dihitung Tidak Hadir.").format(len(tl_absen)))
     if menit_lain > 0:
         catatan.append(_("{0} menit lembur pada hari bukan Hadir tidak dihitung (aturan belum diputuskan).").format(menit_lain))
 
     ringkasan = {
         "working_days": len(hari_kerja),
-        "present_days": len(hadir),
-        "absent_days": len(absen),
-        "absent_deducted_days": len(dipotong) if pay_type == "Bulanan" else 0,
+        "present_days": len(hadir) + len(tl_hadir),
+        "absent_days": len(absen) + len(tl_absen),
+        "absent_deducted_days": (len(dipotong) + len(tl_absen)) if pay_type == "Bulanan" else 0,
         "incomplete_days": len(tidak_lengkap),
         "unclassified_absent_days": len(belum_klas) if pay_type == "Bulanan" else 0,
         "scheduled_hours_total": float(jam_total),
@@ -343,7 +353,8 @@ def proses_karyawan(period, he_name):
         filters={"employee": he.erpnext_employee, "work_date": ["between", [str(awal), str(akhir)]]},
         fields=["status", "scheduled_hours", "late_deduction_hours", "early_leave_deduction_hours",
                 "overtime_minutes", "absence_deducted", "absence_class", "work_date"]
-        + (["rule_department"] if frappe.db.has_column(WH, "rule_department") else []),
+        + (["rule_department"] if frappe.db.has_column(WH, "rule_department") else [])
+        + (["incomplete_outcome"] if frappe.db.has_column(WH, "incomplete_outcome") else []),
     )
     if not rows:
         if gaji.pay_type == "Harian" and frappe.conf.get("hris_skip_harian_absen", 0):

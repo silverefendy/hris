@@ -52,6 +52,7 @@
   "review_break",
   "review_reason",
   "review_note",
+  "incomplete_outcome",
   "review_break_2",
   "reviewed_by",
   "reviewed_on",
@@ -387,6 +388,15 @@
    "label": "Catatan Tinjauan"
   },
   {
+   "depends_on": "eval:doc.status=='Tidak Lengkap'",
+   "description": "Wajib diisi HRD saat menandai Sudah Ditinjau. Alasan dari karyawan ditulis di Catatan Tinjauan.",
+   "fieldname": "incomplete_outcome",
+   "fieldtype": "Select",
+   "label": "Hasil Tinjauan Tidak Lengkap",
+   "mandatory_depends_on": "eval:doc.status=='Tidak Lengkap' && doc.review_status=='Sudah Ditinjau'",
+   "options": "\nDihitung Hadir\nDihitung Tidak Hadir"
+  },
+  {
    "fieldname": "review_break_2",
    "fieldtype": "Column Break"
   },
@@ -634,7 +644,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-11-19 01:20:48.574239",
+ "modified": "2026-11-20 15:49:24.115010",
  "modified_by": "Administrator",
  "module": "HRIS Attendance",
  "name": "HRIS Working Hour",

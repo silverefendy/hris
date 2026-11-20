@@ -9,7 +9,7 @@ EDIT_ROLES = {"HRIS HR Admin", "HRIS Manager", "System Manager"}
 EDITABLE = {
 	"review_status", "review_note", "adjustment_hours", "adjustment_reason",
 	"absence_class", "has_doctor_note", "has_supervisor_instruction", "annual_leave_exhausted",
-	"absence_deducted", "absence_note",
+	"absence_deducted", "absence_note", "incomplete_outcome",
 }
 # Diisi controller sendiri.
 DERIVED = {
@@ -64,6 +64,7 @@ class HRISWorkingHour(Document):
 		self.validate_numbers()
 		self.apply_adjustment()
 		self.classify_absence()
+		self.check_incomplete_outcome()
 		self.stamp_review()
 
 	def guard_edits(self):
@@ -160,6 +161,28 @@ class HRISWorkingHour(Document):
 			self.classified_on = now_datetime()
 		if self.review_status == "Menunggu":
 			self.review_status = "Sudah Ditinjau"
+
+	def check_incomplete_outcome(self):
+		"""Hasil tinjauan hari Tidak Lengkap (C1): HRD memutuskan Dihitung Hadir atau Dihitung Tidak Hadir."""
+		if not self.meta.has_field("incomplete_outcome"):
+			return
+		hasil = (self.get("incomplete_outcome") or "").strip()
+		if self.status != "Tidak Lengkap":
+			self.incomplete_outcome = None
+			return
+		if self.flags.from_calculation:
+			if self.review_status != "Sudah Ditinjau":
+				self.incomplete_outcome = None
+			return
+		if hasil and self.review_status == "Menunggu" and self.has_value_changed("incomplete_outcome"):
+			self.review_status = "Sudah Ditinjau"
+		if self.review_status != "Sudah Ditinjau":
+			self.incomplete_outcome = None
+			return
+		if not hasil:
+			frappe.throw(_("Hasil Tinjauan Tidak Lengkap wajib diisi sebelum tinjauan ditandai Sudah Ditinjau: pilih Dihitung Hadir atau Dihitung Tidak Hadir."))
+		if not (self.review_note or "").strip():
+			frappe.throw(_("Catatan Tinjauan wajib diisi: tulis alasan dari karyawan (misalnya lupa tap atau pulang awal) sebelum tinjauan ditandai Sudah Ditinjau."))
 
 	def stamp_review(self):
 		if self.is_new() or not self.has_value_changed("review_status"):
