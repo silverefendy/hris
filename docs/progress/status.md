@@ -333,4 +333,4 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 - Uji: hitung 20, job 16, kunci 10, on_trash 6. Regresi: SAMA 70, BEDA 0, ERROR 0; patokan 74 modul.
 - Commit `4ec0593` sudah di-push. Bench sudah di-restart (guard `on_trash` aktif di semua situs pada bench ini).
 - Belum: `migrate` produksi (membuat HRIS Hapus WH Log), saklar `hris_hapus_wh_aktif` di produksi, uji hapus pada data produksi.
-- Alur dan aturan: [../business/process-flows/hapus-working-hour.md](../business/process-flows/hapus-working-hour.md). Keputusan: [../decisions/0002-hapus-working-hour.md](../decisions/0002-hapus-working-hour.md).
+- Alur dan aturan: [../business/process-flows/hapus-working-hour.md](../business/process-flows/hapus-working-hour.md). Keputusan: [../decisions/0005-hapus-working-hour.md](../decisions/0005-hapus-working-hour.md).

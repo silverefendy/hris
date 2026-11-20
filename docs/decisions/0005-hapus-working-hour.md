@@ -1,4 +1,4 @@
-# 0002 — Hapus massal Working Hour
+# 0005 — Hapus massal Working Hour
 
 - Tanggal: 2026-11-19
 - Status: disetujui
