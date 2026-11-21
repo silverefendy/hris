@@ -308,7 +308,12 @@ def calculate_working_hour(employee, work_date):
 			# Hari tidak wajib dan tidak ada punch: dianggap libur.
 			doc.status = "Libur"
 		else:
-			result = compute_day(rule, day, punches, doc.is_holiday)
+			from hris.hris_attendance.services.jam_koreksi import hitung_dengan_koreksi
+			manual_masuk = get_datetime(doc.get("manual_check_in")) if doc.get("manual_check_in") else None
+			manual_pulang = get_datetime(doc.get("manual_check_out")) if doc.get("manual_check_out") else None
+			result, _koreksi = hitung_dengan_koreksi(
+				compute_day, rule, day, punches, doc.is_holiday, masuk=manual_masuk, pulang=manual_pulang
+			)
 			for fieldname, value in result["fields"].items():
 				doc.set(fieldname, value)
 			roles = result["roles"]
@@ -323,12 +328,13 @@ def calculate_working_hour(employee, work_date):
 		if pay_type_on(employee, day) != "Harian":
 			reasons.append("Tidak hadir tanpa keterangan: HRD perlu menentukan Klasifikasi Absen")
 			perlu_klasifikasi = True
+	tahan_tinjauan = bool(doc.get("manual_check_in") or doc.get("manual_check_out"))
 	doc.needs_review = 1 if reasons else 0
 	doc.review_reason = "; ".join(reasons) if reasons else None
 	if doc.needs_review:
 		keep = (
 			previous_review == "Sudah Ditinjau"
-			and previous_sig == _signature(doc)
+			and (previous_sig == _signature(doc) or tahan_tinjauan)
 			and not (perlu_klasifikasi and not doc.absence_class)
 		)
 		doc.review_status = "Sudah Ditinjau" if keep else "Menunggu"
