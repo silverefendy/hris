@@ -34,3 +34,10 @@ uji_jam_koreksi 22/22, _db 10/10, _mesin 10/10, _u7 8/8. Regresi 21 Nov: SAMA 78
 - Aturan: tolak jam koreksi bila Klasifikasi Absen terisi.
 - Migrate produksi C4 (persetujuan eksplisit) dan restart.
 - Serial Number HRIS Device "WP 221" dikembalikan dari 123abcd.
+
+## Pembaruan 21 Nov 2026, 13:40 WIB
+- Aturan: jam koreksi ditolak bila Klasifikasi Absen terisi (commit 6b0c6fd). Uji klasifikasi 2/2.
+- Migrate produksi C4 selesai 13:23 WIB (backup, snapshot tanpa selisih, kolom dan section ada), restart 13:24 WIB.
+- Working Hour produksi 1081 dokumen, tidak berubah.
+- Patokan regresi 83 modul.
+- Tertunda: uji browser produksi, Serial Number HRIS Device "WP 221" (123abcd) dikembalikan.

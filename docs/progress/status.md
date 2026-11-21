@@ -337,3 +337,6 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 
 ## 21 Nov 2026: C4 tahap 5
 Selesai di situs uji (commit 7cd4ffb). Rincian: docs/progress/c4-tahap5-tampilan.md. Tertunda: aturan Klasifikasi Absen, migrate produksi C4, Serial Number WP 221.
+
+## 21 Nov 2026, 13:40 WIB: C4 live di produksi
+Migrate dan restart selesai. Menunggu uji browser produksi dan pemulihan Serial Number WP 221.
