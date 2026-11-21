@@ -1,0 +1,15 @@
+﻿# === Data pengguna: JANGAN PERNAH masuk repo ===
+data/
+*.hdtdata
+*.hdtsec
+*.hdttmpl
+*.hdtlog
+*.hdtbak
+# === Hasil build ===
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+# === Sementara ===
+*.tmp
