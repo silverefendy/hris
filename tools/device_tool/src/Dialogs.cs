@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -217,6 +217,7 @@ namespace HrisDeviceTool
             r.Ip = ip;
             r.Port = port;
             r.IngatKey = chkIngat.Checked;
+            r.TanpaKey = (txtKey.Text.Trim().Length == 0 || txtKey.Text.Trim() == "0");
             Result = r;
             KeyResult = txtKey.Text;
             DialogResult = DialogResult.OK;

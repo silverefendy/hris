@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -13,6 +13,7 @@ namespace HrisDeviceTool
         public string Ip = "";
         public int Port = 4370;
         public bool IngatKey = false;
+        public bool TanpaKey = false;
 
         public override string ToString()
         {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -195,6 +195,77 @@ namespace HrisDeviceTool
                 rows.Add(new string[] { id.Trim('\0'), name.Trim('\0'), priv.ToString(), en ? "aktif" : "nonaktif" });
             }
             return rows;
+        }
+
+        public static List<string[]> InfoRows(object zkObj)
+        {
+            dynamic zk = zkObj;
+            List<string[]> r = new List<string[]>();
+            string prod = "", fw = "", sn = "";
+            try { zk.GetProductCode(1, ref prod); } catch { }
+            try { zk.GetFirmwareVersion(1, ref fw); } catch { }
+            try { zk.GetSerialNumber(1, out sn); } catch { }
+            r.Add(new string[] { "Identitas", "Tipe (product code)", prod });
+            r.Add(new string[] { "Identitas", "Firmware", fw });
+            r.Add(new string[] { "Identitas", "Serial", sn });
+            r.Add(new string[] { "Algoritma", "Versi jari", Opt(zkObj, "~ZKFPVersion") });
+            r.Add(new string[] { "Algoritma", "Versi wajah", Opt(zkObj, "ZKFaceVersion") });
+            r.Add(new string[] { "Algoritma", "Fitur wajah aktif", Opt(zkObj, "FaceFunOn") });
+            r.Add(new string[] { "Identitas", "Nama perangkat", Opt(zkObj, "~DeviceName") });
+            r.Add(new string[] { "Identitas", "Platform", Opt(zkObj, "~Platform") });
+            r.Add(new string[] { "Identitas", "Vendor", Opt(zkObj, "~OEMVendor") });
+            r.Add(new string[] { "Isi data", "Password terdaftar", St(zkObj, 4) });
+            r.Add(new string[] { "Isi data", "Catatan operasi", St(zkObj, 5) });
+            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa jari (10)", St(zkObj, 10) });
+            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa user (11)", St(zkObj, 11) });
+            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa log (12)", St(zkObj, 12) });
+            r.Add(new string[] { "Isi data", "Admin", St(zkObj, 1) });
+            r.Add(new string[] { "Isi data", "User", St(zkObj, 2) });
+            r.Add(new string[] { "Isi data", "Template jari", St(zkObj, 3) });
+            r.Add(new string[] { "Isi data", "Template wajah", St(zkObj, 21) });
+            r.Add(new string[] { "Isi data", "Log absensi", St(zkObj, 6) });
+            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 7", St(zkObj, 7) });
+            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 8", St(zkObj, 8) });
+            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 9", St(zkObj, 9) });
+            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 22", St(zkObj, 22) });
+            try
+            {
+                int y = 0, mo = 0, d = 0, h = 0, mi = 0, s = 0;
+                bool ok = zk.GetDeviceTime(1, ref y, ref mo, ref d, ref h, ref mi, ref s);
+                if (ok)
+                {
+                    DateTime dt = new DateTime(y, mo, d, h, mi, s);
+                    double diff = (dt - DateTime.Now).TotalSeconds;
+                    r.Add(new string[] { "Jam", "Jam mesin", dt.ToString("dd-MM-yyyy HH:mm:ss") });
+                    r.Add(new string[] { "Jam", "Selisih dengan PC (detik)", Math.Round(diff).ToString() });
+                }
+            }
+            catch (Exception e)
+            {
+                r.Add(new string[] { "Jam", "Jam mesin", "error: " + e.Message });
+            }
+            return r;
+        }
+
+        // Urutan: versi jari, versi wajah, user, template jari, wajah, log, selisih jam (detik)
+        public static string[] Ringkas(object zkObj)
+        {
+            dynamic zk = zkObj;
+            string selisih = "?";
+            try
+            {
+                int y = 0, mo = 0, d = 0, h = 0, mi = 0, s = 0;
+                bool ok = zk.GetDeviceTime(1, ref y, ref mo, ref d, ref h, ref mi, ref s);
+                if (ok)
+                {
+                    DateTime dt = new DateTime(y, mo, d, h, mi, s);
+                    double diff = (dt - DateTime.Now).TotalSeconds;
+                    selisih = Math.Round(diff).ToString();
+                }
+            }
+            catch { }
+            return new string[] { Opt(zkObj, "~ZKFPVersion"), Opt(zkObj, "ZKFaceVersion"),
+                St(zkObj, 2), St(zkObj, 3), St(zkObj, 21), St(zkObj, 6), selisih };
         }
 
         static string Safe(string s)
