@@ -230,3 +230,6 @@
 - Penamaan Raw Log: awalan = `device_code` bila ada, kalau tidak nama device. Nomor urut dihitung per awalan + ID + bulan, jadi awalan baru memulai urutan sendiri tanpa bentrok dengan nama lama. `punch_key` memakai nama device, sehingga proteksi duplikat tidak terpengaruh. Jangan mengubah `device_code` sembarangan setelah Raw Log baru terbentuk.
 - Error Log produksi: satu entri gagal koneksi ke satu mesin absensi yang middleware-nya masih dibuat (kendala comm key). Bukan akibat migrate.
 - Belum: restart bench setelah migrate (tidak mendesak; hanya skema DB yang berubah), slip Harian nyata, pengaruh pajak Potongan Absen terhadap PPh 21, aturan Tidak Lengkap (C1).
+
+## 21 Nov 2026
+C4 tahap 5 (mesin hitung, tata letak, nama hari, Hitung Ulang otomatis) lulus uji dan di-push (7cd4ffb). Regresi SAMA 78, BEDA 0, ERROR 0, BARU 4.

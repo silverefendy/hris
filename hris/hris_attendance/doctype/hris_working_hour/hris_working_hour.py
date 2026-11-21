@@ -204,6 +204,8 @@ class HRISWorkingHour(Document):
 			frappe.throw(_("Jam koreksi hanya untuk hari berstatus Tidak Lengkap atau Tidak Hadir."))
 		if (self.get("incomplete_outcome") or "").strip():
 			frappe.throw(_("Pilih salah satu: Hasil Tinjauan Tidak Lengkap atau jam koreksi, tidak keduanya."))
+		if (self.get("absence_class") or "").strip():
+			frappe.throw(_("Hari ini punya Klasifikasi Absen terisi: kosongkan Klasifikasi Absen atau hapus jam koreksi."))
 		if flt(self.adjustment_hours):
 			frappe.throw(_("Penyesuaian (jam) tidak dipakai bersama jam koreksi: kosongkan Penyesuaian atau hapus jam koreksi."))
 		if not self.shift_start:

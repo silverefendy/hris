@@ -334,3 +334,6 @@ Catatan: ringkasan 1 sampai 3 November (K-78 sampai K-99) belum dimasukkan ke ba
 - Commit `4ec0593` sudah di-push. Bench sudah di-restart (guard `on_trash` aktif di semua situs pada bench ini).
 - Produksi (20 Nov 2026, 10:54 WIB): `migrate` selesai tanpa selisih; tabel HRIS Hapus WH Log dan kolom `device_code` terverifikasi; `device_code` semua HRIS Device diseragamkan dengan situs uji. Belum: saklar `hris_hapus_wh_aktif` di produksi (sengaja tidak diset), uji hapus pada data produksi.
 - Alur dan aturan: [../business/process-flows/hapus-working-hour.md](../business/process-flows/hapus-working-hour.md). Keputusan: [../decisions/keputusan-2026-11-19-hapus-working-hour.md](../decisions/keputusan-2026-11-19-hapus-working-hour.md).
+
+## 21 Nov 2026: C4 tahap 5
+Selesai di situs uji (commit 7cd4ffb). Rincian: docs/progress/c4-tahap5-tampilan.md. Tertunda: aturan Klasifikasi Absen, migrate produksi C4, Serial Number WP 221.
