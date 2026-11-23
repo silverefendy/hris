@@ -22,13 +22,23 @@ namespace HrisDeviceTool
                     "HRIS Device Tool", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (!Akun.Masuk(st)) return;
-            st.UnlockAtStartup();
-            AuditLog.Dir = st.LogDir;
-            Salinan.BersihkanOtomatis(st);
-            MainForm utama = new MainForm(st);
-            utama.Text += "   [" + Peran.NamaAktif + "]";
-            Application.Run(utama);
+            bool pertama = true;
+            while (true)
+            {
+                if (!Akun.Masuk(st)) return;
+                if (pertama)
+                {
+                    st.UnlockAtStartup();
+                    pertama = false;
+                }
+                AuditLog.Dir = st.LogDir;
+                Salinan.BersihkanOtomatis(st);
+                MainForm utama = new MainForm(st);
+                utama.Text += "   [" + Peran.NamaAktif + "]";
+                Application.Run(utama);
+                if (!utama.KeluarAkun) return;
+                Peran.Level = 0;
+            }
         }
     }
 }

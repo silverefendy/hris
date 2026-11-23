@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.6.0 (tahap 4a)";
+        const string Versi = "0.6.1 (keluar akun)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -127,6 +127,7 @@ namespace HrisDeviceTool
         Label lblCount, lblInfoHead;
         List<string[]> allUsers = new List<string[]>();
         object enrollZk = null;
+        public bool KeluarAkun = false;
         string enrollMesin = "";
         string enrollUid = "";
 
@@ -238,6 +239,7 @@ namespace HrisDeviceTool
             Controls.Add(Btn("Tarik log mesin", 10, 422, 150, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
             Controls.Add(Btn("Kelola salinan", 170, 422, 150, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
             Controls.Add(Btn("Ganti sandi", 330, 422, 120, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
+            Controls.Add(Btn("Keluar akun", 285, 388, 160, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi.\r\nNaik/Turun/A-Z mengatur urutan tersimpan.\r\nKlik judul kolom = urut tampilan saja.", 10, 360));
             Controls.Add(tabs);
             Controls.Add(txtLog);
