@@ -118,7 +118,7 @@ namespace HrisDeviceTool
             txtKey = Field("Comm Key (kosongkan bila mesin tidak memakai)", 142, 376, true);
 
             chkIngat = new CheckBox();
-            chkIngat.Text = "Ingat Comm Key (disimpan terenkripsi, butuh kata sandi aplikasi)";
+            chkIngat.Text = "Ingat Comm Key (terenkripsi Windows, hanya terbaca di PC ini)";
             chkIngat.Location = new Point(12, 188);
             chkIngat.AutoSize = true;
             Controls.Add(chkIngat);

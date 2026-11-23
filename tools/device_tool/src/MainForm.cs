@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.6.1 (keluar akun)";
+        const string Versi = "0.6.2 (Comm Key tanpa sandi)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -146,7 +146,7 @@ namespace HrisDeviceTool
             if (st.Data.Mesin.Count == 0)
                 Log("Belum ada mesin. Klik Tambah di kiri untuk mendaftarkan mesin pertama.");
             if (st.SecretsLocked)
-                Log("Comm Key tersimpan tidak dibuka (kata sandi dilewati). Comm Key akan ditanyakan saat menghubungkan.");
+                Log("Comm Key tersimpan tidak dibuka (migrasi dari kata sandi lama dilewati). Comm Key akan ditanyakan saat menghubungkan.");
         }
 
         // ---------- UI ----------
@@ -357,7 +357,7 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Diagnostik", 15, 15, 140, delegate { if (!Peran.Boleh("OnDiagnostik")) return; AuditLog.Kat = "bantuan"; OnDiagnostik(); }));
             p.Controls.Add(Btn("Buka folder data", 165, 15, 150, delegate { BukaFolder(st.DataDir); }));
             p.Controls.Add(Btn("Buka folder panduan", 325, 15, 170, delegate { if (!Peran.Boleh("OnPanduan")) return; AuditLog.Kat = "bantuan"; OnPanduan(); }));
-            p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dibuka dengan kata sandi aplikasi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
+            p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dienkripsi Windows (hanya terbaca di PC ini, tanpa kata sandi). Di PC lain, isi Comm Key sekali lagi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
             return p;
         }
 
@@ -458,7 +458,7 @@ namespace HrisDeviceTool
                 RefreshList(m.Nama);
             }
             else if (!st.SecretsLocked &&
-                MessageBox.Show("Ingat Comm Key mesin " + m.Nama + "?\r\n(Disimpan terenkripsi, dibuka dengan kata sandi aplikasi saat aplikasi dibuka.)",
+                MessageBox.Show("Ingat Comm Key mesin " + m.Nama + "?\r\n(Disimpan terenkripsi oleh Windows, hanya terbaca di PC ini. Tanpa kata sandi.)",
                 "Comm Key", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 m.IngatKey = true;
