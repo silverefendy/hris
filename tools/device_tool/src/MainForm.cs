@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.3.0 (tahap 2d)";
+        const string Versi = "0.4.0 (tahap 3a)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -233,6 +233,7 @@ namespace HrisDeviceTool
             Controls.Add(Btn("A-Z", 190, 320, 85, delegate { OnUrutAz(); }));
             Controls.Add(Btn("Cek semua", 285, 286, 110, delegate { OnCekSemua(); }));
             Controls.Add(Btn("Bersihkan log", 285, 320, 110, delegate { txtLog.Clear(); }));
+            Controls.Add(Btn("Bandingkan 2 mesin", 285, 354, 160, delegate { OnBanding(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi.\r\nNaik/Turun/A-Z mengatur urutan tersimpan.\r\nKlik judul kolom = urut tampilan saja.", 10, 360));
             Controls.Add(tabs);
             Controls.Add(txtLog);
@@ -352,6 +353,13 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Buka folder panduan", 325, 15, 170, delegate { OnPanduan(); }));
             p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dibuka dengan kata sandi aplikasi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
             return p;
+        }
+
+        void OnBanding()
+        {
+            if (st.Data.Mesin.Count < 2) { Msg("Butuh minimal dua mesin terdaftar."); return; }
+            BandingkanForm f = new BandingkanForm(st, delegate (MesinItem m) { return Open(m, false); });
+            f.ShowDialog(this);
         }
 
         // ---------- Bantu ----------
