@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.5.1 (tahap 3d)";
+        const string Versi = "0.6.0 (tahap 4a)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -392,7 +392,7 @@ namespace HrisDeviceTool
             try
             {
                 string f = AuditLog.Berkas(AuditLog.Kat);
-                File.AppendAllText(f, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + s + Environment.NewLine);
+                File.AppendAllText(f, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + " / " + Peran.NamaAktif + "]  " + s + Environment.NewLine);
             }
             catch { }
         }
