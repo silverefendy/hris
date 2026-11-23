@@ -110,12 +110,14 @@ namespace HrisDeviceTool
             cmbA.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbA.Location = new Point(70, 10);
             cmbA.Width = 200;
+            PilihMesin.Gaya(cmbA);
             Controls.Add(cmbA);
             Controls.Add(MakeLabel("Mesin B", 290, 14));
             cmbB = new ComboBox();
             cmbB.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbB.Location = new Point(350, 10);
             cmbB.Width = 200;
+            PilihMesin.Gaya(cmbB);
             Controls.Add(cmbB);
             foreach (MesinItem m in st.Data.Mesin)
             {
@@ -217,6 +219,7 @@ namespace HrisDeviceTool
             btnBatal.Enabled = true;
             try
             {
+                AuditLog.Tulis("Bandingkan", "mulai " + a.Nama + " dan " + b.Nama);
                 Dictionary<string, UserData> da = BacaMesin(a, "A");
                 if (da == null) { Status("Dibatalkan atau gagal membaca mesin A."); return; }
                 Dictionary<string, UserData> db = BacaMesin(b, "B");
@@ -224,6 +227,7 @@ namespace HrisDeviceTool
                 namaA = a.Nama;
                 namaB = b.Nama;
                 rows = Banding(da, db);
+                AuditLog.Tulis("Bandingkan", "selesai " + a.Nama + " (" + da.Count + " user) dan " + b.Nama + " (" + db.Count + " user), baris hasil " + rows.Count);
                 int sama = 0, mirip = 0, hanya = 0, idbeda = 0, konflik = 0, beda = 0;
                 foreach (BarisBanding r in rows)
                 {
@@ -286,6 +290,7 @@ namespace HrisDeviceTool
                 sb.AppendLine(string.Join(";", f));
             }
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
+            AuditLog.Tulis("Ekspor bandingkan", "berkas " + Path.GetFileName(path) + ", baris " + rows.Count);
             MessageBox.Show("Diekspor ke:\r\n" + path, "Ekspor");
         }
 

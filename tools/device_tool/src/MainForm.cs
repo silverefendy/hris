@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.4.0 (tahap 3a)";
+        const string Versi = "0.5.0 (tahap 3c)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -140,6 +140,7 @@ namespace HrisDeviceTool
             BuildUi();
             RefreshList(null);
             FormClosing += OnClosing;
+            AuditLog.Dir = st.LogDir;
             Log("Aplikasi dibuka. Folder data: " + st.DataDir);
             if (st.Data.Mesin.Count == 0)
                 Log("Belum ada mesin. Klik Tambah di kiri untuk mendaftarkan mesin pertama.");
@@ -234,6 +235,7 @@ namespace HrisDeviceTool
             Controls.Add(Btn("Cek semua", 285, 286, 110, delegate { OnCekSemua(); }));
             Controls.Add(Btn("Bersihkan log", 285, 320, 110, delegate { txtLog.Clear(); }));
             Controls.Add(Btn("Bandingkan 2 mesin", 285, 354, 160, delegate { OnBanding(); }));
+            Controls.Add(Btn("Tarik log mesin", 10, 422, 150, delegate { OnTarikLog(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi.\r\nNaik/Turun/A-Z mengatur urutan tersimpan.\r\nKlik judul kolom = urut tampilan saja.", 10, 360));
             Controls.Add(tabs);
             Controls.Add(txtLog);
@@ -355,6 +357,13 @@ namespace HrisDeviceTool
             return p;
         }
 
+        void OnTarikLog()
+        {
+            if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
+            LogForm f = new LogForm(st, delegate (MesinItem m) { return Open(m, false); });
+            f.ShowDialog(this);
+        }
+
         void OnBanding()
         {
             if (st.Data.Mesin.Count < 2) { Msg("Butuh minimal dua mesin terdaftar."); return; }
@@ -375,7 +384,7 @@ namespace HrisDeviceTool
             try
             {
                 string f = Path.Combine(st.LogDir, "app_" + DateTime.Now.ToString("yyyyMMdd") + ".hdtlog");
-                File.AppendAllText(f, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  " + s + Environment.NewLine);
+                File.AppendAllText(f, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + s + Environment.NewLine);
             }
             catch { }
         }
