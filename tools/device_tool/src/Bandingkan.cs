@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -224,16 +224,18 @@ namespace HrisDeviceTool
                 namaA = a.Nama;
                 namaB = b.Nama;
                 rows = Banding(da, db);
-                int sama = 0, hanya = 0, konflik = 0, beda = 0;
+                int sama = 0, mirip = 0, hanya = 0, idbeda = 0, konflik = 0, beda = 0;
                 foreach (BarisBanding r in rows)
                 {
                     if (r.Kategori == "sama") sama++;
+                    else if (r.Kategori == "mirip") mirip++;
+                    else if (r.Kategori == "idbeda") idbeda++;
                     else if (r.Kategori == "hanya") hanya++;
                     else if (r.Kategori == "konflik") konflik++;
                     else beda++;
                 }
                 lblRingkas.Text = namaA + ": " + da.Count + " user | " + namaB + ": " + db.Count + " user | sama: " + sama +
-                    " | hanya di satu mesin: " + hanya + " | konflik: " + konflik + " | beda lain: " + beda;
+                    " | nama mirip: " + mirip + " | hanya di satu mesin: " + hanya + " | nama sama ID beda: " + idbeda + " | KONFLIK nama: " + konflik + " | beda jari/privilege: " + beda;
                 Status("Selesai " + DateTime.Now.ToString("HH:mm:ss") + ". Hanya membaca, tidak ada yang diubah.");
                 Tampil();
             }
@@ -251,7 +253,7 @@ namespace HrisDeviceTool
             lv.Items.Clear();
             foreach (BarisBanding r in rows)
             {
-                if (chkBeda.Checked && r.Kategori == "sama") continue;
+                if (chkBeda.Checked && (r.Kategori == "sama" || r.Kategori == "mirip")) continue;
                 ListViewItem it = new ListViewItem(r.Id);
                 it.SubItems.Add(r.NamaA);
                 it.SubItems.Add(r.NamaB);
@@ -263,6 +265,8 @@ namespace HrisDeviceTool
                 if (r.Kategori == "konflik") it.BackColor = Color.MistyRose;
                 else if (r.Kategori == "hanya") it.BackColor = Color.LightYellow;
                 else if (r.Kategori == "beda") it.BackColor = Color.AliceBlue;
+                else if (r.Kategori == "idbeda") it.BackColor = Color.MistyRose;
+                else if (r.Kategori == "mirip") it.BackColor = Color.Honeydew;
                 lv.Items.Add(it);
             }
             lv.EndUpdate();
@@ -325,10 +329,52 @@ namespace HrisDeviceTool
             return r;
         }
 
+                static string NormLonggar(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            int depth = 0;
+            foreach (char c in s.ToLowerInvariant())
+            {
+                if (c == '(' || c == '[') { depth++; continue; }
+                if (c == ')' || c == ']') { if (depth > 0) depth--; continue; }
+                if (depth > 0) continue;
+                if (char.IsLetterOrDigit(c)) sb.Append(c); else sb.Append(' ');
+            }
+            string[] parts = sb.ToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return string.Join(" ", parts);
+        }
+
+        static int Rank(string k)
+        {
+            if (k == "konflik") return 3;
+            if (k == "beda") return 2;
+            if (k == "mirip") return 1;
+            return 0;
+        }
+
+        static string Naik(string cur, string kandidat)
+        {
+            return Rank(kandidat) > Rank(cur) ? kandidat : cur;
+        }
+
+        static Dictionary<string, List<string>> IndeksLonggar(Dictionary<string, UserData> d)
+        {
+            Dictionary<string, List<string>> r = new Dictionary<string, List<string>>();
+            foreach (UserData u in d.Values)
+            {
+                string n = NormLonggar(u.Nama);
+                if (n.Length == 0) continue;
+                List<string> l;
+                if (!r.TryGetValue(n, out l)) { l = new List<string>(); r[n] = l; }
+                l.Add(u.Id);
+            }
+            return r;
+        }
+
         static List<BarisBanding> Banding(Dictionary<string, UserData> a, Dictionary<string, UserData> b)
         {
-            Dictionary<string, List<string>> idxA = IndeksNama(a);
-            Dictionary<string, List<string>> idxB = IndeksNama(b);
+            Dictionary<string, List<string>> idxA = IndeksLonggar(a);
+            Dictionary<string, List<string>> idxB = IndeksLonggar(b);
             List<string> ids = new List<string>();
             foreach (string k in a.Keys) ids.Add(k);
             foreach (string k in b.Keys) if (!a.ContainsKey(k)) ids.Add(k);
@@ -361,10 +407,10 @@ namespace HrisDeviceTool
                     r.Hasil = ua != null ? "Hanya di A" : "Hanya di B";
                     Dictionary<string, List<string>> lain = ua != null ? idxB : idxA;
                     List<string> sama;
-                    if (lain.TryGetValue(Norm(ada.Nama), out sama))
+                    if (lain.TryGetValue(NormLonggar(ada.Nama), out sama))
                     {
-                        r.Hasil += ". Nama sama di mesin lain dengan ID " + string.Join(",", sama.ToArray()) + " (kemungkinan salah daftar)";
-                        r.Kategori = "konflik";
+                        r.Hasil += ". Nama sama atau mirip di mesin lain dengan ID " + string.Join(",", sama.ToArray()) + " (kemungkinan salah daftar)";
+                        r.Kategori = "idbeda";
                     }
                     hasil.Add(r);
                     continue;
@@ -373,13 +419,22 @@ namespace HrisDeviceTool
                 List<string> msg = new List<string>();
                 if (Norm(ua.Nama) != Norm(ub.Nama))
                 {
-                    msg.Add("KONFLIK: ID sama, nama beda");
-                    r.Kategori = "konflik";
+                    string la = NormLonggar(ua.Nama);
+                    if (la.Length > 0 && la == NormLonggar(ub.Nama))
+                    {
+                        msg.Add("nama mirip (beda tulisan)");
+                        r.Kategori = Naik(r.Kategori, "mirip");
+                    }
+                    else
+                    {
+                        msg.Add("KONFLIK: ID sama, nama beda");
+                        r.Kategori = Naik(r.Kategori, "konflik");
+                    }
                 }
                 if (ua.Priv != ub.Priv)
                 {
                     msg.Add("privilege beda");
-                    if (r.Kategori == "sama") r.Kategori = "beda";
+                    r.Kategori = Naik(r.Kategori, "beda");
                 }
                 int identik = 0;
                 List<int> diff = new List<int>(), onlyA = new List<int>(), onlyB = new List<int>();
@@ -397,8 +452,7 @@ namespace HrisDeviceTool
                 if (diff.Count > 0) msg.Add("isi jari beda (bukan salinan): " + JoinInts(diff));
                 if (onlyA.Count > 0) msg.Add("jari hanya di A: " + JoinInts(onlyA));
                 if (onlyB.Count > 0) msg.Add("jari hanya di B: " + JoinInts(onlyB));
-                if (diff.Count > 0 || onlyA.Count > 0 || onlyB.Count > 0)
-                    if (r.Kategori == "sama") r.Kategori = "beda";
+                if (diff.Count > 0 || onlyA.Count > 0 || onlyB.Count > 0) r.Kategori = Naik(r.Kategori, "beda");
                 if (identik > 0) msg.Add("jari identik (salinan): " + identik);
                 if (ua.Jari.Count == 0 && ub.Jari.Count == 0) msg.Add("tanpa jari di kedua mesin");
                 r.Hasil = msg.Count == 0 ? "Sama" : string.Join("; ", msg.ToArray());
