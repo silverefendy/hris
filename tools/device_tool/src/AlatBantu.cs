@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -36,7 +36,7 @@ namespace HrisDeviceTool
             {
                 string t = aksi;
                 if (rincian != null && rincian.Length > 0) t += ": " + rincian;
-                string baris = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + t;
+                string baris = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + " / " + Peran.NamaAktif + "]  " + t;
                 File.AppendAllText(Berkas(Peta(aksi)), baris + Environment.NewLine);
             }
             catch { }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -427,7 +427,7 @@ namespace HrisDeviceTool
         void OnPermanen()
         {
             List<SalinanItem> p = Dipilih();
-            if (p.Count == 0) { MessageBox.Show("Centang salinan yang mau dihapus permanen."); return; }
+            if (!Peran.Boleh("HapusPermanenSalinan")) return; if (p.Count == 0) { MessageBox.Show("Centang salinan yang mau dihapus permanen."); return; }
             string tanya = "HAPUS PERMANEN " + p.Count + " salinan (" + Salinan.Ukuran(p) + ")?\r\n\r\nTidak bisa dipulihkan lagi.";
             if (MessageBox.Show(tanya, "Hapus permanen", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
             int n = Salinan.HapusPermanen(st, p);
@@ -437,7 +437,7 @@ namespace HrisDeviceTool
 
         void OnKosong()
         {
-            List<SalinanItem> semua = Salinan.DaftarSampah(st);
+            if (!Peran.Boleh("HapusPermanenSalinan")) return; List<SalinanItem> semua = Salinan.DaftarSampah(st);
             if (semua.Count == 0) { MessageBox.Show("Tempat sampah sudah kosong."); return; }
             string tanya = "Kosongkan seluruh tempat sampah: " + semua.Count + " salinan (" + Salinan.Ukuran(semua) + ") dihapus PERMANEN?\r\n\r\nTidak bisa dipulihkan lagi.";
             if (MessageBox.Show(tanya, "Kosongkan sampah", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
