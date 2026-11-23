@@ -5,21 +5,39 @@ using System.Windows.Forms;
 
 namespace HrisDeviceTool
 {
-    // Catatan aktivitas: satu berkas per hari, sama dengan catatan jendela utama.
+    // Catatan aktivitas per menu: data\log\<kategori>\<kategori>_<tanggal>.hdtlog
     // Tidak pernah menulis Comm Key, token, atau kata sandi.
     public static class AuditLog
     {
         public static string Dir = "";
+        public static string Kat = "sistem";
+
+        static string Peta(string aksi)
+        {
+            if (aksi.StartsWith("Tarik log", StringComparison.Ordinal) ||
+                aksi.StartsWith("Ekspor log", StringComparison.Ordinal) ||
+                aksi.StartsWith("Salinan", StringComparison.Ordinal)) return "tarik-log";
+            if (aksi.StartsWith("Bandingkan", StringComparison.Ordinal) ||
+                aksi.StartsWith("Ekspor bandingkan", StringComparison.Ordinal)) return "bandingkan";
+            return Kat;
+        }
+
+        public static string Berkas(string kat)
+        {
+            if (Dir.Length == 0) return Path.Combine(Path.GetTempPath(), "hdt_" + kat + ".hdtlog");
+            string d = Path.Combine(Dir, kat);
+            Directory.CreateDirectory(d);
+            return Path.Combine(d, kat + "_" + DateTime.Now.ToString("yyyyMMdd") + ".hdtlog");
+        }
 
         public static void Tulis(string aksi, string rincian)
         {
             try
             {
-                if (Dir.Length == 0) return;
-                string f = Path.Combine(Dir, "app_" + DateTime.Now.ToString("yyyyMMdd") + ".hdtlog");
-                string baris = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + aksi;
-                if (rincian != null && rincian.Length > 0) baris += ": " + rincian;
-                File.AppendAllText(f, baris + Environment.NewLine);
+                string t = aksi;
+                if (rincian != null && rincian.Length > 0) t += ": " + rincian;
+                string baris = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + t;
+                File.AppendAllText(Berkas(Peta(aksi)), baris + Environment.NewLine);
             }
             catch { }
         }

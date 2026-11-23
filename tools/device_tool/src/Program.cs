@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace HrisDeviceTool
@@ -23,6 +23,8 @@ namespace HrisDeviceTool
                 return;
             }
             st.UnlockAtStartup();
+            AuditLog.Dir = st.LogDir;
+            Salinan.BersihkanOtomatis(st);
             Application.Run(new MainForm(st));
         }
     }

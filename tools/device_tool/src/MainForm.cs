@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.5.0 (tahap 3c)";
+        const string Versi = "0.5.1 (tahap 3d)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -226,16 +226,17 @@ namespace HrisDeviceTool
 
             Controls.Add(lm);
             Controls.Add(lvMesin);
-            Controls.Add(Btn("Tambah", 10, 286, 85, delegate { OnTambah(); }));
-            Controls.Add(Btn("Ubah", 100, 286, 85, delegate { OnUbah(); }));
-            Controls.Add(Btn("Hapus", 190, 286, 85, delegate { OnHapus(); }));
-            Controls.Add(Btn("Naik", 10, 320, 85, delegate { OnGeser(-1); }));
-            Controls.Add(Btn("Turun", 100, 320, 85, delegate { OnGeser(1); }));
-            Controls.Add(Btn("A-Z", 190, 320, 85, delegate { OnUrutAz(); }));
-            Controls.Add(Btn("Cek semua", 285, 286, 110, delegate { OnCekSemua(); }));
+            Controls.Add(Btn("Tambah", 10, 286, 85, delegate { AuditLog.Kat = "mesin"; OnTambah(); }));
+            Controls.Add(Btn("Ubah", 100, 286, 85, delegate { AuditLog.Kat = "mesin"; OnUbah(); }));
+            Controls.Add(Btn("Hapus", 190, 286, 85, delegate { AuditLog.Kat = "mesin"; OnHapus(); }));
+            Controls.Add(Btn("Naik", 10, 320, 85, delegate { AuditLog.Kat = "mesin"; OnGeser(-1); }));
+            Controls.Add(Btn("Turun", 100, 320, 85, delegate { AuditLog.Kat = "mesin"; OnGeser(1); }));
+            Controls.Add(Btn("A-Z", 190, 320, 85, delegate { AuditLog.Kat = "mesin"; OnUrutAz(); }));
+            Controls.Add(Btn("Cek semua", 285, 286, 110, delegate { AuditLog.Kat = "mesin"; OnCekSemua(); }));
             Controls.Add(Btn("Bersihkan log", 285, 320, 110, delegate { txtLog.Clear(); }));
-            Controls.Add(Btn("Bandingkan 2 mesin", 285, 354, 160, delegate { OnBanding(); }));
-            Controls.Add(Btn("Tarik log mesin", 10, 422, 150, delegate { OnTarikLog(); }));
+            Controls.Add(Btn("Bandingkan 2 mesin", 285, 354, 160, delegate { AuditLog.Kat = "bandingkan"; OnBanding(); }));
+            Controls.Add(Btn("Tarik log mesin", 10, 422, 150, delegate { AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
+            Controls.Add(Btn("Kelola salinan", 170, 422, 150, delegate { AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi.\r\nNaik/Turun/A-Z mengatur urutan tersimpan.\r\nKlik judul kolom = urut tampilan saja.", 10, 360));
             Controls.Add(tabs);
             Controls.Add(txtLog);
@@ -244,7 +245,7 @@ namespace HrisDeviceTool
         TabPage BuildTabInfo()
         {
             TabPage p = new TabPage("Info mesin");
-            p.Controls.Add(Btn("Ambil info mesin", 15, 12, 160, delegate { OnInfo(); }));
+            p.Controls.Add(Btn("Ambil info mesin", 15, 12, 160, delegate { AuditLog.Kat = "info-mesin"; OnInfo(); }));
             lblInfoHead = Lbl("Pilih mesin di daftar kiri, lalu klik Ambil info mesin. Hanya membaca.", 190, 19);
             p.Controls.Add(lblInfoHead);
             lvInfo = MakeList(new string[] { "Kelompok", "Item", "Nilai" }, new int[] { 230, 190, 250 });
@@ -258,8 +259,8 @@ namespace HrisDeviceTool
         TabPage BuildTabSemua()
         {
             TabPage p = new TabPage("Semua mesin");
-            p.Controls.Add(Btn("Ringkas semua mesin", 15, 12, 170, delegate { OnRingkas(); }));
-            p.Controls.Add(Btn("Ekspor CSV", 195, 12, 110, delegate { OnEkspor(); }));
+            p.Controls.Add(Btn("Ringkas semua mesin", 15, 12, 170, delegate { AuditLog.Kat = "semua-mesin"; OnRingkas(); }));
+            p.Controls.Add(Btn("Ekspor CSV", 195, 12, 110, delegate { AuditLog.Kat = "semua-mesin"; OnEkspor(); }));
             p.Controls.Add(Lbl("Hanya membaca. Baris kuning = selisih jam lebih dari 60 detik.", 320, 19));
             lvSum = MakeList(ColS, new int[] { 110, 75, 80, 60, 90, 55, 60, 120, 150 });
             lvSum.Location = new Point(15, 50);
@@ -285,9 +286,9 @@ namespace HrisDeviceTool
             txtNama.Location = new Point(265, 17);
             txtNama.Width = 200;
             p.Controls.Add(txtNama);
-            p.Controls.Add(Btn("Cek user", 15, 52, 110, delegate { OnCekUser(); }));
-            p.Controls.Add(Btn("Tambah user uji (999...)", 135, 52, 170, delegate { OnTambahUserUji(); }));
-            p.Controls.Add(Btn("List semua user", 315, 52, 130, delegate { OnDaftarUser(); }));
+            p.Controls.Add(Btn("Cek user", 15, 52, 110, delegate { AuditLog.Kat = "user"; OnCekUser(); }));
+            p.Controls.Add(Btn("Tambah user uji (999...)", 135, 52, 170, delegate { AuditLog.Kat = "user"; OnTambahUserUji(); }));
+            p.Controls.Add(Btn("List semua user", 315, 52, 130, delegate { AuditLog.Kat = "user"; OnDaftarUser(); }));
 
             p.Controls.Add(Lbl("Cari (nama atau ID)", 15, 96));
             txtCari = new TextBox();
@@ -330,9 +331,9 @@ namespace HrisDeviceTool
                 hand.Invalidate();
             };
             p.Controls.Add(cmbJari);
-            p.Controls.Add(Btn("Baca template (jari 0-9)", 15, 55, 190, delegate { OnBacaTemplate(); }));
-            p.Controls.Add(Btn("Picu daftar dari PC", 215, 55, 170, delegate { OnPicu(); }));
-            p.Controls.Add(Btn("Selesai daftar && baca", 395, 55, 170, delegate { OnSelesai(); }));
+            p.Controls.Add(Btn("Baca template (jari 0-9)", 15, 55, 190, delegate { AuditLog.Kat = "sidik-jari"; OnBacaTemplate(); }));
+            p.Controls.Add(Btn("Picu daftar dari PC", 215, 55, 170, delegate { AuditLog.Kat = "sidik-jari"; OnPicu(); }));
+            p.Controls.Add(Btn("Selesai daftar && baca", 395, 55, 170, delegate { AuditLog.Kat = "sidik-jari"; OnSelesai(); }));
 
             Label info = Lbl("Baca template: hanya membaca. Hasil disimpan di folder data\\cadangan (ekstensi .hdttmpl). Jari yang ditemukan berwarna hijau di gambar.\r\n\r\nPicu daftar: mesin dipaksa masuk mode daftar untuk ID tersebut (hanya ID uji berawalan 999) dan jari yang dipilih di kotak Jari. Minta rekan menempelkan jari di mesin, lalu klik 'Selesai daftar && baca'.\r\n\r\nSelama menunggu, aplikasi TIDAK membaca apa pun.\r\n\r\nNama jari: 0-4 tangan kiri (kelingking ke jempol), 5-9 tangan kanan (jempol ke kelingking).", 15, 100);
             info.AutoSize = false;
@@ -350,9 +351,9 @@ namespace HrisDeviceTool
         TabPage BuildTabBantuan()
         {
             TabPage p = new TabPage("Bantuan");
-            p.Controls.Add(Btn("Diagnostik", 15, 15, 140, delegate { OnDiagnostik(); }));
+            p.Controls.Add(Btn("Diagnostik", 15, 15, 140, delegate { AuditLog.Kat = "bantuan"; OnDiagnostik(); }));
             p.Controls.Add(Btn("Buka folder data", 165, 15, 150, delegate { BukaFolder(st.DataDir); }));
-            p.Controls.Add(Btn("Buka folder panduan", 325, 15, 170, delegate { OnPanduan(); }));
+            p.Controls.Add(Btn("Buka folder panduan", 325, 15, 170, delegate { AuditLog.Kat = "bantuan"; OnPanduan(); }));
             p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dibuka dengan kata sandi aplikasi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
             return p;
         }
@@ -361,6 +362,12 @@ namespace HrisDeviceTool
         {
             if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
             LogForm f = new LogForm(st, delegate (MesinItem m) { return Open(m, false); });
+            f.ShowDialog(this);
+        }
+
+        void OnKelolaSalinan()
+        {
+            KelolaSalinanForm f = new KelolaSalinanForm(st);
             f.ShowDialog(this);
         }
 
@@ -383,7 +390,7 @@ namespace HrisDeviceTool
             txtLog.AppendText(line + "\r\n");
             try
             {
-                string f = Path.Combine(st.LogDir, "app_" + DateTime.Now.ToString("yyyyMMdd") + ".hdtlog");
+                string f = AuditLog.Berkas(AuditLog.Kat);
                 File.AppendAllText(f, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "  [" + Environment.UserName + "@" + Environment.MachineName + "]  " + s + Environment.NewLine);
             }
             catch { }
