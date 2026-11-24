@@ -106,7 +106,7 @@ namespace HrisDeviceTool
     {
         Store st;
         Func<MesinItem, object> opener;
-        ComboBox cmbMesin;
+        MesinPicker cmbMesin;
         DateTimePicker dtSejak;
         TextBox txtCari;
         Button btnTarik, btnBatal, btnEkspor;
@@ -129,11 +129,11 @@ namespace HrisDeviceTool
             StartPosition = FormStartPosition.CenterParent;
 
             Controls.Add(Lbl("Mesin", 10, 14));
-            cmbMesin = new ComboBox();
-            cmbMesin.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbMesin = new MesinPicker();
+            
             cmbMesin.Location = new Point(55, 10);
             cmbMesin.Width = 200;
-            PilihMesin.Gaya(cmbMesin);
+            
             foreach (MesinItem m in st.Data.Mesin) cmbMesin.Items.Add(m);
             if (cmbMesin.Items.Count > 0) cmbMesin.SelectedIndex = 0;
             Controls.Add(cmbMesin);

@@ -86,7 +86,7 @@ namespace HrisDeviceTool
     {
         Store st;
         Func<MesinItem, object> opener;
-        ComboBox cmbA, cmbB;
+        MesinPicker cmbA, cmbB;
         Button btnGo, btnBatal, btnEkspor;
         CheckBox chkBeda;
         Label lblStatus, lblRingkas;
@@ -106,18 +106,18 @@ namespace HrisDeviceTool
             StartPosition = FormStartPosition.CenterParent;
 
             Controls.Add(MakeLabel("Mesin A", 10, 14));
-            cmbA = new ComboBox();
-            cmbA.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbA = new MesinPicker();
+            
             cmbA.Location = new Point(70, 10);
             cmbA.Width = 200;
-            PilihMesin.Gaya(cmbA);
+            
             Controls.Add(cmbA);
             Controls.Add(MakeLabel("Mesin B", 290, 14));
-            cmbB = new ComboBox();
-            cmbB.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbB = new MesinPicker();
+            
             cmbB.Location = new Point(350, 10);
             cmbB.Width = 200;
-            PilihMesin.Gaya(cmbB);
+            
             Controls.Add(cmbB);
             foreach (MesinItem m in st.Data.Mesin)
             {
