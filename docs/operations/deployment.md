@@ -106,7 +106,7 @@ Ganti `rb` dengan `bash /home/it/runbook_k102/runbook_k102.sh`, dan `S` dengan `
 `scp` dari server ke jalur Windows (`D:\...`) gagal karena `D:` dibaca sebagai nama host. Tarik dari sisi Windows, di PowerShell (ganti nama berkas sesuai cadangan terbaru):
 
 ```powershell
-scp "it@10.1.0.26:/home/it/cadangan_k102/<AWALAN>-erp_ciptamebel_co_id-*" "D:\Efendy\Temp\"
+scp "it@<server>:/home/it/cadangan_k102/<AWALAN>-erp_ciptamebel_co_id-*" "D:\Efendy\Temp\"
 Get-FileHash "D:\Efendy\Temp\<AWALAN>-erp_ciptamebel_co_id-database.sql.gz" -Algorithm SHA256
 ```
 

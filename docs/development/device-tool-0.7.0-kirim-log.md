@@ -1,7 +1,7 @@
 # HRIS Device Tool 0.7.x: Kirim Log ke HRIS
 
 Diperbarui: Selasa, 24 Nov 2026, sekitar 14:55 WIB
-Status kode: 0.7.0 (`307f916`) dan 0.7.1 (`84f8211`) di GitHub (`main`). Diuji di server **uji** (`hris-uji.local`, `http://10.1.0.26:8001`). Belum dipakai di produksi.
+Status kode: 0.7.0 (`307f916`) dan 0.7.1 (`84f8211`) di GitHub (`main`). Diuji di server **uji** (`hris-uji.local`, `http://<server-uji>:8001`). Belum dipakai di produksi.
 Versi 0.7.2 (menu dirapikan) sedang disiapkan dan belum tercatat di dokumen ini sebagai fitur teruji.
 Dokumen terkait: `docs/development/device-tool-rencana-kirim-log.md`, `docs/architecture/agent-api.md`.
 

@@ -146,7 +146,7 @@ Belum dibaca: DocType HRIS Raw Log (`.json`/`.py`), `agent_auth.py`, `hris_atten
 
 | Fakta | Nilai |
 |---|---|
-| Mesin (9), port 4370 | Kiri `10.1.0.211`, Sizing `.212`, Finishing `.215`, Kanan `.216`, Showroom `.217`, Cemara `.218`, Sena `.219`, PLTB `.220`, WP 221 `.221`. Comm Key sungguhan hanya di WP 221 |
+| Mesin (9), port 4370 | Kiri, Sizing, Finishing, Kanan, Showroom, Cemara, Sena, PLTB, WP 221. Alamat IP ada di daftar mesin aplikasi, bukan di dokumen. Comm Key sungguhan hanya di WP 221 |
 | `GetDeviceStatus` | Indeks 25 membuat aplikasi crash; batas aman 1-24 |
 | Verifikasi di log | 1 = sidik jari, 15 = wajah |
 | Status log | WP 221 = 255 di semua baris; Kanan = 0 (tidak mencatat masuk/pulang sungguhan) |
