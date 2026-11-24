@@ -130,14 +130,24 @@ namespace HrisDeviceTool
             return s.Length <= n ? s : s.Substring(0, n) + "...";
         }
 
+        static string PesanServer(string isi)
+        {
+            Match m = Regex.Match(isi ?? "", "\"exception\"\\s*:\\s*\"((?:[^\"\\\\]|\\\\.)*)\"");
+            if (!m.Success) return Potong(isi, 300);
+            string s = m.Groups[1].Value.Replace("\\\"", "\"").Replace("\\\\", "\\");
+            int i = s.IndexOf(": ", StringComparison.Ordinal);
+            if (i > 0 && s.Substring(0, i).IndexOf(' ') < 0) s = s.Substring(i + 2);
+            return Potong(s, 300);
+        }
+
         static string PesanGagal(int kode, string isi)
         {
             if (kode == 401)
                 return "Token ditolak (HTTP 401). Pengiriman dihentikan agar tidak memicu blokir "
                      + "(10 kegagalan per 10 menit per IP). Periksa token dan saklar Agent Enabled.";
             if (kode == 417)
-                return "Server menolak permintaan (HTTP 417). Biasanya device belum terdaftar, tidak aktif, "
-                     + "atau 'Via Windows Agent' belum dicentang. Detail: " + Potong(isi, 400);
+                return "Server menolak permintaan (HTTP 417): " + PesanServer(isi) + " "
+                     + "(Periksa Via Windows Agent dan status aktif di HRIS Device.)";
             if (kode == 0)
                 return "Tidak dapat terhubung ke server: " + Potong(isi, 300);
             return "Gagal (HTTP " + kode + "): " + Potong(isi, 400);

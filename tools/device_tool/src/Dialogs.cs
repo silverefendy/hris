@@ -220,6 +220,13 @@ namespace HrisDeviceTool
             r.Port = port;
             r.IngatKey = chkIngat.Checked;
             r.NamaDiHris = txtHris.Text.Trim();
+            if (editing != null)
+            {
+                r.NamaLama.AddRange(editing.NamaLama);
+                if (!string.Equals(editing.Nama, nama, StringComparison.OrdinalIgnoreCase) && !r.NamaLama.Contains(editing.Nama))
+                    r.NamaLama.Add(editing.Nama);
+                r.NamaLama.RemoveAll(delegate (string s) { return string.Equals(s, nama, StringComparison.OrdinalIgnoreCase); });
+            }
             r.TanpaKey = (txtKey.Text.Trim().Length == 0 || txtKey.Text.Trim() == "0");
             Result = r;
             KeyResult = txtKey.Text;

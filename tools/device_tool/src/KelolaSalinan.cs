@@ -428,11 +428,44 @@ namespace HrisDeviceTool
 
         MesinItem CariMesin(string nama)
         {
+            MesinItem m = CariMesinPersis(nama);
+            if (m != null) return m;
+            foreach (MesinItem x in st.Data.Mesin)
+            {
+                if (x.NamaLama == null) continue;
+                foreach (string lama in x.NamaLama)
+                {
+                    if (string.Equals(lama, nama, StringComparison.OrdinalIgnoreCase)) return x;
+                }
+            }
+            return null;
+        }
+
+        MesinItem CariMesinPersis(string nama)
+        {
             foreach (MesinItem m in st.Data.Mesin)
             {
                 if (string.Equals(m.Nama, nama, StringComparison.OrdinalIgnoreCase)) return m;
             }
             return null;
+        }
+
+        string BuatPemetaan(List<SalinanItem> p)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("\r\n\r\nTujuan di HRIS:\r\n");
+            int n = 0;
+            foreach (SalinanItem it in p)
+            {
+                if (n >= 8) { sb.Append("... dan " + (p.Count - 8) + " salinan lain\r\n"); break; }
+                n++;
+                MesinItem mm = CariMesin(it.Mesin);
+                sb.Append(it.Mesin);
+                if (mm != null && !string.Equals(mm.Nama, it.Mesin, StringComparison.OrdinalIgnoreCase))
+                    sb.Append(" (kini bernama " + mm.Nama + ")");
+                sb.Append("  ->  " + (mm != null ? mm.NamaDiHris : "?") + "\r\n");
+            }
+            return sb.ToString();
         }
 
         bool KonfirmasiBelumTerkirim(List<SalinanItem> p)
@@ -471,7 +504,7 @@ namespace HrisDeviceTool
             {
                 MesinItem mm = CariMesin(it.Mesin);
                 if (mm == null || (mm.NamaDiHris ?? "").Trim().Length == 0)
-                    masalah.Add(it.Mesin + ": kolom Nama di HRIS belum diisi (atau mesin tidak ada di daftar).");
+                    masalah.Add(it.Mesin + ": mesin tidak ditemukan di daftar (nama sudah diganti?) atau Nama di HRIS masih kosong.");
                 else if (it.Hash != "cocok")
                     masalah.Add(it.Mesin + " (" + it.Base + "): hash " + it.Hash + ", tidak dikirim.");
                 totalBaris += it.Baris;
@@ -484,6 +517,7 @@ namespace HrisDeviceTool
             }
             string tanya = "Kirim " + p.Count + " salinan (" + totalBaris.ToString("N0") + " baris) ke " + url + " ?\r\n\r\n" +
                 "Kirim ulang aman: baris yang sudah ada di HRIS dihitung duplicate, bukan data ganda.";
+            tanya += BuatPemetaan(p);
             if (MessageBox.Show(tanya, "Kirim ke HRIS", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             int ke = 0, sukses = 0;

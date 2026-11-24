@@ -16,6 +16,8 @@ namespace HrisDeviceTool
         public bool TanpaKey = false;
         // Nama dokumen HRIS Device (harus persis). Kosong = mesin ini tidak dikirim ke HRIS.
         public string NamaDiHris = "";
+        // Nama lama mesin (dicatat otomatis saat nama diganti) agar salinan lama tetap bisa dikirim.
+        public List<string> NamaLama = new List<string>();
 
         public override string ToString()
         {
