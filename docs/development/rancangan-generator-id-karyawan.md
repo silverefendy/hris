@@ -1,6 +1,6 @@
 # Rancangan: Generator ID Karyawan Baru (ID Finger)
 
-Status: rancangan, belum ada kode. Tanggal: 24 Nov 2026.
+Status: rancangan disetujui (U1-U7), belum ada kode. Tanggal: 24 Nov 2026 (diperbarui malam).
 
 ## 1. Latar Belakang
 
@@ -16,7 +16,9 @@ ID Finger (`attendance_device_id`) dipakai di tiga tempat dan dicocokkan sebagai
 | 4 digit | 454 | 1111 - 9988 |
 | 5 digit | 573 | 10000 - 12196 |
 
-Total 1.078 karyawan. ID terbesar: 12196. Sebagian besar karyawan sudah ber-ID 5 digit dan sistem berjalan dengan panjang campuran.
+Total 1.078 karyawan. ID terbesar di Employee: 12196.
+
+Cek tambahan (produksi, 24 Nov 2026): ID bukan angka di Employee = 0. ID terbesar di HRIS Raw Log = 12215, dan ada 9 ID berbeda di Raw Log di atas 12196 (ID di mesin yang belum menjadi karyawan). Maka ID pertama generator = **12216**, bukan 12197. Sebagian besar karyawan sudah ber-ID 5 digit dan sistem berjalan dengan panjang campuran.
 
 ## 3. Keputusan
 
@@ -26,7 +28,7 @@ Total 1.078 karyawan. ID terbesar: 12196. Sebagian besar karyawan sudah ber-ID 5
 | ID karyawan baru | Terbesar + 1 (bukan lebar tetap 5 digit) | Efendy, 24 Nov 2026 |
 | `99901`, `99902`, `99903` | ID uji, bukan acuan produksi | Catatan sebelumnya |
 
-## 4. Usulan (belum disetujui)
+## 4. Usulan U1-U7 (disetujui Efendy, 24 Nov 2026)
 
 | # | Usulan | Alasan |
 |---|---|---|
@@ -40,16 +42,16 @@ Total 1.078 karyawan. ID terbesar: 12196. Sebagian besar karyawan sudah ber-ID 5
 
 ## 5. Pertanyaan Terbuka
 
-1. Apakah ada ID non-angka di Employee atau di mesin? (Belum dicek.)
-2. Apakah ada ID di Raw Log yang lebih besar dari 12196? (Belum dicek.)
-3. Setuju U2 (tombol) atau lebih suka otomatis?
+1. ID non-angka di Employee: tidak ada (terjawab).
+2. ID Raw Log di atas 12196: ada 9 ID, terbesar 12215 (terjawab). Siapa pemilik 9 ID itu belum diketahui.
+3. U2 (tombol): disetujui.
 4. Nama field ID Finger di HRIS Employee perlu dibaca dari kode sebelum implementasi.
 
 ## 6. Rencana Uji (setelah disetujui)
 
 | # | Uji | Hasil benar |
 |---|---|---|
-| 1 | Nomor pertama | 12197 bila data tidak berubah |
+| 1 | Nomor pertama | 12216 bila data tidak berubah (bukan 12197) |
 | 2 | Dua permintaan beruntun | Nomor berbeda |
 | 3 | ID resign terbesar | Tetap dihitung, tidak dipakai ulang |
 | 4 | ID non-angka | Diabaikan, jumlahnya dilaporkan |
