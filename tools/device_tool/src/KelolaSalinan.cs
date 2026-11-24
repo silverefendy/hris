@@ -142,6 +142,8 @@ namespace HrisDeviceTool
             Directory.CreateDirectory(tujuan);
             if (File.Exists(it.Csv)) File.Move(it.Csv, Path.Combine(tujuan, it.Base + ".csv"));
             if (File.Exists(it.Man)) File.Move(it.Man, Path.Combine(tujuan, it.Base + ".hdtman"));
+            string err = Path.Combine(it.Dir, it.Base + ".hdterr");
+            if (File.Exists(err)) File.Move(err, Path.Combine(tujuan, it.Base + ".hdterr"));
         }
 
         public static int KeSampah(Store st, List<SalinanItem> l)
@@ -193,6 +195,8 @@ namespace HrisDeviceTool
                 {
                     if (File.Exists(it.Csv)) File.Delete(it.Csv);
                     if (File.Exists(it.Man)) File.Delete(it.Man);
+                    string err = Path.Combine(it.Dir, it.Base + ".hdterr");
+                    if (File.Exists(err)) File.Delete(err);
                     n++;
                     AuditLog.Tulis("Salinan hapus permanen", "mesin " + it.Mesin + ", berkas " + it.Base);
                 }

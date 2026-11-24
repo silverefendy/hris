@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.7.1 (kirim log ke HRIS)";
+        const string Versi = "0.7.2 (menu dirapikan)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -124,7 +124,9 @@ namespace HrisDeviceTool
         TextBox txtLog, txtUid, txtNama, txtUidFp, txtCari;
         ComboBox cmbJari;
         HandPanel hand;
-        Label lblCount, lblInfoHead;
+        Label lblCount, lblInfoHead, lblRingkasLog, lblPeran;
+        TabPage tpLog, tpSemua;
+        Panel pnlStrip;
         List<string[]> allUsers = new List<string[]>();
         object enrollZk = null;
         public bool KeluarAkun = false;
@@ -141,6 +143,7 @@ namespace HrisDeviceTool
             BuildUi();
             RefreshList(null);
             FormClosing += OnClosing;
+            RefreshRingkasLog();
             AuditLog.Dir = st.LogDir;
             Log("Aplikasi dibuka. Folder data: " + st.DataDir);
             if (st.Data.Mesin.Count == 0)
@@ -204,14 +207,14 @@ namespace HrisDeviceTool
             txtLog.ReadOnly = true;
             txtLog.ScrollBars = ScrollBars.Vertical;
             txtLog.Font = new Font("Consolas", 9f);
-            txtLog.Location = new Point(10, 455);
-            txtLog.Size = new Size(1180, 255);
+            txtLog.Location = new Point(10, 488);
+            txtLog.Size = new Size(1180, 222);
             txtLog.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
             Label lm = Lbl("Daftar mesin", 10, 10);
             lvMesin = MakeList(ColM, new int[] { 32, 115, 95, 45, 50, 95 });
             lvMesin.Location = new Point(10, 30);
-            lvMesin.Size = new Size(440, 250);
+            lvMesin.Size = new Size(440, 320);
             lvMesin.ListViewItemSorter = sM;
             lvMesin.ColumnClick += delegate (object o, ColumnClickEventArgs e) { SortClick(lvMesin, sM, ColM, e.Column); };
 
@@ -219,30 +222,65 @@ namespace HrisDeviceTool
             tabs.Location = new Point(460, 10);
             tabs.Size = new Size(730, 435);
             tabs.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tpLog = BuildTabLog();
+            tabs.TabPages.Add(tpLog);
             tabs.TabPages.Add(BuildTabInfo());
-            tabs.TabPages.Add(BuildTabSemua());
+            tpSemua = BuildTabSemua();
+            tabs.TabPages.Add(tpSemua);
             tabs.TabPages.Add(BuildTabUser());
             tabs.TabPages.Add(BuildTabJari());
             tabs.TabPages.Add(BuildTabBantuan());
 
             Controls.Add(lm);
+            Controls.Add(Lbl("Catatan aktivitas", 10, 460));
+            pnlStrip = new Panel();
+            pnlStrip.SetBounds(660, 450, 530, 34);
+            pnlStrip.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblPeran = Lbl("Masuk sebagai: " + Peran.NamaAktif, 0, 10);
+            pnlStrip.Controls.Add(lblPeran);
+            Controls.Add(pnlStrip);
             Controls.Add(lvMesin);
-            Controls.Add(Btn("Tambah", 10, 286, 85, delegate { if (!Peran.Boleh("OnTambah")) return; AuditLog.Kat = "mesin"; OnTambah(); }));
-            Controls.Add(Btn("Ubah", 100, 286, 85, delegate { if (!Peran.Boleh("OnUbah")) return; AuditLog.Kat = "mesin"; OnUbah(); }));
-            Controls.Add(Btn("Hapus", 190, 286, 85, delegate { if (!Peran.Boleh("OnHapus")) return; AuditLog.Kat = "mesin"; OnHapus(); }));
-            Controls.Add(Btn("Naik", 10, 320, 85, delegate { if (!Peran.Boleh("OnGeser")) return; AuditLog.Kat = "mesin"; OnGeser(-1); }));
-            Controls.Add(Btn("Turun", 100, 320, 85, delegate { if (!Peran.Boleh("OnGeser")) return; AuditLog.Kat = "mesin"; OnGeser(1); }));
-            Controls.Add(Btn("A-Z", 190, 320, 85, delegate { if (!Peran.Boleh("OnUrutAz")) return; AuditLog.Kat = "mesin"; OnUrutAz(); }));
-            Controls.Add(Btn("Cek semua", 285, 286, 110, delegate { if (!Peran.Boleh("OnCekSemua")) return; AuditLog.Kat = "mesin"; OnCekSemua(); }));
-            Controls.Add(Btn("Bersihkan log", 285, 320, 110, delegate { txtLog.Clear(); }));
-            Controls.Add(Btn("Bandingkan 2 mesin", 285, 354, 160, delegate { if (!Peran.Boleh("OnBanding")) return; AuditLog.Kat = "bandingkan"; OnBanding(); }));
-            Controls.Add(Btn("Tarik log mesin", 10, 422, 150, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
-            Controls.Add(Btn("Kelola salinan", 170, 422, 150, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
-            Controls.Add(Btn("Ganti sandi", 330, 422, 120, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
-            Controls.Add(Btn("Keluar akun", 285, 388, 160, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
-            Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi.\r\nNaik/Turun/A-Z mengatur urutan tersimpan.\r\nKlik judul kolom = urut tampilan saja.", 10, 360));
+            Controls.Add(Btn("Tambah", 10, 358, 140, delegate { if (!Peran.Boleh("OnTambah")) return; AuditLog.Kat = "mesin"; OnTambah(); }));
+            Controls.Add(Btn("Ubah", 160, 358, 140, delegate { if (!Peran.Boleh("OnUbah")) return; AuditLog.Kat = "mesin"; OnUbah(); }));
+            Controls.Add(Btn("Hapus", 310, 358, 140, delegate { if (!Peran.Boleh("OnHapus")) return; AuditLog.Kat = "mesin"; OnHapus(); }));
+            Controls.Add(Btn("Naik", 10, 392, 140, delegate { if (!Peran.Boleh("OnGeser")) return; AuditLog.Kat = "mesin"; OnGeser(-1); }));
+            Controls.Add(Btn("Turun", 160, 392, 140, delegate { if (!Peran.Boleh("OnGeser")) return; AuditLog.Kat = "mesin"; OnGeser(1); }));
+            Controls.Add(Btn("A-Z", 310, 392, 140, delegate { if (!Peran.Boleh("OnUrutAz")) return; AuditLog.Kat = "mesin"; OnUrutAz(); }));
+            tpSemua.Controls.Add(Btn("Cek semua", 315, 12, 110, delegate { if (!Peran.Boleh("OnCekSemua")) return; AuditLog.Kat = "mesin"; OnCekSemua(); }));
+            pnlStrip.Controls.Add(Btn("Bersihkan log", 420, 2, 110, delegate { txtLog.Clear(); }));
+            tpSemua.Controls.Add(Btn("Bandingkan 2 mesin", 435, 12, 160, delegate { if (!Peran.Boleh("OnBanding")) return; AuditLog.Kat = "bandingkan"; OnBanding(); }));
+            tpLog.Controls.Add(Btn("Tarik log mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
+            tpLog.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
+            pnlStrip.Controls.Add(Btn("Ganti sandi", 180, 2, 110, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
+            pnlStrip.Controls.Add(Btn("Keluar akun", 300, 2, 110, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
+            Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi. Naik/Turun/A-Z = urutan tersimpan.", 10, 426));
             Controls.Add(tabs);
             Controls.Add(txtLog);
+        }
+
+        TabPage BuildTabLog()
+        {
+            TabPage p = new TabPage("Log absensi");
+            p.Controls.Add(Lbl("Alur kirim log ke HRIS:   1. Tarik log mesin   >   2. Kelola salinan   >   3. Kirim ke HRIS (dicentang)", 15, 54));
+            p.Controls.Add(Lbl("Tarik log menyimpan salinan CSV di komputer ini. Kirim dilakukan dari Kelola salinan.\r\nKirim ulang aman: baris yang sudah ada di HRIS dihitung duplicate, bukan data ganda.", 15, 80));
+            lblRingkasLog = Lbl("", 15, 128);
+            lblRingkasLog.Font = new Font(Font, FontStyle.Bold);
+            p.Controls.Add(lblRingkasLog);
+            return p;
+        }
+
+        void RefreshRingkasLog()
+        {
+            if (lblRingkasLog == null) return;
+            try
+            {
+                List<SalinanItem> l = Salinan.DaftarAktif(st);
+                int belum = 0;
+                foreach (SalinanItem it in l) { if (it.Terkirim.Length == 0) belum++; }
+                lblRingkasLog.Text = "Salinan aktif: " + l.Count + "     Belum terkirim ke HRIS: " + belum;
+                lblRingkasLog.ForeColor = belum > 0 ? Color.Firebrick : Color.DarkGreen;
+            }
+            catch (Exception) { lblRingkasLog.Text = ""; }
         }
 
         TabPage BuildTabInfo()
@@ -264,10 +302,10 @@ namespace HrisDeviceTool
             TabPage p = new TabPage("Semua mesin");
             p.Controls.Add(Btn("Ringkas semua mesin", 15, 12, 170, delegate { if (!Peran.Boleh("OnRingkas")) return; AuditLog.Kat = "semua-mesin"; OnRingkas(); }));
             p.Controls.Add(Btn("Ekspor CSV", 195, 12, 110, delegate { if (!Peran.Boleh("OnEkspor")) return; AuditLog.Kat = "semua-mesin"; OnEkspor(); }));
-            p.Controls.Add(Lbl("Hanya membaca. Baris kuning = selisih jam lebih dari 60 detik.", 320, 19));
+            p.Controls.Add(Lbl("Hanya membaca. Baris kuning = selisih jam lebih dari 60 detik.", 15, 54));
             lvSum = MakeList(ColS, new int[] { 110, 75, 80, 60, 90, 55, 60, 120, 150 });
-            lvSum.Location = new Point(15, 50);
-            lvSum.Size = new Size(695, 345);
+            lvSum.Location = new Point(15, 76);
+            lvSum.Size = new Size(695, 319);
             lvSum.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lvSum.ListViewItemSorter = sS;
             lvSum.ColumnClick += delegate (object o, ColumnClickEventArgs e) { SortClick(lvSum, sS, ColS, e.Column); };
@@ -357,7 +395,7 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Diagnostik", 15, 15, 140, delegate { if (!Peran.Boleh("OnDiagnostik")) return; AuditLog.Kat = "bantuan"; OnDiagnostik(); }));
             p.Controls.Add(Btn("Buka folder data", 165, 15, 150, delegate { BukaFolder(st.DataDir); }));
             p.Controls.Add(Btn("Buka folder panduan", 325, 15, 170, delegate { if (!Peran.Boleh("OnPanduan")) return; AuditLog.Kat = "bantuan"; OnPanduan(); }));
-            p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dienkripsi Windows (hanya terbaca di PC ini, tanpa kata sandi). Di PC lain, isi Comm Key sekali lagi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
+            p.Controls.Add(Lbl("Diagnostik memeriksa: komponen mesin (zkemkeeper), folder data, dan koneksi ke semua mesin terdaftar.\r\n\r\nPindah ke PC lain: salin SELURUH folder aplikasi (exe + folder data).\r\nComm Key yang disimpan dienkripsi Windows (hanya terbaca di PC ini, tanpa kata sandi). Di PC lain, isi Comm Key dan token HRIS (Pengaturan HRIS) sekali lagi.\r\n\r\nPanduan lengkap ada di folder docs (ditambahkan setelah tahap ini teruji).\r\nVersi: " + Versi, 15, 60));
             return p;
         }
 
@@ -365,12 +403,14 @@ namespace HrisDeviceTool
         {
             if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
             LogForm f = new LogForm(st, delegate (MesinItem m) { return Open(m, false); });
+            f.FormClosed += delegate { RefreshRingkasLog(); };
             f.ShowDialog(this);
         }
 
         void OnKelolaSalinan()
         {
             KelolaSalinanForm f = new KelolaSalinanForm(st);
+            f.FormClosed += delegate { RefreshRingkasLog(); };
             f.ShowDialog(this);
         }
 

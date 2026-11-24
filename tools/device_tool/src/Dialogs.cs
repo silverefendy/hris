@@ -106,6 +106,8 @@ namespace HrisDeviceTool
             st = store;
             editing = edit;
             Text = (edit == null) ? "Tambah mesin" : "Ubah mesin";
+            if (edit != null && edit.NamaLama != null && edit.NamaLama.Count > 0)
+                Text += "  (nama lama: " + string.Join(", ", edit.NamaLama.ToArray()) + ")";
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
             MinimizeBox = false;
