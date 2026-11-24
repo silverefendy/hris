@@ -81,7 +81,7 @@ namespace HrisDeviceTool
     {
         Store st;
         MesinItem editing;
-        TextBox txtNama, txtIp, txtPort, txtKey;
+        TextBox txtNama, txtIp, txtPort, txtKey, txtHris;
         CheckBox chkIngat;
         public MesinItem Result;
         public string KeyResult = "";
@@ -110,32 +110,33 @@ namespace HrisDeviceTool
             StartPosition = FormStartPosition.CenterParent;
             MinimizeBox = false;
             MaximizeBox = false;
-            ClientSize = new Size(400, 252);
+            ClientSize = new Size(400, 296);
 
             txtNama = Field("Nama mesin (bebas, contoh: Produksi)", 10, 376, false);
             txtIp = Field("Alamat IP (contoh: 192.168.1.10)", 54, 376, false);
             txtPort = Field("Port (biasanya 4370)", 98, 100, false);
             txtKey = Field("Comm Key (kosongkan bila mesin tidak memakai)", 142, 376, true);
+            txtHris = Field("Nama di HRIS (persis seperti Device Name di HRIS; kosong = tidak dikirim)", 186, 376, false);
 
             chkIngat = new CheckBox();
             chkIngat.Text = "Ingat Comm Key (terenkripsi Windows, hanya terbaca di PC ini)";
-            chkIngat.Location = new Point(12, 188);
+            chkIngat.Location = new Point(12, 232);
             chkIngat.AutoSize = true;
             Controls.Add(chkIngat);
 
             Button bTes = new Button();
             bTes.Text = "Tes koneksi";
-            bTes.Location = new Point(12, 216);
+            bTes.Location = new Point(12, 260);
             bTes.Size = new Size(110, 28);
             bTes.Click += delegate { OnTes(); };
             Button bOk = new Button();
             bOk.Text = "Simpan";
-            bOk.Location = new Point(222, 216);
+            bOk.Location = new Point(222, 260);
             bOk.Size = new Size(80, 28);
             bOk.Click += delegate { OnSimpan(); };
             Button bCancel = new Button();
             bCancel.Text = "Batal";
-            bCancel.Location = new Point(312, 216);
+            bCancel.Location = new Point(312, 260);
             bCancel.Size = new Size(80, 28);
             bCancel.DialogResult = DialogResult.Cancel;
             Controls.Add(bTes);
@@ -151,6 +152,7 @@ namespace HrisDeviceTool
                 txtPort.Text = edit.Port.ToString();
                 txtKey.Text = existingKey;
                 chkIngat.Checked = edit.IngatKey;
+                txtHris.Text = edit.NamaDiHris;
             }
         }
 
@@ -217,6 +219,7 @@ namespace HrisDeviceTool
             r.Ip = ip;
             r.Port = port;
             r.IngatKey = chkIngat.Checked;
+            r.NamaDiHris = txtHris.Text.Trim();
             r.TanpaKey = (txtKey.Text.Trim().Length == 0 || txtKey.Text.Trim() == "0");
             Result = r;
             KeyResult = txtKey.Text;

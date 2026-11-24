@@ -14,6 +14,8 @@ namespace HrisDeviceTool
         public int Port = 4370;
         public bool IngatKey = false;
         public bool TanpaKey = false;
+        // Nama dokumen HRIS Device (harus persis). Kosong = mesin ini tidak dikirim ke HRIS.
+        public string NamaDiHris = "";
 
         public override string ToString()
         {
@@ -24,6 +26,7 @@ namespace HrisDeviceTool
     public class AppData
     {
         public List<MesinItem> Mesin = new List<MesinItem>();
+        public string UrlHris = "";
     }
 
     // Penyimpanan portabel: semua di folder "data" di samping exe.
