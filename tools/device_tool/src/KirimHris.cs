@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -54,7 +54,7 @@ namespace HrisDeviceTool
         public delegate void Lapor(int batchKe, int batchTotal, int selesai, int total,
             int created, int duplicate, int error, string status);
 
-        static string Esc(string s)
+        internal static string Esc(string s)
         {
             StringBuilder sb = new StringBuilder();
             foreach (char c in (s ?? ""))
@@ -75,14 +75,14 @@ namespace HrisDeviceTool
             return sb.ToString();
         }
 
-        static void SiapkanJaringan(string url)
+        internal static void SiapkanJaringan(string url)
         {
             ServicePointManager.Expect100Continue = false;
             if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; // TLS 1.2
         }
 
-        static string Post(string url, string token, string body, int timeoutMs, out int kode)
+        internal static string Post(string url, string token, string body, int timeoutMs, out int kode)
         {
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
             req.Method = "POST";
@@ -124,7 +124,7 @@ namespace HrisDeviceTool
             }
         }
 
-        static string Potong(string s, int n)
+        internal static string Potong(string s, int n)
         {
             s = (s ?? "").Replace("\r", " ").Replace("\n", " ");
             return s.Length <= n ? s : s.Substring(0, n) + "...";
