@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:user_key",
+ "creation": "2026-11-25 14:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_data",
+  "user_key",
+  "device",
+  "device_user_id",
+  "column_break_1",
+  "user_name_on_device",
+  "privilege",
+  "enabled_on_device",
+  "section_snapshot",
+  "snapshot_at",
+  "column_break_2",
+  "in_last_snapshot",
+  "finger_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_data",
+   "fieldtype": "Section Break",
+   "label": "Data dari Mesin"
+  },
+  {
+   "description": "Kunci unik: mesin|ID. Diisi sistem.",
+   "fieldname": "user_key",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "User Key",
+   "no_copy": 1,
+   "read_only": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "device",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Device",
+   "options": "HRIS Device",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "device_user_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ID di Mesin",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_name_on_device",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nama di Mesin",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Kode hak akses dari mesin. 0 = user biasa. Arti nilai lain belum terverifikasi.",
+   "fieldname": "privilege",
+   "fieldtype": "Int",
+   "label": "Privilege (kode mesin)",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled_on_device",
+   "fieldtype": "Check",
+   "label": "Aktif di Mesin",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_snapshot",
+   "fieldtype": "Section Break",
+   "label": "Snapshot"
+  },
+  {
+   "fieldname": "snapshot_at",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Snapshot Terakhir (WIB)",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "description": "Dicentang bila user masih ada pada pembacaan mesin yang terakhir.",
+   "fieldname": "in_last_snapshot",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "label": "Ada di Snapshot Terakhir",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "finger_count",
+   "fieldtype": "Int",
+   "label": "Jumlah Jari",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-25 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "HRIS Attendance",
+ "name": "HRIS Device User",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "HRIS Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "HRIS HR Admin",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  }
+ ],
+ "search_fields": "device_user_id,user_name_on_device",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "user_name_on_device",
+ "track_changes": 0
+}
