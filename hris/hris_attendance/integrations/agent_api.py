@@ -15,4 +15,8 @@ def push_punches(device=None, punches=None):
 	Daftar kosong dianggap detak (heartbeat) dan hanya memperbarui last_agent_at.
 	"""
 	verify_agent_request()
-	return save_punches(device, punches, "Agen Windows")
+	hasil = save_punches(device, punches, "Agen Windows")
+	# Catat ke HRIS Pull Run (aman-gagal: tidak boleh menggagalkan penyimpanan punch)
+	from hris.hris_attendance.services.pull_run_log import catat_kirim_agen
+	catat_kirim_agen(hasil.get("device") or device, hasil)
+	return hasil
