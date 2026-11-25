@@ -248,7 +248,7 @@ namespace HrisDeviceTool
             Controls.Add(Btn("A-Z", 310, 392, 140, delegate { if (!Peran.Boleh("OnUrutAz")) return; AuditLog.Kat = "mesin"; OnUrutAz(); }));
             tpSemua.Controls.Add(Btn("Cek semua", 315, 12, 110, delegate { if (!Peran.Boleh("OnCekSemua")) return; AuditLog.Kat = "mesin"; OnCekSemua(); }));
             pnlStrip.Controls.Add(Btn("Bersihkan log", 420, 2, 110, delegate { txtLog.Clear(); }));
-            tpSemua.Controls.Add(Btn("Kirim user ke HRIS", 315, 12, 115, delegate { if (!Peran.Boleh("OnKirimHris")) return; AuditLog.Kat = "semua-mesin"; OnKirimUser(); }));
+            tpSemua.Controls.Add(Btn("Kirim user HRIS", 603, 12, 105, delegate { if (!Peran.Boleh("OnKirimHris")) return; AuditLog.Kat = "semua-mesin"; OnKirimUser(); }));
             tpSemua.Controls.Add(Btn("Bandingkan 2 mesin", 435, 12, 160, delegate { if (!Peran.Boleh("OnBanding")) return; AuditLog.Kat = "bandingkan"; OnBanding(); }));
             tpLog.Controls.Add(Btn("Tarik log mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
             tpLog.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
