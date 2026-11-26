@@ -54,3 +54,13 @@ Kartu, tab, edit dan simpan, Batal, field Link dan tanggal, ganti foto, peran ta
 
 - Grup Shift di header (bukan field DocType HRIS Employee, butuh sumber dari penugasan shift).
 - Galat `socket.io` port 9000 (realtime) di Console, tidak berhubungan dengan kartu.
+
+## Tema banner
+
+| Hal | Penjelasan |
+|---|---|
+| Pilihan | Biru Langit (default), Hijau Mint, Krem Emas, Oranye Lembut, Gelap, lewat menu **Tampilan** |
+| Penyimpanan | Per browser (`localStorage`, kunci `hris_employee_tema`) |
+| Cara kerja | Atribut `data-tema` pada `.hk-kartu`, CSS mengatur variabel warna per tema |
+| Mode gelap Frappe | Banner tetap gelap (selektor `html:not([data-theme="dark"])`) |
+| Menambah tema | Tambah satu entri di array `TEMA` (JS) dan satu blok `.hk-kartu[data-tema="..."]` (CSS) |

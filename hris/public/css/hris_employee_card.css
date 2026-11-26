@@ -304,3 +304,28 @@
 [data-theme="dark"] .hk-head .hk-warn { color: #fcd34d; }
 [data-theme="dark"] .hk-head .hk-err { color: #fca5a5; }
 [data-theme="dark"] .hk-head .hk-muted { color: #cbd5e1; }
+
+/* ---------- Tema banner (dipilih lewat menu Tampilan) ---------- */
+html:not([data-theme="dark"]) .hk-kartu[data-tema="mint"] {
+    --hk-head-a: #dcfce7; --hk-head-b: #f0fdf4; --hk-head-c: #fef9c3;
+    --hk-gold: #16a34a; --hk-aksen: #15803d;
+}
+html:not([data-theme="dark"]) .hk-kartu[data-tema="krem"] {
+    --hk-head-a: #fef3c7; --hk-head-b: #fffbeb; --hk-head-c: #ffffff;
+    --hk-gold: #c9a227; --hk-aksen: #a16207;
+}
+html:not([data-theme="dark"]) .hk-kartu[data-tema="oranye"] {
+    --hk-head-a: #ffedd5; --hk-head-b: #fff7ed; --hk-head-c: #fef9c3;
+    --hk-gold: #ea580c; --hk-aksen: #c2410c;
+}
+.hk-kartu[data-tema="gelap"] {
+    --hk-head-a: #0f172a; --hk-head-b: #1e293b; --hk-head-c: #334155;
+    --hk-head-teks: #f8fafc; --hk-head-redup: #e2e8f0; --hk-head-label: #94a3b8;
+    --hk-gold: #c9a227; --hk-aksen: #c9a227;
+}
+.hk-kartu[data-tema="gelap"] .hk-foto { background: #1e293b; }
+.hk-kartu[data-tema="gelap"] .hk-edit { background: transparent; }
+.hk-kartu[data-tema="gelap"] .hk-head .hk-ok { color: #86efac; }
+.hk-kartu[data-tema="gelap"] .hk-head .hk-warn { color: #fcd34d; }
+.hk-kartu[data-tema="gelap"] .hk-head .hk-err { color: #fca5a5; }
+.hk-kartu[data-tema="gelap"] .hk-head .hk-muted { color: #cbd5e1; }

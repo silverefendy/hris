@@ -58,6 +58,35 @@
         return { f: null, label: label, wide: !!wide, h: h };
     }
 
+    // ---------- Tema banner ----------
+    const TEMA_KEY = "hris_employee_tema";
+    const TEMA = [
+        { id: "langit", label: "Biru Langit" },
+        { id: "mint", label: "Hijau Mint" },
+        { id: "krem", label: "Krem Emas" },
+        { id: "oranye", label: "Oranye Lembut" },
+        { id: "gelap", label: "Gelap" },
+    ];
+    function baca_tema() {
+        try {
+            const t = window.localStorage.getItem(TEMA_KEY);
+            return TEMA.some((x) => x.id === t) ? t : "langit";
+        } catch (e) {
+            return "langit";
+        }
+    }
+    function simpan_tema(id) {
+        try {
+            window.localStorage.setItem(TEMA_KEY, id);
+        } catch (e) {
+            /* abaikan */
+        }
+    }
+    function ganti_tema(frm, id) {
+        simpan_tema(id);
+        $(frm.wrapper).find(".hk-kartu").attr("data-tema", id);
+    }
+
     function baca_pref() {
         try {
             return window.localStorage.getItem(PREF_KEY) === "form" ? "form" : "kartu";
@@ -373,7 +402,7 @@
             ? '<div class="hk-warnbar">Ada perubahan yang belum disimpan. Kartu menampilkan nilai yang sedang diedit.</div>'
             : "";
         return (
-            `<div class="hk-kartu">${header(frm)}` +
+            `<div class="hk-kartu" data-tema="${esc(baca_tema())}">${header(frm)}` +
             `<div class="hk-card">${peringatan}<div class="hk-tabs">${bar_tab}</div>${panel}</div></div>`
         );
     }
@@ -643,6 +672,9 @@
         }
         frm.add_custom_button(__("Kartu Profil"), () => tampil(frm, "kartu"), __("Tampilan"));
         frm.add_custom_button(__("Form Edit"), () => tampil(frm, "form"), __("Tampilan"));
+        TEMA.forEach((t) => {
+            frm.add_custom_button("Tema: " + t.label, () => ganti_tema(frm, t.id), __("Tampilan"));
+        });
     }
 
     frappe.ui.form.on(DOCTYPE, {
