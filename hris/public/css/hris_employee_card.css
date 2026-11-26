@@ -329,3 +329,62 @@ html:not([data-theme="dark"]) .hk-kartu[data-tema="oranye"] {
 .hk-kartu[data-tema="gelap"] .hk-head .hk-warn { color: #fcd34d; }
 .hk-kartu[data-tema="gelap"] .hk-head .hk-err { color: #fca5a5; }
 .hk-kartu[data-tema="gelap"] .hk-head .hk-muted { color: #cbd5e1; }
+
+/* ---------- Tema di dalam kartu, Employee ID dan No Induk di banner ---------- */
+.hk-head { position: relative; }
+.hk-ids { margin-bottom: 6px; font-size: 13.5px; font-weight: 600; color: var(--hk-head-teks); }
+.hk-tema { position: absolute; top: 10px; right: 14px; z-index: 5; outline: none; }
+.hk-tema-btn {
+    display: inline-block;
+    padding: 2px 12px;
+    border: 1px solid rgba(127, 127, 127, 0.35);
+    border-radius: 999px;
+    background: rgba(127, 127, 127, 0.15);
+    color: var(--hk-head-redup);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.hk-tema-list {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 170px;
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: var(--card-bg);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.16);
+}
+.hk-tema:hover .hk-tema-list,
+.hk-tema:focus-within .hk-tema-list { display: block; }
+.hk-tema-item {
+    display: block;
+    width: 100%;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    text-align: left;
+    color: var(--text-color);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+.hk-tema-item:hover { background: var(--control-bg, rgba(127, 127, 127, 0.12)); }
+.hk-tema-item.aktif { font-weight: 600; }
+.hk-tema-item.aktif::after { content: "\2713"; float: right; color: var(--hk-aksen); }
+.hk-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    vertical-align: -1px;
+}
+.hk-dot-langit { background: linear-gradient(135deg, #e0f2fe, #fef9c3); }
+.hk-dot-mint { background: linear-gradient(135deg, #dcfce7, #fef9c3); }
+.hk-dot-krem { background: linear-gradient(135deg, #fef3c7, #ffffff); }
+.hk-dot-oranye { background: linear-gradient(135deg, #ffedd5, #fef9c3); }
+.hk-dot-gelap { background: linear-gradient(135deg, #0f172a, #334155); }

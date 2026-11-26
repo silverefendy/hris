@@ -14,6 +14,7 @@ class HRISEmployee(Document):
         self._normalisasi()
         self._cek_ktp()
         self._cek_id_finger()
+        self._cek_no_induk()
         self._cek_tanggal()
         self._cek_status()
 
@@ -94,6 +95,20 @@ class HRISEmployee(Document):
                     "Gunakan ID lain."
                 ).format(nilai, pemegang.name, pemegang.employee_name, pemegang.status)
             )
+
+    def _cek_no_induk(self):
+        # No Induk diisi manual oleh HRD: dipangkas, huruf besar, kosong = NULL, unik antar dokumen.
+        nilai = (self.get("employee_number") or "").strip().upper()
+        self.employee_number = nilai or None
+        if not nilai:
+            return
+        ada = frappe.db.get_value(
+            "HRIS Employee",
+            {"employee_number": nilai, "name": ["!=", self.name or ""]},
+            "name",
+        )
+        if ada:
+            frappe.throw(_("No Induk {0} sudah dipakai oleh dokumen {1}.").format(nilai, ada))
 
     def _cek_tanggal(self):
         # K-126 (V1): aturan yang sama dengan Employee ERPNext, ditolak di sumbernya.

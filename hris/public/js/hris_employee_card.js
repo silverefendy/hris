@@ -7,7 +7,7 @@
     const DOCTYPE = "HRIS Employee";
     const PREF_KEY = "hris_employee_view";
     const KOSONG = '<span class="hk-empty">&mdash;</span>';
-    let tab_aktif = { nama: null, id: "profil" };
+    let tab_aktif = { nama: null, id: "pekerjaan" };
     let peta_seksi = {};
 
     // ---------- Util ----------
@@ -182,10 +182,12 @@
                 id: "identitas", judul: "Identitas", warna: "#3b82f6",
                 items: [
                     T("employee_name", "Nama Lengkap"),
+                    T("academic_title", "Gelar"),
                     T("birth_place", "Tempat Lahir"),
                     T("birth_date", "Tanggal Lahir", { h: (d) => tgl(d.birth_date) + umur(d.birth_date) }),
                     T("gender", "Jenis Kelamin"),
                     T("religion", "Agama"),
+                    T("nationality", "Kewarganegaraan"),
                     T("marital_status", "Status Perkawinan"),
                     T("blood_type", "Golongan Darah"),
                     T("education", "Pendidikan"),
@@ -195,6 +197,7 @@
                 id: "kontak", judul: "Kontak", warna: "#14b8a6",
                 items: [
                     T("phone", "No Telepon", { h: (d) => telepon(d.phone) }),
+                    T("office_phone", "Telp Kantor"),
                     T("email", "Email", { h: (d) => surel(d.email) }),
                     T("postal_code", "Kode Pos"),
                     T("address", "Alamat", { wide: true }),
@@ -212,6 +215,7 @@
                     T("branch", "Branch"),
                     T("department", "Department"),
                     T("employee_group", "Grup Karyawan"),
+                    T("job_title", "Jabatan"),
                     T("rule_follow", "Aturan Mengikuti"),
                 ],
             },
@@ -228,6 +232,8 @@
                 id: "absensi", judul: "Absensi", warna: "#c9a227",
                 items: [
                     T("attendance_device_id", "ID Finger"),
+                    T("employee_number", "No Induk"),
+                    T("card_number", "Nomor Kartu"),
                     T("fingerprint_method", "Metode Fingerprint"),
                     T("legacy_payroll_code", "Kode di Aplikasi Gaji Lama"),
                 ],
@@ -337,6 +343,11 @@
         return daftar.map((s) => seksi_html(frm, s)).join("");
     }
 
+    function absensi_dulu(daftar) {
+        const a = daftar.filter((x) => x.id === "absensi");
+        return a.concat(daftar.filter((x) => x.id !== "absensi"));
+    }
+
     function header(frm) {
         const d = frm.doc;
         const nama = d.employee_name || "";
@@ -359,10 +370,21 @@
             .map((m) => `<span class="hk-meta"><b>${esc(m[0])}</b>${esc(m[1])}</span>`)
             .join("");
         const form = boleh_ubah(frm) ? '<button type="button" class="hk-edit">Form lengkap</button>' : "";
+        const ids =
+            `<span class="hk-meta"><b>Employee ID</b>${esc(d.name)}</span>` +
+            `<span class="hk-meta"><b>No Induk</b>${ada(d.employee_number) ? esc(d.employee_number) : KOSONG}</span>`;
+        const tema_aktif = baca_tema();
+        const tema_ui =
+            '<div class="hk-tema" tabindex="0"><span class="hk-tema-btn">Tema</span><div class="hk-tema-list">' +
+            TEMA.map(
+                (t) =>
+                    `<button type="button" class="hk-tema-item${t.id === tema_aktif ? " aktif" : ""}" data-tema="${t.id}"><i class="hk-dot hk-dot-${t.id}"></i>${esc(t.label)}</button>`
+            ).join("") +
+            "</div></div>";
         return (
             `<div class="hk-head"><div class="hk-fotobox">${foto}${ganti}</div>` +
             `<div class="hk-id"><h3 class="hk-nama">${esc(nama)}</h3>` +
-            `<div class="hk-badges">${lencana}</div><div class="hk-metas">${meta}</div></div>${form}</div>`
+            `<div class="hk-badges">${lencana}</div><div class="hk-metas hk-ids">${ids}</div><div class="hk-metas">${meta}</div></div>${form}${tema_ui}</div>`
         );
     }
 
@@ -370,8 +392,8 @@
         const d = frm.doc;
         peta_seksi = {};
         const tabs = [
+            { id: "pekerjaan", label: "Pekerjaan", html: panel_html(frm, absensi_dulu(seksi_pekerjaan())) },
             { id: "profil", label: "Profil", html: panel_html(frm, seksi_profil()) + ringkas_html() },
-            { id: "pekerjaan", label: "Pekerjaan", html: panel_html(frm, seksi_pekerjaan()) },
         ];
         if (boleh_payroll(frm)) {
             tabs.push({ id: "payroll", label: "Payroll dan BPJS", html: panel_html(frm, seksi_payroll(d)) });
@@ -384,7 +406,7 @@
         });
 
         if (tab_aktif.nama !== d.name || !tabs.some((t) => t.id === tab_aktif.id)) {
-            tab_aktif = { nama: d.name, id: "profil" };
+            tab_aktif = { nama: d.name, id: "pekerjaan" };
         }
         const bar_tab = tabs
             .map(
@@ -615,6 +637,12 @@
         });
         $kartu.on("click", ".hk-edit", () => tampil(frm, "form"));
         $kartu.on("click", ".hk-ganti", () => ganti_foto(frm));
+        $kartu.on("click", ".hk-tema-item", function () {
+            ganti_tema(frm, $(this).attr("data-tema"));
+            $kartu.find(".hk-tema-item").removeClass("aktif");
+            $(this).addClass("aktif");
+            this.blur();
+        });
         $kartu.on("click", ".hk-lihat", () => $kartu.find('.hk-tab[data-tab="riwayat"]').trigger("click"));
         isi_ringkas(frm, $kartu);
         $kartu.on("click", ".hk-pen", function () {
@@ -672,9 +700,6 @@
         }
         frm.add_custom_button(__("Kartu Profil"), () => tampil(frm, "kartu"), __("Tampilan"));
         frm.add_custom_button(__("Form Edit"), () => tampil(frm, "form"), __("Tampilan"));
-        TEMA.forEach((t) => {
-            frm.add_custom_button("Tema: " + t.label, () => ganti_tema(frm, t.id), __("Tampilan"));
-        });
     }
 
     frappe.ui.form.on(DOCTYPE, {

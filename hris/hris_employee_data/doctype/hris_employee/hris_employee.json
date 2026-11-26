@@ -13,117 +13,53 @@
     "track_changes": 1,
     "fields": [
         {
-            "fieldname": "details_tab",
-            "fieldtype": "Tab Break",
-            "label": "Data Pribadi"
-        },
-        {
-            "fieldname": "sec_identitas",
-            "fieldtype": "Section Break",
-            "label": "Identitas"
-        },
-        {
-            "fieldname": "employee_name",
-            "fieldtype": "Data",
-            "label": "Nama Lengkap",
-            "reqd": 1,
-            "in_list_view": 1,
-            "in_standard_filter": 1,
-            "search_index": 1
-        },
-        {
-            "fieldname": "birth_place",
-            "fieldtype": "Data",
-            "label": "Tempat Lahir"
-        },
-        {
-            "fieldname": "birth_date",
-            "fieldtype": "Date",
-            "label": "Tanggal Lahir",
-            "reqd": 1
-        },
-        {
-            "fieldname": "col_identitas",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "gender",
-            "fieldtype": "Select",
-            "label": "Jenis Kelamin",
-            "options": "\nLaki-laki\nPerempuan\nTidak Disebutkan",
-            "reqd": 1
-        },
-        {
-            "fieldname": "religion",
-            "fieldtype": "Select",
-            "label": "Agama",
-            "options": "\nIslam\nKristen\nKatolik\nHindu\nBuddha\nKonghucu\nLainnya"
-        },
-        {
-            "fieldname": "marital_status",
-            "fieldtype": "Select",
-            "label": "Status Perkawinan",
-            "options": "\nBelum Menikah\nMenikah\nCerai Hidup\nCerai Mati"
-        },
-        {
-            "fieldname": "col_identitas_2",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "blood_type",
-            "fieldtype": "Select",
-            "label": "Golongan Darah",
-            "options": "\nA\nB\nAB\nO"
-        },
-        {
-            "fieldname": "education",
-            "fieldtype": "Data",
-            "label": "Pendidikan"
-        },
-        {
-            "fieldname": "image",
-            "fieldtype": "Attach Image",
-            "label": "Foto"
-        },
-        {
-            "fieldname": "sec_kontak",
-            "fieldtype": "Section Break",
-            "label": "Kontak"
-        },
-        {
-            "fieldname": "phone",
-            "fieldtype": "Data",
-            "label": "No Telepon",
-            "options": "Phone"
-        },
-        {
-            "fieldname": "email",
-            "fieldtype": "Data",
-            "label": "Email",
-            "options": "Email"
-        },
-        {
-            "fieldname": "col_kontak",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "address",
-            "fieldtype": "Small Text",
-            "label": "Alamat"
-        },
-        {
-            "fieldname": "col_kontak_2",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "postal_code",
-            "fieldtype": "Data",
-            "label": "Kode Pos"
-        },
-        {
             "fieldname": "tab_pekerjaan",
             "fieldtype": "Tab Break",
             "label": "Pekerjaan"
+        },
+        {
+            "fieldname": "sec_absensi",
+            "fieldtype": "Section Break",
+            "label": "Absensi"
+        },
+        {
+            "fieldname": "attendance_device_id",
+            "fieldtype": "Data",
+            "label": "ID Finger",
+            "in_list_view": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "employee_number",
+            "fieldtype": "Data",
+            "label": "No Induk",
+            "search_index": 1
+        },
+        {
+            "fieldname": "card_number",
+            "fieldtype": "Data",
+            "label": "Nomor Kartu"
+        },
+        {
+            "fieldname": "col_absensi",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "fingerprint_method",
+            "fieldtype": "Select",
+            "label": "Metode Fingerprint",
+            "options": "\nJari\nWajah\nKartu\nLainnya"
+        },
+        {
+            "fieldname": "col_absensi_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "legacy_payroll_code",
+            "fieldtype": "Data",
+            "label": "Kode di Aplikasi Gaji Lama",
+            "description": "Dipakai untuk mencocokkan data dari aplikasi payroll lama.",
+            "in_standard_filter": 1
         },
         {
             "fieldname": "sec_kerja",
@@ -161,6 +97,11 @@
             "label": "Grup Karyawan",
             "options": "HRIS Employee Group",
             "in_standard_filter": 1
+        },
+        {
+            "fieldname": "job_title",
+            "fieldtype": "Data",
+            "label": "Jabatan"
         },
         {
             "fieldname": "col_kerja_2",
@@ -204,39 +145,6 @@
             "label": "Tanggal Akhir Perjanjian Kerja"
         },
         {
-            "fieldname": "sec_absensi",
-            "fieldtype": "Section Break",
-            "label": "Absensi"
-        },
-        {
-            "fieldname": "attendance_device_id",
-            "fieldtype": "Data",
-            "label": "ID Finger",
-            "in_list_view": 1,
-            "search_index": 1
-        },
-        {
-            "fieldname": "col_absensi",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "fingerprint_method",
-            "fieldtype": "Select",
-            "label": "Metode Fingerprint",
-            "options": "\nJari\nWajah\nKartu\nLainnya"
-        },
-        {
-            "fieldname": "col_absensi_2",
-            "fieldtype": "Column Break"
-        },
-        {
-            "fieldname": "legacy_payroll_code",
-            "fieldtype": "Data",
-            "label": "Kode di Aplikasi Gaji Lama",
-            "description": "Dipakai untuk mencocokkan data dari aplikasi payroll lama.",
-            "in_standard_filter": 1
-        },
-        {
             "fieldname": "sec_status",
             "fieldtype": "Section Break",
             "label": "Status dan Akun"
@@ -275,6 +183,129 @@
             "label": "Akun Login (Opsional)",
             "options": "User",
             "description": "Tidak dibuat otomatis."
+        },
+        {
+            "fieldname": "details_tab",
+            "fieldtype": "Tab Break",
+            "label": "Data Pribadi"
+        },
+        {
+            "fieldname": "sec_identitas",
+            "fieldtype": "Section Break",
+            "label": "Identitas"
+        },
+        {
+            "fieldname": "employee_name",
+            "fieldtype": "Data",
+            "label": "Nama Lengkap",
+            "reqd": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "academic_title",
+            "fieldtype": "Data",
+            "label": "Gelar"
+        },
+        {
+            "fieldname": "birth_place",
+            "fieldtype": "Data",
+            "label": "Tempat Lahir"
+        },
+        {
+            "fieldname": "birth_date",
+            "fieldtype": "Date",
+            "label": "Tanggal Lahir",
+            "reqd": 1
+        },
+        {
+            "fieldname": "col_identitas",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "gender",
+            "fieldtype": "Select",
+            "label": "Jenis Kelamin",
+            "options": "\nLaki-laki\nPerempuan\nTidak Disebutkan",
+            "reqd": 1
+        },
+        {
+            "fieldname": "religion",
+            "fieldtype": "Select",
+            "label": "Agama",
+            "options": "\nIslam\nKristen\nKatolik\nHindu\nBuddha\nKonghucu\nLainnya"
+        },
+        {
+            "fieldname": "nationality",
+            "fieldtype": "Data",
+            "label": "Kewarganegaraan"
+        },
+        {
+            "fieldname": "marital_status",
+            "fieldtype": "Select",
+            "label": "Status Perkawinan",
+            "options": "\nBelum Menikah\nMenikah\nCerai Hidup\nCerai Mati"
+        },
+        {
+            "fieldname": "col_identitas_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "blood_type",
+            "fieldtype": "Select",
+            "label": "Golongan Darah",
+            "options": "\nA\nB\nAB\nO"
+        },
+        {
+            "fieldname": "education",
+            "fieldtype": "Data",
+            "label": "Pendidikan"
+        },
+        {
+            "fieldname": "image",
+            "fieldtype": "Attach Image",
+            "label": "Foto"
+        },
+        {
+            "fieldname": "sec_kontak",
+            "fieldtype": "Section Break",
+            "label": "Kontak"
+        },
+        {
+            "fieldname": "phone",
+            "fieldtype": "Data",
+            "label": "No Telepon",
+            "options": "Phone"
+        },
+        {
+            "fieldname": "office_phone",
+            "fieldtype": "Data",
+            "label": "Telp Kantor"
+        },
+        {
+            "fieldname": "email",
+            "fieldtype": "Data",
+            "label": "Email",
+            "options": "Email"
+        },
+        {
+            "fieldname": "col_kontak",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "address",
+            "fieldtype": "Small Text",
+            "label": "Alamat"
+        },
+        {
+            "fieldname": "col_kontak_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "postal_code",
+            "fieldtype": "Data",
+            "label": "Kode Pos"
         },
         {
             "fieldname": "tab_payroll",
@@ -707,6 +738,6 @@
             "write": 1
         }
     ],
-    "modified": "2026-11-19 08:58:47.374070",
+    "modified": "2026-11-26 08:00:58.528665",
     "allow_import": 1
 }
