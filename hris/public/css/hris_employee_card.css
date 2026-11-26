@@ -1,0 +1,306 @@
+/* HRIS Employee: Kartu Profil v2 (baca bertab + edit per bagian). Hanya tampilan. */
+.hk-kartu {
+    --hk-gold: #c9a227;
+    max-width: 1180px;
+    margin: 0 auto 20px;
+    font-size: 13px;
+    color: var(--text-color);
+}
+
+/* Mode kartu: sembunyikan duplikat dan tombol Save */
+.hk-mode-kartu .primary-action { display: none !important; }
+.hk-mode-kartu .sidebar-image-section,
+.hk-mode-kartu .sidebar-image-wrapper { display: none !important; }
+
+/* ---------- Header ---------- */
+.hk-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 24px;
+    border-radius: 14px 14px 0 0;
+    border-bottom: 3px solid var(--hk-gold);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #334155 100%);
+    color: #f8fafc;
+}
+.hk-fotobox { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.hk-foto {
+    width: 84px;
+    height: 108px;
+    border-radius: 10px;
+    object-fit: cover;
+    object-position: top;
+    border: 2px solid var(--hk-gold);
+    background: #1e293b;
+}
+.hk-inisial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--hk-gold);
+}
+.hk-ganti {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 11px;
+    color: #cbd5e1;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.hk-ganti:hover { color: var(--hk-gold); }
+.hk-id { flex: 1 1 280px; min-width: 0; }
+.hk-nama { margin: 0 0 8px; font-size: 22px; font-weight: 600; color: #ffffff; }
+.hk-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.hk-metas { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: 12.5px; color: #e2e8f0; }
+.hk-meta b {
+    margin-right: 5px;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+.hk-edit {
+    flex: none;
+    padding: 6px 16px;
+    border: 1px solid var(--hk-gold);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--hk-gold);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.hk-edit:hover { background: var(--hk-gold); color: #0f172a; }
+
+/* ---------- Badge ---------- */
+.hk-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.hk-ok   { background: rgba(34, 197, 94, 0.15);  border-color: rgba(34, 197, 94, 0.35);  color: #15803d; }
+.hk-warn { background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.38); color: #b45309; }
+.hk-err  { background: rgba(239, 68, 68, 0.14);  border-color: rgba(239, 68, 68, 0.35);  color: #b91c1c; }
+.hk-muted { background: rgba(100, 116, 139, 0.15); border-color: rgba(100, 116, 139, 0.3); color: #475569; }
+.hk-head .hk-ok, [data-theme="dark"] .hk-ok { color: #86efac; }
+.hk-head .hk-warn, [data-theme="dark"] .hk-warn { color: #fcd34d; }
+.hk-head .hk-err, [data-theme="dark"] .hk-err { color: #fca5a5; }
+.hk-head .hk-muted, [data-theme="dark"] .hk-muted { color: #cbd5e1; }
+
+/* ---------- Badan kartu ---------- */
+.hk-card {
+    border: 1px solid var(--border-color);
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    background: var(--card-bg);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.hk-warnbar {
+    padding: 8px 24px;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.38);
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+    font-weight: 500;
+}
+[data-theme="dark"] .hk-warnbar { color: #fcd34d; }
+
+.hk-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.hk-tab {
+    appearance: none;
+    padding: 13px 18px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    cursor: pointer;
+}
+.hk-tab:hover { color: var(--text-color); }
+.hk-tab.aktif { color: var(--text-color); border-bottom-color: var(--hk-gold); }
+
+.hk-panel { padding: 6px 24px 22px; }
+
+/* ---------- Section ---------- */
+.hk-sec {
+    --acc: var(--hk-gold);
+    margin-top: 16px;
+    padding: 12px 16px 6px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--acc);
+    border-radius: 10px;
+}
+.hk-sh { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.hk-sh h5 {
+    margin: 0;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.hk-acts { display: flex; gap: 6px; }
+.hk-pen, .hk-btn {
+    padding: 3px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--control-bg, transparent);
+    color: var(--text-color);
+    font-size: 12px;
+    cursor: pointer;
+}
+.hk-pen:hover, .hk-btn:hover { border-color: var(--hk-gold); }
+.hk-simpan { background: #0f172a; border-color: #0f172a; color: #fff; }
+[data-theme="dark"] .hk-simpan { background: var(--hk-gold); border-color: var(--hk-gold); color: #0f172a; }
+
+.hk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 28px;
+}
+.hk-item, .hk-ctl { min-width: 0; padding-bottom: 8px; }
+.hk-item { border-bottom: 1px solid var(--border-color); }
+.hk-ctl .form-group { margin-bottom: 0; }
+.hk-wide { grid-column: 1 / -1; }
+.hk-l { margin-bottom: 2px; font-size: 11.5px; color: var(--text-muted); }
+.hk-v { font-size: 13.5px; font-weight: 500; color: var(--text-color); word-break: break-word; }
+.hk-empty { font-weight: 400; color: var(--text-light, #94a3b8); opacity: 0.6; }
+.hk-sub { font-weight: 400; color: var(--text-muted); }
+.hk-link { color: #a16207; }
+[data-theme="dark"] .hk-link { color: #fcd34d; }
+
+@media (max-width: 900px) {
+    .hk-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+    .hk-grid { grid-template-columns: 1fr; }
+    .hk-head { padding: 14px; }
+    .hk-panel { padding: 2px 12px 14px; }
+    .hk-tabs { padding: 0 6px; }
+}
+
+/* ---------- Warna untuk Form Edit (form biasa) ---------- */
+.hk-form-warna { --hk-gold: #c9a227; }
+
+.hk-form-warna .form-tabs-list .nav-link.active {
+    color: var(--text-color);
+    border-bottom: 2px solid var(--hk-gold);
+    font-weight: 600;
+}
+
+.hk-form-warna .form-section {
+    --acc: #3b82f6;
+    margin: 12px 0;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--acc);
+    border-radius: 10px;
+}
+.hk-form-warna .form-section:nth-child(4n+2) { --acc: #14b8a6; }
+.hk-form-warna .form-section:nth-child(4n+3) { --acc: #22c55e; }
+.hk-form-warna .form-section:nth-child(4n+4) { --acc: #c9a227; }
+
+.hk-form-warna .form-section .section-head {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--acc);
+}
+
+/* ---------- Riwayat (audit trail) ---------- */
+.hk-rwl { margin: 0 0 8px; padding: 0; list-style: none; }
+.hk-rw {
+    position: relative;
+    margin: 0;
+    padding: 6px 0 8px 16px;
+    border-left: 2px solid var(--border-color);
+}
+.hk-rw::before {
+    content: "";
+    position: absolute;
+    left: -5px;
+    top: 11px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--acc, #8b5cf6);
+}
+.hk-rw-t { font-size: 11.5px; color: var(--text-muted); }
+.hk-ring { min-height: 24px; padding-bottom: 6px; }
+.hk-tblwrap { overflow-x: auto; margin-bottom: 8px; }
+.hk-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.hk-tbl th {
+    padding: 6px 10px;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+}
+.hk-tbl td {
+    padding: 6px 10px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-color);
+    word-break: break-word;
+}
+.hk-tbl td:first-child { white-space: nowrap; }
+
+/* ---------- Banner cerah (menimpa gaya gelap di atas) ---------- */
+.hk-kartu {
+    --hk-head-a: #e0f2fe;
+    --hk-head-b: #f0f9ff;
+    --hk-head-c: #fef9c3;
+    --hk-head-teks: #0f172a;
+    --hk-head-redup: #475569;
+    --hk-head-label: #64748b;
+    --hk-aksen: #a16207;
+}
+.hk-head {
+    background: linear-gradient(135deg, var(--hk-head-a) 0%, var(--hk-head-b) 55%, var(--hk-head-c) 100%);
+    color: var(--hk-head-teks);
+}
+.hk-nama { color: var(--hk-head-teks); }
+.hk-metas { color: var(--hk-head-redup); }
+.hk-meta b { color: var(--hk-head-label); }
+.hk-foto { background: #ffffff; }
+.hk-head .hk-inisial { color: var(--hk-aksen); }
+.hk-ganti { color: var(--hk-head-redup); }
+.hk-ganti:hover { color: var(--hk-aksen); }
+.hk-edit { color: var(--hk-aksen); background: rgba(255, 255, 255, 0.65); }
+.hk-edit:hover { background: var(--hk-gold); color: #0f172a; }
+.hk-head .hk-ok { color: #15803d; }
+.hk-head .hk-warn { color: #b45309; }
+.hk-head .hk-err { color: #b91c1c; }
+.hk-head .hk-muted { color: #475569; }
+
+/* Mode gelap Frappe: banner tetap gelap */
+[data-theme="dark"] .hk-kartu {
+    --hk-head-a: #0f172a;
+    --hk-head-b: #1e293b;
+    --hk-head-c: #334155;
+    --hk-head-teks: #f8fafc;
+    --hk-head-redup: #e2e8f0;
+    --hk-head-label: #94a3b8;
+    --hk-aksen: #c9a227;
+}
+[data-theme="dark"] .hk-foto { background: #1e293b; }
+[data-theme="dark"] .hk-edit { background: transparent; }
+[data-theme="dark"] .hk-head .hk-ok { color: #86efac; }
+[data-theme="dark"] .hk-head .hk-warn { color: #fcd34d; }
+[data-theme="dark"] .hk-head .hk-err { color: #fca5a5; }
+[data-theme="dark"] .hk-head .hk-muted { color: #cbd5e1; }

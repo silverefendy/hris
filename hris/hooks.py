@@ -286,7 +286,10 @@ app_include_js = [
     "/assets/hris/js/hris_audit_trail.js",
     "/assets/hris/js/hris_sync_status.js",
     "/assets/hris/js/hris_device_actions.js",
+    "/assets/hris/js/hris_employee_card.js",
 ]
+
+app_include_css = ["/assets/hris/css/hris_employee_card.css"]
 
 add_to_apps_screen = [
 	{
