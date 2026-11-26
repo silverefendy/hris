@@ -254,6 +254,7 @@ namespace HrisDeviceTool
             tpLog.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
             tpLog.Controls.Add(Btn("Cek database", 355, 12, 160, delegate { if (!Peran.Boleh("OnCekDb")) return; AuditLog.Kat = "sistem"; OnCekDb(); }));
             tpLog.Controls.Add(Btn("Cadangkan DB", 525, 12, 140, delegate { if (!Peran.Boleh("OnCadangDb")) return; AuditLog.Kat = "sistem"; OnCadangDb(); }));
+            tpLog.Controls.Add(Btn("Impor aplikasi lama", 15, 170, 200, delegate { if (!Peran.Boleh("OnImporLama")) return; AuditLog.Kat = "sistem"; OnImporLama(); }));
             pnlStrip.Controls.Add(Btn("Ganti sandi", 180, 2, 110, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
             pnlStrip.Controls.Add(Btn("Keluar akun", 300, 2, 110, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi. Naik/Turun/A-Z = urutan tersimpan.", 10, 426));
@@ -459,6 +460,52 @@ namespace HrisDeviceTool
             catch (System.Exception ex)
             {
                 Msg("Cadangkan database GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnImporLama()
+        {
+            try
+            {
+                string berkas;
+                using (OpenFileDialog dlg = new OpenFileDialog())
+                {
+                    dlg.Title = "Pilih berkas CSV aplikasi absensi lama";
+                    dlg.Filter = "CSV / teks (*.csv;*.txt)|*.csv;*.txt|Semua berkas (*.*)|*.*";
+                    if (dlg.ShowDialog(this) != DialogResult.OK) return;
+                    berkas = dlg.FileName;
+                }
+                string db = global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault();
+                string pem = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(db), "pemetaan_impor.txt");
+                global::HrisDeviceTool.Data.HasilAnalisis h = global::HrisDeviceTool.Data.ImporLama.Analisis(berkas, pem);
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.AppendLine("Berkas: " + System.IO.Path.GetFileName(berkas));
+                sb.AppendLine("Penyandian: " + h.Sandi + "   Pemisah: " + h.Pemisah);
+                sb.AppendLine("Baris data: " + h.TotalBaris + "   Akan diimpor: " + h.Baris.Count);
+                sb.AppendLine("Tanpa No. Akun (dilewati): " + h.TanpaIdAkun);
+                sb.AppendLine("No. Akun ganda di berkas (dipakai yang terakhir): " + h.GandaDalamBerkas);
+                sb.AppendLine("Tanggal tidak terbaca (masuk data_lain): " + h.TanggalTakTerbaca);
+                sb.AppendLine();
+                sb.AppendLine("Pemetaan judul kolom:");
+                for (int i = 0; i < h.Judul.Count; i++)
+                {
+                    sb.AppendLine("  " + h.Judul[i] + "  ->  " + (h.Peta[i] == null ? "(tidak dikenal, masuk data_lain)" : h.Peta[i]));
+                }
+                sb.AppendLine();
+                sb.AppendLine("Lanjutkan impor ke database?");
+                if (MessageBox.Show(sb.ToString(), "Impor aplikasi lama", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(db))
+                {
+                    global::HrisDeviceTool.Data.HasilTulis w = global::HrisDeviceTool.Data.ImporLama.Tulis(c, h);
+                    AuditLog.Tulis("Impor aplikasi lama", System.IO.Path.GetFileName(berkas) + ": baru " + w.Baru + ", diperbarui " + w.Diperbarui);
+                    Msg("Impor selesai.\r\nBaru: " + w.Baru + "\r\nDiperbarui: " + w.Diperbarui + "\r\nDilewati (tanpa No. Akun): " + h.TanpaIdAkun);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Msg("Impor GAGAL: " + ex.Message);
             }
         }
 
