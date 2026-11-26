@@ -252,6 +252,8 @@ namespace HrisDeviceTool
             tpSemua.Controls.Add(Btn("Bandingkan 2 mesin", 435, 12, 160, delegate { if (!Peran.Boleh("OnBanding")) return; AuditLog.Kat = "bandingkan"; OnBanding(); }));
             tpLog.Controls.Add(Btn("Tarik log mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
             tpLog.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
+            tpLog.Controls.Add(Btn("Cek database", 355, 12, 160, delegate { if (!Peran.Boleh("OnCekDb")) return; AuditLog.Kat = "sistem"; OnCekDb(); }));
+            tpLog.Controls.Add(Btn("Cadangkan DB", 525, 12, 140, delegate { if (!Peran.Boleh("OnCadangDb")) return; AuditLog.Kat = "sistem"; OnCadangDb(); }));
             pnlStrip.Controls.Add(Btn("Ganti sandi", 180, 2, 110, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
             pnlStrip.Controls.Add(Btn("Keluar akun", 300, 2, 110, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi. Naik/Turun/A-Z = urutan tersimpan.", 10, 426));
@@ -406,6 +408,58 @@ namespace HrisDeviceTool
             LogForm f = new LogForm(st, delegate (MesinItem m) { return Open(m, false); });
             f.FormClosed += delegate { RefreshRingkasLog(); };
             f.ShowDialog(this);
+        }
+
+        void OnCekDb()
+        {
+            try
+            {
+                string berkas = global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault();
+                bool baru = !System.IO.File.Exists(berkas);
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(berkas))
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    sb.AppendLine("Berkas: " + berkas);
+                    sb.AppendLine(baru ? "Database BARU dibuat (skema v" + global::HrisDeviceTool.Data.HdtDatabase.VersiSkema + ")." : "Database sudah ada.");
+                    sb.AppendLine();
+                    foreach (System.Collections.Generic.KeyValuePair<string, long> kv in global::HrisDeviceTool.Data.HdtDatabase.Ringkasan(c))
+                    {
+                        sb.AppendLine(kv.Key + " : " + kv.Value + " baris");
+                    }
+                    AuditLog.Tulis("Cek database", "ringkasan tabel dibuka");
+                    Msg(sb.ToString());
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Msg("Cek database GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnCadangDb()
+        {
+            try
+            {
+                string berkas = global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault();
+                using (SaveFileDialog dlg = new SaveFileDialog())
+                {
+                    dlg.Title = "Cadangkan database";
+                    dlg.Filter = "Database SQLite (*.sqlite)|*.sqlite";
+                    dlg.FileName = "hdt_cadangan_" + System.DateTime.Now.ToString("yyyyMMdd_HHmm") + ".sqlite";
+                    if (dlg.ShowDialog(this) != DialogResult.OK) return;
+                    if (System.IO.File.Exists(dlg.FileName)) System.IO.File.Delete(dlg.FileName);
+                    using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(berkas))
+                    {
+                        global::HrisDeviceTool.Data.HdtDatabase.Cadangkan(c, dlg.FileName);
+                    }
+                    AuditLog.Tulis("Cadangkan database", "salinan dibuat");
+                    Msg("Cadangan selesai:\r\n" + dlg.FileName);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Msg("Cadangkan database GAGAL: " + ex.Message);
+            }
         }
 
         void OnKelolaSalinan()
