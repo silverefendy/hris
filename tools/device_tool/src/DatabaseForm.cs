@@ -21,6 +21,7 @@ namespace HrisDeviceTool
         Label lblInfo;
         DataTable tabel;
         DataView tampilan;
+        CheckBox chkKosong;
         string berkasDb;
         bool terpotong;
 
@@ -55,6 +56,13 @@ namespace HrisDeviceTool
             atas.Controls.Add(cmb);
             atas.Controls.Add(l2);
             atas.Controls.Add(txtCari);
+            chkKosong = new CheckBox();
+            chkKosong.Text = "Sembunyikan kolom kosong";
+            chkKosong.Checked = true;
+            chkKosong.AutoSize = true;
+            chkKosong.Location = new Point(600, 11);
+            chkKosong.CheckedChanged += delegate { AturKolom(); };
+            atas.Controls.Add(chkKosong);
 
             Panel bawah = new Panel();
             bawah.Dock = DockStyle.Bottom;
@@ -86,6 +94,7 @@ namespace HrisDeviceTool
             grid.RowHeadersVisible = false;
             grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            grid.DataBindingComplete += delegate { AturKolom(); };
 
             Controls.Add(grid);
             Controls.Add(bawah);
@@ -119,6 +128,33 @@ namespace HrisDeviceTool
             {
                 MessageBox.Show("Gagal membuka database: " + ex.Message, "Database lokal", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        void AturKolom()
+        {
+            if (tabel == null || grid.Columns.Count == 0) { return; }
+            bool sembunyi = chkKosong.Checked;
+            List<DataGridViewColumn> depan = new List<DataGridViewColumn>();
+            List<DataGridViewColumn> isi = new List<DataGridViewColumn>();
+            List<DataGridViewColumn> kosong = new List<DataGridViewColumn>();
+            foreach (DataColumn dc in tabel.Columns)
+            {
+                DataGridViewColumn gc = grid.Columns[dc.ColumnName];
+                if (gc == null) { continue; }
+                bool ada = false;
+                foreach (DataRow r in tabel.Rows)
+                {
+                    object v = r[dc];
+                    if (v != null && !(v is DBNull) && Convert.ToString(v).Trim().Length > 0) { ada = true; break; }
+                }
+                if (dc.ColumnName == "id") { depan.Add(gc); }
+                else if (ada) { isi.Add(gc); }
+                else { kosong.Add(gc); }
+            }
+            int i = 0;
+            foreach (DataGridViewColumn gc in depan) { gc.Visible = true; gc.DisplayIndex = i++; }
+            foreach (DataGridViewColumn gc in isi) { gc.Visible = true; gc.DisplayIndex = i++; }
+            foreach (DataGridViewColumn gc in kosong) { gc.Visible = !sembunyi; gc.DisplayIndex = i++; }
         }
 
         static string Esc(string s)
