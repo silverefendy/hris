@@ -63,6 +63,14 @@ namespace HrisDeviceTool.Data
                     }
                 }
 
+                // Jumlah jari tidak hilang saat snapshot diganti
+                using (SQLiteCommand j = new SQLiteCommand(
+                    "update user_mesin set jumlah_jari=(select count(*) from template_jari x where x.mesin=user_mesin.mesin and x.id_mesin=user_mesin.id_mesin) where mesin=@m and exists (select 1 from template_jari y where y.mesin=@m)", c, t))
+                {
+                    j.Parameters.AddWithValue("@m", mesin);
+                    j.ExecuteNonQuery();
+                }
+
                 using (SQLiteCommand m = new SQLiteCommand(
                     "insert into mesin (nama,ip,diperbarui) values (@n,@ip,@t) on conflict(nama) do update set ip=excluded.ip, diperbarui=excluded.diperbarui", c, t))
                 {

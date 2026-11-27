@@ -246,17 +246,17 @@ namespace HrisDeviceTool
             r.Add(new string[] { "Identitas", "Vendor", Opt(zkObj, "~OEMVendor") });
             r.Add(new string[] { "Isi data", "Password terdaftar", St(zkObj, 4) });
             r.Add(new string[] { "Isi data", "Catatan operasi", St(zkObj, 5) });
-            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa jari (10)", St(zkObj, 10) });
-            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa user (11)", St(zkObj, 11) });
-            r.Add(new string[] { "Sisa kapasitas (BELUM terverifikasi)", "Sisa log (12)", St(zkObj, 12) });
+            r.Add(new string[] { "Sisa kapasitas", "Sisa jari", St(zkObj, 10) });
+            r.Add(new string[] { "Sisa kapasitas", "Sisa user", St(zkObj, 11) });
+            r.Add(new string[] { "Sisa kapasitas", "Sisa log", St(zkObj, 12) });
             r.Add(new string[] { "Isi data", "Admin", St(zkObj, 1) });
             r.Add(new string[] { "Isi data", "User", St(zkObj, 2) });
             r.Add(new string[] { "Isi data", "Template jari", St(zkObj, 3) });
             r.Add(new string[] { "Isi data", "Template wajah", St(zkObj, 21) });
             r.Add(new string[] { "Isi data", "Log absensi", St(zkObj, 6) });
-            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 7", St(zkObj, 7) });
-            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 8", St(zkObj, 8) });
-            r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 9", St(zkObj, 9) });
+            r.Add(new string[] { "Kapasitas", "Kapasitas jari", St(zkObj, 7) });
+            r.Add(new string[] { "Kapasitas", "Kapasitas user", St(zkObj, 8) });
+            r.Add(new string[] { "Kapasitas", "Kapasitas log", St(zkObj, 9) });
             r.Add(new string[] { "Kapasitas (arti BELUM terverifikasi)", "Angka 22", St(zkObj, 22) });
             try
             {
@@ -332,6 +332,55 @@ namespace HrisDeviceTool
                 }
             }
             return found;
+        }
+
+        public static int VersiJari(object zkObj)
+        {
+            int v;
+            return int.TryParse(Opt(zkObj, "~ZKFPVersion").Trim('\0', ' '), out v) ? v : 0;
+        }
+
+        // Jumlah template menurut mesin, -1 bila tidak terbaca
+        public static int JumlahTemplateMesin(object zkObj)
+        {
+            int v;
+            return int.TryParse(St(zkObj, 3), out v) ? v : -1;
+        }
+
+        // Hanya membaca semua template jari. progres(urutan user, jumlah user)
+        public static List<HrisDeviceTool.Data.BarisTemplate> BacaSemuaTemplate(object zkObj, Action<int, int> progres)
+        {
+            dynamic zk = zkObj;
+            List<HrisDeviceTool.Data.BarisTemplate> hasil = new List<HrisDeviceTool.Data.BarisTemplate>();
+            List<string[]> users = ListUsers(zkObj, 20000);
+            try { zk.ReadAllTemplate(1); } catch { }
+            Dictionary<string, bool> sudah = new Dictionary<string, bool>();
+            int n = 0;
+            foreach (string[] u in users)
+            {
+                n++;
+                string id = u[0].Trim();
+                if (id.Length == 0 || sudah.ContainsKey(id)) continue;
+                sudah[id] = true;
+                for (int f = 0; f <= 9; f++)
+                {
+                    int flag = 0, len = 0;
+                    string tmp = "";
+                    bool ok = zk.GetUserTmpExStr(1, id, f, ref flag, ref tmp, ref len);
+                    if (!ok || tmp == null) continue;
+                    tmp = tmp.Trim('\0').Trim();
+                    if (tmp.Length == 0) continue;
+                    HrisDeviceTool.Data.BarisTemplate b = new HrisDeviceTool.Data.BarisTemplate();
+                    b.Id = id;
+                    b.Jari = f;
+                    b.Flag = flag;
+                    b.Panjang = len;
+                    b.Isi = tmp;
+                    hasil.Add(b);
+                }
+                progres(n, users.Count);
+            }
+            return hasil;
         }
 
         public static bool StartEnroll(object zkObj, string uid, int jari)

@@ -38,6 +38,7 @@ namespace HrisDeviceTool
                 Application.Run(utama);
                 if (!utama.KeluarAkun) return;
                 Peran.Level = 0;
+                Brankas.Keluar();
             }
         }
     }

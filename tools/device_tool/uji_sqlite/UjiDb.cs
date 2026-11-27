@@ -72,10 +72,10 @@ namespace UjiDb
             using (SQLiteConnection c = HdtDatabase.Buka(berkas))
             {
                 Cek("D1 berkas dibuat, skema versi 2",
-                    File.Exists(berkas) && Convert.ToInt32(Skalar(c, "PRAGMA user_version")) == 2, berkas);
+                    File.Exists(berkas) && Convert.ToInt32(Skalar(c, "PRAGMA user_version")) == HdtDatabase.VersiSkema, berkas);
 
                 List<KeyValuePair<string, long>> rs = HdtDatabase.Ringkasan(c);
-                Cek("D2 tujuh tabel, semuanya kosong", rs.Count == 7 && Total(rs) == 0, rs.Count + " tabel");
+                Cek("D2 delapan tabel, semuanya kosong", rs.Count == 8 && Total(rs) == 0, rs.Count + " tabel");
 
                 string ik = "insert into induk_aplikasi_lama (id_akun,no_induk,nama,gelar,departemen,data_lain,sumber,diimpor) values ('{0}','{1}','{2}','OPERATOR','Sizing','Kolom Lain=nilai','uji','2026-01-01')";
                 Jalan(c, string.Format(ik, "99901", "B-UJI-0001", "ANDI"));
@@ -104,8 +104,8 @@ namespace UjiDb
             using (SQLiteConnection c2 = HdtDatabase.Buka(berkas))
             {
                 List<KeyValuePair<string, long>> rs2 = HdtDatabase.Ringkasan(c2);
-                Cek("D4 buka ulang: migrasi tidak mengubah data, skema tetap 2",
-                    Jumlah(rs2, "induk_aplikasi_lama") == 3 && Convert.ToInt32(Skalar(c2, "PRAGMA user_version")) == 2,
+                Cek("D4 buka ulang: migrasi tidak mengubah data, skema tetap",
+                    Jumlah(rs2, "induk_aplikasi_lama") == 3 && Convert.ToInt32(Skalar(c2, "PRAGMA user_version")) == HdtDatabase.VersiSkema,
                     "induk_aplikasi_lama=" + Jumlah(rs2, "induk_aplikasi_lama"));
             }
 

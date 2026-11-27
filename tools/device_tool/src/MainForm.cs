@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.7.2 (menu dirapikan)";
+        const string Versi = "0.8.0 (info mesin, template)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -442,6 +442,8 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Picu daftar dari PC", 215, 55, 170, delegate { if (!Peran.Boleh("OnPicu")) return; AuditLog.Kat = "sidik-jari"; OnPicu(); }));
             p.Controls.Add(Btn("Selesai daftar && baca", 395, 55, 170, delegate { if (!Peran.Boleh("OnSelesai")) return; AuditLog.Kat = "sidik-jari"; OnSelesai(); }));
 
+            p.Controls.Add(Btn("Simpan ke database", 575, 55, 140, delegate { if (!Peran.Boleh("OnSimpanTemplate")) return; AuditLog.Kat = "sidik-jari"; OnSimpanTemplate(); }));
+
             Label info = Lbl("Baca template: hanya membaca. Hasil disimpan di folder data\\cadangan (ekstensi .hdttmpl). Jari yang ditemukan berwarna hijau di gambar.\r\n\r\nPicu daftar: mesin dipaksa masuk mode daftar untuk ID tersebut (hanya ID uji berawalan 999) dan jari yang dipilih di kotak Jari. Minta rekan menempelkan jari di mesin, lalu klik 'Selesai daftar && baca'.\r\n\r\nSelama menunggu, aplikasi TIDAK membaca apa pun.\r\n\r\nNama jari: 0-4 tangan kiri (kelingking ke jempol), 5-9 tangan kanan (jempol ke kelingking).", 15, 100);
             info.AutoSize = false;
             info.Size = new Size(335, 270);
@@ -614,6 +616,8 @@ namespace HrisDeviceTool
                             totalUser += h.Sesudah;
                             berhasil++;
                             Log("Snapshot user " + mi.Nama + ": " + h.Sesudah + " user tersimpan.");
+                            try { global::HrisDeviceTool.Data.InfoMesin.Simpan(c, mi.Nama, mi.Ip, Dev.InfoRows(zk)); }
+                            catch (System.Exception exInfo) { sb.AppendLine(mi.Nama + " : info mesin tidak tersimpan (" + exInfo.Message + ")"); }
                         }
                         catch (System.Exception ex)
                         {
@@ -1179,6 +1183,79 @@ namespace HrisDeviceTool
             finally
             {
                 Done(zk);
+            }
+        }
+
+        void OnSimpanTemplate()
+        {
+            if (enrollZk != null) { Msg("Sesi daftar masih terbuka. Klik 'Selesai daftar & baca' dulu."); return; }
+            if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
+            DialogResult jawab = MessageBox.Show(
+                "Simpan template sidik jari (terenkripsi) ke database lokal. Mesin hanya dibaca.\r\n\r\nYa = SEMUA mesin (" + st.Data.Mesin.Count + ", bisa lama)\r\nTidak = hanya mesin yang dipilih di daftar\r\nBatal = keluar",
+                "Simpan template", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            if (jawab == DialogResult.Cancel) return;
+            List<MesinItem> daftar = new List<MesinItem>();
+            if (jawab == DialogResult.Yes) daftar.AddRange(st.Data.Mesin);
+            else
+            {
+                MesinItem pilih = Selected();
+                if (pilih == null) return;
+                daftar.Add(pilih);
+            }
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                int total = 0, berhasil = 0;
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault()))
+                {
+                    byte[] kunci = Brankas.Buka(c);
+                    if (kunci == null) { Log("Simpan template dibatalkan (kunci tidak dibuka)."); return; }
+                    Enabled = false;
+                    foreach (MesinItem mi in daftar)
+                    {
+                        object zk = Open(mi, true);
+                        if (zk == null) { sb.AppendLine(mi.Nama + " : GAGAL tersambung"); continue; }
+                        try
+                        {
+                            string nama = mi.Nama;
+                            Log("Membaca template " + nama + "...");
+                            List<global::HrisDeviceTool.Data.BarisTemplate> baris = Dev.BacaSemuaTemplate(zk, delegate (int n, int jml)
+                            {
+                                if (n % 100 == 0) Log(nama + ": user " + n + " dari " + jml);
+                                if (n % 10 == 0) Application.DoEvents();
+                            });
+                            int diMesin = Dev.JumlahTemplateMesin(zk);
+                            if (baris.Count == 0) { sb.AppendLine(nama + " : 0 template terbaca (mesin melaporkan " + diMesin + "), tidak disimpan"); continue; }
+                            global::HrisDeviceTool.Data.HasilTemplate h = global::HrisDeviceTool.Data.TemplateStore.Simpan(c, nama, Dev.VersiJari(zk), baris, kunci);
+                            string ringkas = nama + " : disimpan " + h.Disimpan + ", cocok " + h.Cocok + ", mesin melaporkan " + diMesin + ", total di database " + h.TotalMesin;
+                            sb.AppendLine(ringkas);
+                            Log(ringkas);
+                            total += h.Disimpan;
+                            berhasil++;
+                        }
+                        catch (Exception ex)
+                        {
+                            sb.AppendLine(mi.Nama + " : GAGAL (" + ex.Message + ")");
+                        }
+                        finally
+                        {
+                            Done(zk);
+                        }
+                    }
+                }
+                Enabled = true;
+                AuditLog.Tulis("Simpan template", berhasil + " dari " + daftar.Count + " mesin, " + total + " template");
+                Msg("Simpan template selesai.\r\n\r\n" + sb.ToString());
+            }
+            catch (Exception ex)
+            {
+                Enabled = true;
+                Msg("Simpan template GAGAL: " + ex.Message);
+            }
+            finally
+            {
+                Enabled = true;
+                Cursor = Cursors.Default;
             }
         }
 

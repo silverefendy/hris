@@ -27,7 +27,7 @@ namespace HrisDeviceTool
             Dictionary<string, int> d = new Dictionary<string, int>();
             string[] u1 = { "OnInfo", "OnPindai", "OnRingkas", "OnEkspor", "OnCekUser", "OnDaftarUser", "OnBanding", "OnTarikLog", "OnKelolaSalinan", "OnDiagnostik", "OnPanduan", "OnCekSemua", "OnCekDb" };
             string[] u2 = { "OnTambahUserUji", "OnPicu", "OnSelesai", "OnBacaTemplate", "OnKirimHris" };
-            string[] u3 = { "HapusPermanenSalinan", "OnCadangDb", "OnImporLama", "OnLihatDb", "OnSimpanUserMesin" };
+            string[] u3 = { "HapusPermanenSalinan", "OnCadangDb", "OnImporLama", "OnLihatDb", "OnSimpanUserMesin", "OnSimpanTemplate" };
             string[] u5 = { "OnTambah", "OnUbah", "OnHapus", "OnUrutAz", "OnGeser", "OnPengaturanHris" };
             foreach (string s in u1) d[s] = 1;
             foreach (string s in u2) d[s] = 2;
@@ -170,6 +170,11 @@ namespace HrisDeviceTool
             return d;
         }
 
+        public static bool SandiBawaan(int level, string pw)
+        {
+            return level >= 1 && level <= Bawaan.Length && Bawaan[level - 1] == pw;
+        }
+
         // true = berhasil masuk
         public static bool Masuk(Store st)
         {
@@ -197,6 +202,7 @@ namespace HrisDeviceTool
                 if (Sama(pw, d[Peran.Nama[idx]]))
                 {
                     Peran.Level = idx + 1;
+                    Brankas.Masuk(Peran.Level, pw);
                     AuditLog.Tulis("Login", "berhasil sebagai " + Peran.Nama[idx]);
                     return true;
                 }
@@ -231,6 +237,7 @@ namespace HrisDeviceTool
                 if (baru.Length < 4) { MessageBox.Show("Kata sandi minimal 4 karakter.", "HRIS Device Tool"); return; }
                 d[nama] = Buat(baru);
                 Simpan(st, d);
+                Brankas.SandiDiganti(target, baru);
                 AuditLog.Tulis("Ganti kata sandi", "peran " + nama + " (oleh " + Peran.NamaAktif + ")");
                 MessageBox.Show("Kata sandi \"" + nama + "\" diganti.", "HRIS Device Tool");
             }

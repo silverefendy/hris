@@ -10,7 +10,7 @@ namespace HrisDeviceTool.Data
     // Tidak menyimpan jalur absolut, jadi berkas bisa disalin antar PC.
     public static class HdtDatabase
     {
-        public const int VersiSkema = 2;
+        public const int VersiSkema = 3;
 
         private const string SkemaV1 = @"
 CREATE TABLE IF NOT EXISTS meta (kunci TEXT PRIMARY KEY, nilai TEXT);
@@ -114,6 +114,37 @@ FROM (SELECT id_akun AS id FROM induk_aplikasi_lama UNION SELECT id_mesin FROM u
 LEFT JOIN induk_aplikasi_lama i ON i.id_akun = ids.id;
 ";
 
+        private const string SkemaV3 = @"
+ALTER TABLE mesin ADD COLUMN tipe TEXT;
+ALTER TABLE mesin ADD COLUMN firmware TEXT;
+ALTER TABLE mesin ADD COLUMN serial TEXT;
+ALTER TABLE mesin ADD COLUMN platform TEXT;
+ALTER TABLE mesin ADD COLUMN jumlah_user INTEGER;
+ALTER TABLE mesin ADD COLUMN jumlah_admin INTEGER;
+ALTER TABLE mesin ADD COLUMN jumlah_template_jari INTEGER;
+ALTER TABLE mesin ADD COLUMN jumlah_wajah INTEGER;
+ALTER TABLE mesin ADD COLUMN jumlah_log INTEGER;
+ALTER TABLE mesin ADD COLUMN kapasitas_user INTEGER;
+ALTER TABLE mesin ADD COLUMN kapasitas_jari INTEGER;
+ALTER TABLE mesin ADD COLUMN kapasitas_log INTEGER;
+ALTER TABLE mesin ADD COLUMN selisih_jam_detik INTEGER;
+ALTER TABLE mesin ADD COLUMN info_diambil TEXT;
+CREATE TABLE IF NOT EXISTS kunci_template (peran TEXT PRIMARY KEY, data BLOB NOT NULL, diubah TEXT);
+";
+
+        // Skema v3: info mesin dan kunci template terbungkus per akun. Hanya menambah.
+        public static void MigrasiV3(SQLiteConnection c)
+        {
+            int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
+            if (versi >= 3) { return; }
+            using (SQLiteTransaction t = c.BeginTransaction())
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(SkemaV3, c, t)) { cmd.ExecuteNonQuery(); }
+                using (SQLiteCommand cmd2 = new SQLiteCommand("PRAGMA user_version = 3", c, t)) { cmd2.ExecuteNonQuery(); }
+                t.Commit();
+            }
+        }
+
         // Skema v2: kolom data mesin dan tampilan gabungan per id. Hanya menambah.
         public static void MigrasiV2(SQLiteConnection c)
         {
@@ -151,6 +182,7 @@ LEFT JOIN induk_aplikasi_lama i ON i.id_akun = ids.id;
                 c.Open();
                 Migrasi(c);
                 MigrasiV2(c);
+                MigrasiV3(c);
                 return c;
             }
             catch

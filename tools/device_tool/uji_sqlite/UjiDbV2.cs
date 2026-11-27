@@ -74,10 +74,10 @@ namespace UjiDbV2
                 bool kolom = AdaKolom(c, "user_mesin", "nomor_kartu") && AdaKolom(c, "user_mesin", "ada_sandi")
                     && AdaKolom(c, "user_mesin", "jumlah_jari") && AdaKolom(c, "user_mesin", "jumlah_wajah");
                 long view = Convert.ToInt64(Skalar(c, "select count(*) from sqlite_master where type='view' and name='v_karyawan_lokal'"));
-                Cek("V1 database baru: skema 2, empat kolom mesin baru, view ada", Versi(c) == 2 && kolom && view == 1,
+                Cek("V1 database baru: skema terbaru, empat kolom mesin baru, view ada", Versi(c) == HdtDatabase.VersiSkema && kolom && view == 1,
                     "versi=" + Versi(c) + " kolom=" + kolom + " view=" + view);
                 int tabel = HdtDatabase.Ringkasan(c).Count;
-                Cek("V2 ringkasan tetap 7 tabel (view tidak dihitung)", tabel == 7, tabel + " tabel");
+                Cek("V2 ringkasan 8 tabel (view tidak dihitung)", tabel == 8, tabel + " tabel");
             }
 
             string lama = Path.Combine(Path.Combine(akar, "lama"), "hdt.sqlite");
@@ -97,8 +97,8 @@ namespace UjiDbV2
                 long a = Convert.ToInt64(Skalar(c2, "select count(*) from induk_aplikasi_lama"));
                 long b = Convert.ToInt64(Skalar(c2, "select count(*) from user_mesin"));
                 string kartu = Teks(c2, "select nomor_kartu from user_mesin where id_mesin='99901'");
-                Cek("V3 naik dari v1 berisi data: skema 2, data utuh, kolom baru kosong",
-                    Versi(c2) == 2 && a == 1 && b == 1 && kartu == null, "versi=" + Versi(c2) + " induk=" + a + " mesin=" + b);
+                Cek("V3 naik dari v1 berisi data: skema terbaru, data utuh, kolom baru kosong",
+                    Versi(c2) == HdtDatabase.VersiSkema && a == 1 && b == 1 && kartu == null, "versi=" + Versi(c2) + " induk=" + a + " mesin=" + b);
 
                 Jalan(c2, "insert into user_mesin (mesin,id_mesin,nama,privilege,aktif,diambil) values ('UJI-B','99901','ANDI',0,1,'2026-01-01')");
                 Jalan(c2, "insert into user_mesin (mesin,id_mesin,nama,privilege,aktif,diambil) values ('UJI-A','99950','TANPA PROFIL',0,1,'2026-01-01')");
@@ -131,7 +131,7 @@ namespace UjiDbV2
             using (SQLiteConnection c4 = HdtDatabase.Buka(lama))
             {
                 long total = Convert.ToInt64(Skalar(c4, "select count(*) from v_karyawan_lokal"));
-                Cek("V8 buka ulang berkali-kali aman: skema tetap 2, data tetap", Versi(c4) == 2 && total == 3, "versi=" + Versi(c4));
+                Cek("V8 buka ulang berkali-kali aman: skema tetap, data tetap", Versi(c4) == HdtDatabase.VersiSkema && total == 3, "versi=" + Versi(c4));
             }
 
             Console.WriteLine();
