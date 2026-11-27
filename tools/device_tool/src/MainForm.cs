@@ -184,6 +184,60 @@ namespace HrisDeviceTool
             return lv;
         }
 
+        // Pilih banyak baris dan salin. Hasil dipisah tab, bisa ditempel ke Excel.
+        void BisaSalin(ListView lv)
+        {
+            lv.MultiSelect = true;
+            string sel = "";
+            ContextMenuStrip menu = new ContextMenuStrip();
+            menu.Items.Add("Salin sel ini", null, delegate { TaruhClipboard(sel); });
+            menu.Items.Add("Salin baris terpilih (Ctrl+C)", null, delegate { SalinBaris(lv, false); });
+            menu.Items.Add("Salin semua dengan judul", null, delegate { SalinBaris(lv, true); });
+            menu.Items.Add("Pilih semua (Ctrl+A)", null, delegate { PilihSemua(lv); });
+            lv.ContextMenuStrip = menu;
+            lv.MouseDown += delegate (object o, MouseEventArgs e)
+            {
+                ListViewHitTestInfo h = lv.HitTest(e.Location);
+                sel = (h.SubItem != null) ? h.SubItem.Text : "";
+            };
+            lv.KeyDown += delegate (object o, KeyEventArgs e)
+            {
+                if (e.Control && e.KeyCode == Keys.C) { SalinBaris(lv, false); e.Handled = true; }
+                if (e.Control && e.KeyCode == Keys.A) { PilihSemua(lv); e.Handled = true; }
+            };
+        }
+
+        void PilihSemua(ListView lv)
+        {
+            lv.BeginUpdate();
+            foreach (ListViewItem it in lv.Items) it.Selected = true;
+            lv.EndUpdate();
+        }
+
+        void SalinBaris(ListView lv, bool semua)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (semua)
+            {
+                for (int i = 0; i < lv.Columns.Count; i++) sb.Append((i > 0 ? "\t" : "") + lv.Columns[i].Text);
+                sb.Append(Environment.NewLine);
+            }
+            foreach (ListViewItem it in lv.Items)
+            {
+                if (!semua && !it.Selected) continue;
+                for (int i = 0; i < it.SubItems.Count; i++) sb.Append((i > 0 ? "\t" : "") + it.SubItems[i].Text);
+                sb.Append(Environment.NewLine);
+            }
+            TaruhClipboard(sb.ToString());
+        }
+
+        void TaruhClipboard(string teks)
+        {
+            if (string.IsNullOrEmpty(teks)) return;
+            try { Clipboard.SetText(teks); }
+            catch (Exception ex) { Log("Gagal menyalin: " + ex.Message); }
+        }
+
         void SetArrow(ListView lv, ListSorter s, string[] names)
         {
             string up = " " + (char)0x25B2;
@@ -292,6 +346,7 @@ namespace HrisDeviceTool
         TabPage BuildTabInfo()
         {
             TabPage p = new TabPage("Info mesin");
+            p.Size = new Size(722, 409);
             p.Controls.Add(Btn("Ambil info mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnInfo")) return; AuditLog.Kat = "info-mesin"; OnInfo(); }));
             lblInfoHead = Lbl("Pilih mesin di daftar kiri, lalu klik Ambil info mesin. Hanya membaca.", 190, 19);
             p.Controls.Add(lblInfoHead);
@@ -300,12 +355,14 @@ namespace HrisDeviceTool
             lvInfo.Size = new Size(695, 345);
             lvInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             p.Controls.Add(lvInfo);
+            BisaSalin(lvInfo);
             return p;
         }
 
         TabPage BuildTabSemua()
         {
             TabPage p = new TabPage("Semua mesin");
+            p.Size = new Size(722, 409);
             p.Controls.Add(Btn("Ringkas semua mesin", 15, 12, 170, delegate { if (!Peran.Boleh("OnRingkas")) return; AuditLog.Kat = "semua-mesin"; OnRingkas(); }));
             p.Controls.Add(Btn("Ekspor CSV", 195, 12, 110, delegate { if (!Peran.Boleh("OnEkspor")) return; AuditLog.Kat = "semua-mesin"; OnEkspor(); }));
             p.Controls.Add(Lbl("Hanya membaca. Baris kuning = selisih jam lebih dari 60 detik.", 15, 54));
@@ -316,12 +373,14 @@ namespace HrisDeviceTool
             lvSum.ListViewItemSorter = sS;
             lvSum.ColumnClick += delegate (object o, ColumnClickEventArgs e) { SortClick(lvSum, sS, ColS, e.Column); };
             p.Controls.Add(lvSum);
+            BisaSalin(lvSum);
             return p;
         }
 
         TabPage BuildTabUser()
         {
             TabPage p = new TabPage("User");
+            p.Size = new Size(722, 409);
             p.Controls.Add(Lbl("ID user", 15, 20));
             txtUid = new TextBox();
             txtUid.Location = new Point(70, 17);
@@ -353,6 +412,7 @@ namespace HrisDeviceTool
             lvUser.ListViewItemSorter = sU;
             lvUser.ColumnClick += delegate (object o, ColumnClickEventArgs e) { SortClick(lvUser, sU, ColU, e.Column); };
             p.Controls.Add(lvUser);
+            BisaSalin(lvUser);
             return p;
         }
 
