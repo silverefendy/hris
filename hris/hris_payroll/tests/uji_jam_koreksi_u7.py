@@ -44,6 +44,15 @@ def _bebas(emp, day):
         return False
 
 
+def _masih_pulang_saja(r):
+    """Prasyarat uji: hitung ulang dari Raw Log SEKARANG masih menghasilkan hanya-pulang.
+    Dokumen tersimpan bisa usang. Perubahan ikut di-rollback."""
+    calculate_working_hour(r.employee, getdate(r.work_date))
+    d = _baca(r.name)
+    return bool(d and d.status == "Tidak Lengkap" and d.review_status == "Menunggu"
+                and not d.check_in and d.check_out)
+
+
 def _kandidat():
     for r in frappe.get_all(
         WH,
@@ -51,7 +60,7 @@ def _kandidat():
                  "check_in": ["is", "not set"], "check_out": ["is", "set"]},
         fields=["name", "employee", "work_date", "shift_start"], limit=40,
     ):
-        if r.shift_start and _bebas(r.employee, r.work_date):
+        if r.shift_start and _bebas(r.employee, r.work_date) and _masih_pulang_saja(r):
             return frappe.get_doc(WH, r.name)
     return None
 
