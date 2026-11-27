@@ -197,6 +197,36 @@ namespace HrisDeviceTool
             return rows;
         }
 
+        // Seperti ListUsers, ditambah penanda ada kata sandi (nilainya tidak dibawa) dan nomor kartu bila mesin menyediakannya.
+        // Isi baris: id, nama, privilege, aktif/nonaktif, ada_sandi (1/0), nomor_kartu.
+        public static List<string[]> ListUsersLengkap(object zkObj, int max)
+        {
+            dynamic zk = zkObj;
+            List<string[]> rows = new List<string[]>();
+            bool okAll = zk.ReadAllUserID(1);
+            if (!okAll) return rows;
+            string id = "", name = "", pwd = "";
+            int priv = 0;
+            bool en = false;
+            while (rows.Count < max)
+            {
+                bool ok = zk.SSR_GetAllUserInfo(1, ref id, ref name, ref pwd, ref priv, ref en);
+                if (!ok) break;
+                string kartu = "";
+                try
+                {
+                    string k = "";
+                    bool okK = zk.GetStrCardNumber(out k);
+                    if (okK && k != null) kartu = k.Trim('\0').Trim();
+                    if (kartu == "0") kartu = "";
+                }
+                catch { }
+                string sandi = (pwd != null && pwd.Trim('\0').Length > 0) ? "1" : "0";
+                rows.Add(new string[] { id.Trim('\0'), name.Trim('\0'), priv.ToString(), en ? "aktif" : "nonaktif", sandi, kartu });
+            }
+            return rows;
+        }
+
         public static List<string[]> InfoRows(object zkObj)
         {
             dynamic zk = zkObj;

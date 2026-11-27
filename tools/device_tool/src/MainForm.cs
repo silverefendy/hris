@@ -255,6 +255,8 @@ namespace HrisDeviceTool
             tpLog.Controls.Add(Btn("Cek database", 355, 12, 160, delegate { if (!Peran.Boleh("OnCekDb")) return; AuditLog.Kat = "sistem"; OnCekDb(); }));
             tpLog.Controls.Add(Btn("Cadangkan DB", 525, 12, 140, delegate { if (!Peran.Boleh("OnCadangDb")) return; AuditLog.Kat = "sistem"; OnCadangDb(); }));
             tpLog.Controls.Add(Btn("Impor aplikasi lama", 15, 170, 200, delegate { if (!Peran.Boleh("OnImporLama")) return; AuditLog.Kat = "sistem"; OnImporLama(); }));
+            tpLog.Controls.Add(Btn("Simpan user mesin", 225, 170, 200, delegate { if (!Peran.Boleh("OnSimpanUserMesin")) return; AuditLog.Kat = "sistem"; OnSimpanUserMesin(); }));
+            tpLog.Controls.Add(Btn("Lihat database", 435, 170, 160, delegate { if (!Peran.Boleh("OnLihatDb")) return; AuditLog.Kat = "sistem"; OnLihatDb(); }));
             pnlStrip.Controls.Add(Btn("Ganti sandi", 180, 2, 110, delegate { AuditLog.Kat = "sistem"; Akun.Ganti(st); }));
             pnlStrip.Controls.Add(Btn("Keluar akun", 300, 2, 110, delegate { if (MessageBox.Show("Keluar dari akun \"" + Peran.NamaAktif + "\" dan kembali ke dialog Masuk?", "Keluar akun", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return; AuditLog.Kat = "sistem"; AuditLog.Tulis("Logout", "keluar akun " + Peran.NamaAktif); KeluarAkun = true; Close(); }));
             Controls.Add(Lbl("Hapus = hanya dari daftar aplikasi. Naik/Turun/A-Z = urutan tersimpan.", 10, 426));
@@ -506,6 +508,83 @@ namespace HrisDeviceTool
             catch (System.Exception ex)
             {
                 Msg("Impor GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnSimpanUserMesin()
+        {
+            try
+            {
+                if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
+                System.Collections.Generic.List<MesinItem> daftar = new System.Collections.Generic.List<MesinItem>();
+                DialogResult jawab = MessageBox.Show(
+                    "Simpan daftar user dari mesin ke database lokal?\r\n\r\nYa = SEMUA mesin (" + st.Data.Mesin.Count + ")\r\nTidak = hanya mesin yang dipilih di daftar\r\nBatal = keluar\r\n\r\nSnapshot lama mesin yang sama akan diganti. Kata sandi mesin tidak disimpan.",
+                    "Simpan user mesin", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                if (jawab == DialogResult.Cancel) return;
+                if (jawab == DialogResult.Yes)
+                {
+                    foreach (MesinItem mi in st.Data.Mesin) daftar.Add(mi);
+                }
+                else
+                {
+                    MesinItem pilih = Selected();
+                    if (pilih == null) { Msg("Pilih satu mesin di daftar dulu."); return; }
+                    daftar.Add(pilih);
+                }
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                int totalUser = 0;
+                int berhasil = 0;
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault()))
+                {
+                    foreach (MesinItem mi in daftar)
+                    {
+                        object zk = Open(mi, false);
+                        if (zk == null) { sb.AppendLine(mi.Nama + " : GAGAL tersambung"); continue; }
+                        try
+                        {
+                            System.Collections.Generic.List<string[]> rows = Dev.ListUsersLengkap(zk, 5000);
+                            if (rows.Count == 0)
+                            {
+                                sb.AppendLine(mi.Nama + " : 0 user terbaca (tidak disimpan, snapshot lama dipertahankan)");
+                                continue;
+                            }
+                            global::HrisDeviceTool.Data.HasilSnapshot h = global::HrisDeviceTool.Data.SnapshotUser.Simpan(c, mi.Nama, mi.Ip, rows);
+                            sb.AppendLine(mi.Nama + " : " + h.Sesudah + " user (sebelumnya " + h.Sebelum + ", dilewati " + h.Dilewati + ")");
+                            totalUser += h.Sesudah;
+                            berhasil++;
+                            Log("Snapshot user " + mi.Nama + ": " + h.Sesudah + " user tersimpan.");
+                        }
+                        catch (System.Exception ex)
+                        {
+                            sb.AppendLine(mi.Nama + " : GAGAL (" + ex.Message + ")");
+                        }
+                        finally
+                        {
+                            Done(zk);
+                        }
+                    }
+                }
+                AuditLog.Tulis("Simpan user mesin", berhasil + " dari " + daftar.Count + " mesin, " + totalUser + " user");
+                Msg("Simpan user mesin selesai.\r\n\r\n" + sb.ToString());
+            }
+            catch (System.Exception ex)
+            {
+                Msg("Simpan user mesin GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnLihatDb()
+        {
+            try
+            {
+                AuditLog.Tulis("Lihat database", "dialog dibuka");
+                DatabaseForm f = new DatabaseForm();
+                f.ShowDialog(this);
+            }
+            catch (System.Exception ex)
+            {
+                Msg("Lihat database GAGAL: " + ex.Message);
             }
         }
 
