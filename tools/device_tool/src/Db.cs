@@ -10,7 +10,7 @@ namespace HrisDeviceTool.Data
     // Tidak menyimpan jalur absolut, jadi berkas bisa disalin antar PC.
     public static class HdtDatabase
     {
-        public const int VersiSkema = 1;
+        public const int VersiSkema = 2;
 
         private const string SkemaV1 = @"
 CREATE TABLE IF NOT EXISTS meta (kunci TEXT PRIMARY KEY, nilai TEXT);
@@ -81,6 +81,52 @@ CREATE TABLE IF NOT EXISTS department_hris (
 );
 ";
 
+        private const string SkemaV2 = @"
+ALTER TABLE user_mesin ADD COLUMN nomor_kartu TEXT;
+ALTER TABLE user_mesin ADD COLUMN ada_sandi INTEGER;
+ALTER TABLE user_mesin ADD COLUMN jumlah_jari INTEGER;
+ALTER TABLE user_mesin ADD COLUMN jumlah_wajah INTEGER;
+DROP VIEW IF EXISTS v_karyawan_lokal;
+CREATE VIEW v_karyawan_lokal AS
+SELECT
+    ids.id AS id,
+    i.no_induk AS no_induk,
+    i.nama AS nama,
+    i.kelamin AS kelamin,
+    i.warga_negara AS warga_negara,
+    i.gelar AS gelar,
+    i.tgl_lahir AS tgl_lahir,
+    i.mulai_bekerja AS mulai_bekerja,
+    i.nomor_kartu AS nomor_kartu,
+    i.telp_kantor AS telp_kantor,
+    i.no_ponsel AS no_ponsel,
+    i.alamat AS alamat_rumah,
+    i.departemen AS departemen,
+    i.batasan AS batasan,
+    CASE WHEN i.id_akun IS NULL THEN 0 ELSE 1 END AS ada_di_aplikasi_lama,
+    (SELECT COUNT(*) FROM user_mesin u WHERE u.id_mesin = ids.id) AS jumlah_mesin,
+    (SELECT group_concat(u.mesin, ', ') FROM user_mesin u WHERE u.id_mesin = ids.id) AS daftar_mesin,
+    (SELECT MAX(u.nama) FROM user_mesin u WHERE u.id_mesin = ids.id) AS nama_di_mesin,
+    (SELECT MAX(u.privilege) FROM user_mesin u WHERE u.id_mesin = ids.id) AS privilege_mesin,
+    (SELECT MAX(u.nomor_kartu) FROM user_mesin u WHERE u.id_mesin = ids.id) AS kartu_di_mesin,
+    (SELECT MAX(u.jumlah_jari) FROM user_mesin u WHERE u.id_mesin = ids.id) AS jari_terbanyak
+FROM (SELECT id_akun AS id FROM induk_aplikasi_lama UNION SELECT id_mesin FROM user_mesin) ids
+LEFT JOIN induk_aplikasi_lama i ON i.id_akun = ids.id;
+";
+
+        // Skema v2: kolom data mesin dan tampilan gabungan per id. Hanya menambah.
+        public static void MigrasiV2(SQLiteConnection c)
+        {
+            int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
+            if (versi >= 2) { return; }
+            using (SQLiteTransaction t = c.BeginTransaction())
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(SkemaV2, c, t)) { cmd.ExecuteNonQuery(); }
+                using (SQLiteCommand cmd2 = new SQLiteCommand("PRAGMA user_version = 2", c, t)) { cmd2.ExecuteNonQuery(); }
+                t.Commit();
+            }
+        }
+
         public static string FolderDefault()
         {
             return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("data", "db"));
@@ -104,6 +150,7 @@ CREATE TABLE IF NOT EXISTS department_hris (
             {
                 c.Open();
                 Migrasi(c);
+                MigrasiV2(c);
                 return c;
             }
             catch

@@ -71,8 +71,8 @@ namespace UjiDb
 
             using (SQLiteConnection c = HdtDatabase.Buka(berkas))
             {
-                Cek("D1 berkas dibuat, skema versi 1",
-                    File.Exists(berkas) && Convert.ToInt32(Skalar(c, "PRAGMA user_version")) == 1, berkas);
+                Cek("D1 berkas dibuat, skema versi 2",
+                    File.Exists(berkas) && Convert.ToInt32(Skalar(c, "PRAGMA user_version")) == 2, berkas);
 
                 List<KeyValuePair<string, long>> rs = HdtDatabase.Ringkasan(c);
                 Cek("D2 tujuh tabel, semuanya kosong", rs.Count == 7 && Total(rs) == 0, rs.Count + " tabel");
@@ -104,8 +104,8 @@ namespace UjiDb
             using (SQLiteConnection c2 = HdtDatabase.Buka(berkas))
             {
                 List<KeyValuePair<string, long>> rs2 = HdtDatabase.Ringkasan(c2);
-                Cek("D4 buka ulang: migrasi tidak mengubah data, skema tetap 1",
-                    Jumlah(rs2, "induk_aplikasi_lama") == 3 && Convert.ToInt32(Skalar(c2, "PRAGMA user_version")) == 1,
+                Cek("D4 buka ulang: migrasi tidak mengubah data, skema tetap 2",
+                    Jumlah(rs2, "induk_aplikasi_lama") == 3 && Convert.ToInt32(Skalar(c2, "PRAGMA user_version")) == 2,
                     "induk_aplikasi_lama=" + Jumlah(rs2, "induk_aplikasi_lama"));
             }
 
