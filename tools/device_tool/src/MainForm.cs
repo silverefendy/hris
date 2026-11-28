@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.9.2 (lihat log)";
+        const string Versi = "0.9.3 (tarik banyak mesin)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -491,6 +491,7 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Tarik log mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
             p.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
             p.Controls.Add(Btn("Impor CSV ke database", 355, 12, 190, delegate { if (!Peran.Boleh("OnImporLog")) return; AuditLog.Kat = "tarik-log"; OnImporLog(); }));
+            p.Controls.Add(Btn("Tarik banyak mesin", 555, 12, 170, delegate { if (!Peran.Boleh("OnTarikBanyak")) return; AuditLog.Kat = "tarik-log"; OnTarikBanyak(); }));
             p.Controls.Add(Lbl("Alur kirim log ke HRIS:   1. Tarik log mesin   >   2. Kelola salinan   >   3. Kirim ke HRIS (dicentang)", 15, 54));
             p.Controls.Add(Lbl("Tarik log menyimpan salinan CSV di komputer ini. Kirim dilakukan dari Kelola salinan.\r\nKirim ulang aman: baris yang sudah ada di HRIS dihitung duplicate, bukan data ganda.", 15, 80));
             lblRingkasLog = Lbl("", 15, 128);
@@ -819,6 +820,26 @@ namespace HrisDeviceTool
             catch (System.Exception ex)
             {
                 Msg("Lihat database GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnTarikBanyak()
+        {
+            try
+            {
+                if (st.Data.Mesin.Count < 1) { Msg("Belum ada mesin terdaftar."); return; }
+                OpsiTarik o = DialogTarikBanyak.Tanya(this, st.Data.Mesin);
+                if (o == null) return;
+                Cursor = Cursors.WaitCursor;
+                string hasil = TarikBanyak.Jalankan(this, o, st.DataDir, delegate (MesinItem m) { return Open(m, true); }, delegate (object zk) { Done(zk); });
+                Cursor = Cursors.Default;
+                RefreshRingkasLog();
+                Msg(hasil);
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                Msg("Tarik banyak mesin GAGAL: " + ex.Message);
             }
         }
 
