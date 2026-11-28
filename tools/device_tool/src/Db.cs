@@ -10,7 +10,7 @@ namespace HrisDeviceTool.Data
     // Tidak menyimpan jalur absolut, jadi berkas bisa disalin antar PC.
     public static class HdtDatabase
     {
-        public const int VersiSkema = 3;
+        public const int VersiSkema = 4;
 
         private const string SkemaV1 = @"
 CREATE TABLE IF NOT EXISTS meta (kunci TEXT PRIMARY KEY, nilai TEXT);
@@ -132,6 +132,57 @@ ALTER TABLE mesin ADD COLUMN info_diambil TEXT;
 CREATE TABLE IF NOT EXISTS kunci_template (peran TEXT PRIMARY KEY, data BLOB NOT NULL, diubah TEXT);
 ";
 
+        private const string SkemaV4 = @"
+CREATE TABLE IF NOT EXISTS log_absensi (
+    mesin TEXT NOT NULL,
+    id_mesin TEXT NOT NULL,
+    waktu TEXT NOT NULL,
+    verifikasi INTEGER,
+    status INTEGER,
+    workcode INTEGER,
+    diambil TEXT,
+    PRIMARY KEY (mesin, id_mesin, waktu)
+);
+CREATE INDEX IF NOT EXISTS ix_log_waktu ON log_absensi (waktu);
+CREATE INDEX IF NOT EXISTS ix_log_id_waktu ON log_absensi (id_mesin, waktu);
+CREATE TABLE IF NOT EXISTS tarikan_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    mesin TEXT NOT NULL,
+    mulai TEXT,
+    selesai TEXT,
+    terbaca INTEGER,
+    baru INTEGER,
+    di_mesin INTEGER,
+    sumber TEXT,
+    berhasil INTEGER,
+    catatan TEXT
+);
+CREATE INDEX IF NOT EXISTS ix_tarikan_mesin ON tarikan_log (mesin, mulai);
+";
+
+        // Skema v4: log absensi dan riwayat tarikan. Hanya menambah.
+        public static void MigrasiV4(SQLiteConnection c)
+        {
+            int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
+            if (versi >= 4) { return; }
+            using (SQLiteTransaction t = c.BeginTransaction())
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(SkemaV4, c, t)) { cmd.ExecuteNonQuery(); }
+                using (SQLiteCommand cmd2 = new SQLiteCommand("PRAGMA user_version = 4", c, t)) { cmd2.ExecuteNonQuery(); }
+                t.Commit();
+            }
+        }
+
+        // Sebelum naik ke v4, simpan salinan database lama di samping berkas aslinya.
+        public static void CadangkanBilaNaik(SQLiteConnection c)
+        {
+            int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
+            if (versi < 1 || versi >= 4) { return; }
+            string folder = Path.GetDirectoryName(c.FileName);
+            string tujuan = Path.Combine(folder, "hdt_sebelum_v4_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".sqlite");
+            Cadangkan(c, tujuan);
+        }
+
         // Skema v3: info mesin dan kunci template terbungkus per akun. Hanya menambah.
         public static void MigrasiV3(SQLiteConnection c)
         {
@@ -180,9 +231,11 @@ CREATE TABLE IF NOT EXISTS kunci_template (peran TEXT PRIMARY KEY, data BLOB NOT
             try
             {
                 c.Open();
+                CadangkanBilaNaik(c);
                 Migrasi(c);
                 MigrasiV2(c);
                 MigrasiV3(c);
+                MigrasiV4(c);
                 return c;
             }
             catch
