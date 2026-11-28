@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.9.3 (tarik banyak mesin)";
+        const string Versi = "0.9.4 (salin shift)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -492,6 +492,7 @@ namespace HrisDeviceTool
             p.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
             p.Controls.Add(Btn("Impor CSV ke database", 355, 12, 190, delegate { if (!Peran.Boleh("OnImporLog")) return; AuditLog.Kat = "tarik-log"; OnImporLog(); }));
             p.Controls.Add(Btn("Tarik banyak mesin", 555, 12, 170, delegate { if (!Peran.Boleh("OnTarikBanyak")) return; AuditLog.Kat = "tarik-log"; OnTarikBanyak(); }));
+            p.Controls.Add(Btn("Salin shift dari HRIS", 735, 12, 180, delegate { if (!Peran.Boleh("OnSalinShift")) return; AuditLog.Kat = "sistem"; SalinShift.Jalankan(this, st); }));
             p.Controls.Add(Lbl("Alur kirim log ke HRIS:   1. Tarik log mesin   >   2. Kelola salinan   >   3. Kirim ke HRIS (dicentang)", 15, 54));
             p.Controls.Add(Lbl("Tarik log menyimpan salinan CSV di komputer ini. Kirim dilakukan dari Kelola salinan.\r\nKirim ulang aman: baris yang sudah ada di HRIS dihitung duplicate, bukan data ganda.", 15, 80));
             lblRingkasLog = Lbl("", 15, 128);

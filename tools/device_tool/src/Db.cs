@@ -10,7 +10,7 @@ namespace HrisDeviceTool.Data
     // Tidak menyimpan jalur absolut, jadi berkas bisa disalin antar PC.
     public static class HdtDatabase
     {
-        public const int VersiSkema = 4;
+        public const int VersiSkema = 5;
 
         private const string SkemaV1 = @"
 CREATE TABLE IF NOT EXISTS meta (kunci TEXT PRIMARY KEY, nilai TEXT);
@@ -160,6 +160,57 @@ CREATE TABLE IF NOT EXISTS tarikan_log (
 CREATE INDEX IF NOT EXISTS ix_tarikan_mesin ON tarikan_log (mesin, mulai);
 ";
 
+        private const string SkemaV5 = @"
+CREATE TABLE IF NOT EXISTS jadwal_shift (
+    id_mesin TEXT NOT NULL,
+    tanggal TEXT NOT NULL,
+    shift TEXT,
+    wajib INTEGER,
+    works INTEGER,
+    libur INTEGER,
+    off INTEGER,
+    sumber TEXT,
+    PRIMARY KEY (id_mesin, tanggal)
+);
+CREATE INDEX IF NOT EXISTS ix_jadwal_tanggal ON jadwal_shift (tanggal);
+CREATE TABLE IF NOT EXISTS aturan_shift (
+    nama TEXT PRIMARY KEY,
+    mulai TEXT,
+    selesai TEXT,
+    lewat_tengah_malam INTEGER,
+    durasi INTEGER,
+    istirahat INTEGER,
+    toleransi_telat INTEGER,
+    toleransi_pulang INTEGER,
+    jendela_sebelum INTEGER,
+    batas_telat INTEGER,
+    jendela_sesudah INTEGER,
+    min_pulang INTEGER,
+    lembur_min INTEGER
+);
+CREATE TABLE IF NOT EXISTS salin_shift (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    waktu TEXT,
+    dari TEXT,
+    sampai TEXT,
+    baris INTEGER,
+    karyawan INTEGER,
+    peringatan TEXT
+);
+";
+
+        // Skema v5: jadwal shift salinan dari HRIS. Hanya menambah.
+        public static void MigrasiV5(SQLiteConnection c)
+        {
+            int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
+            if (versi >= 5) { return; }
+            using (SQLiteTransaction t = c.BeginTransaction())
+            {
+                using (SQLiteCommand cmd = new SQLiteCommand(SkemaV5, c, t)) { cmd.ExecuteNonQuery(); }
+                using (SQLiteCommand cmd2 = new SQLiteCommand("PRAGMA user_version = 5", c, t)) { cmd2.ExecuteNonQuery(); }
+                t.Commit();
+            }
+        }
         // Skema v4: log absensi dan riwayat tarikan. Hanya menambah.
         public static void MigrasiV4(SQLiteConnection c)
         {
@@ -173,13 +224,13 @@ CREATE INDEX IF NOT EXISTS ix_tarikan_mesin ON tarikan_log (mesin, mulai);
             }
         }
 
-        // Sebelum naik ke v4, simpan salinan database lama di samping berkas aslinya.
+        // Sebelum naik versi skema, simpan salinan database lama di samping berkas aslinya.
         public static void CadangkanBilaNaik(SQLiteConnection c)
         {
             int versi = Convert.ToInt32(Skalar(c, "PRAGMA user_version"));
-            if (versi < 1 || versi >= 4) { return; }
+            if (versi < 1 || versi >= VersiSkema) { return; }
             string folder = Path.GetDirectoryName(c.FileName);
-            string tujuan = Path.Combine(folder, "hdt_sebelum_v4_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".sqlite");
+            string tujuan = Path.Combine(folder, "hdt_sebelum_v" + VersiSkema + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".sqlite");
             Cadangkan(c, tujuan);
         }
 
@@ -236,6 +287,7 @@ CREATE INDEX IF NOT EXISTS ix_tarikan_mesin ON tarikan_log (mesin, mulai);
                 MigrasiV2(c);
                 MigrasiV3(c);
                 MigrasiV4(c);
+                MigrasiV5(c);
                 return c;
             }
             catch

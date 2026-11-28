@@ -59,7 +59,7 @@ public static class UjiLogDb
         Console.WriteLine("Uji LogDb dan skema v4 (database sementara, data fiktif)");
         using (SQLiteConnection c = HdtDatabase.Buka(berkas))
         {
-            Cek("L1", "database baru berskema 4", Skalar(c, "PRAGMA user_version") == 4,
+            Cek("L1", "database baru berskema terbaru", Skalar(c, "PRAGMA user_version") == HdtDatabase.VersiSkema,
                 "user_version " + Skalar(c, "PRAGMA user_version"));
             Cek("L1b", "tabel log_absensi dan tarikan_log ada",
                 Skalar(c, "select count(*) from sqlite_master where name in ('log_absensi','tarikan_log')") == 2, "");
@@ -121,11 +121,11 @@ public static class UjiLogDb
             "INSERT INTO user_mesin (mesin, id_mesin, nama) VALUES ('UJI-A', '1', 'Nama Fiktif');");
         using (SQLiteConnection c2 = HdtDatabase.Buka(berkas))
         {
-            Cek("L8", "naik dari v3 ke v4", Skalar(c2, "PRAGMA user_version") == 4 &&
+            Cek("L8", "naik dari v3 ke versi terbaru", Skalar(c2, "PRAGMA user_version") == HdtDatabase.VersiSkema &&
                 Skalar(c2, "select count(*) from sqlite_master where name in ('log_absensi','tarikan_log')") == 2, "");
             Cek("L8b", "data lama (user_mesin) utuh", Skalar(c2, "select count(*) from user_mesin") == 1, "");
         }
-        string[] cad = Directory.GetFiles(folder, "hdt_sebelum_v4_*.sqlite");
+        string[] cad = Directory.GetFiles(folder, "hdt_sebelum_v" + HdtDatabase.VersiSkema + "_*.sqlite");
         bool cadOk = cad.Length == 1;
         if (cadOk)
         {
@@ -138,7 +138,7 @@ public static class UjiLogDb
         Cek("L9", "cadangan sebelum naik ada dan berisi data v3", cadOk, "berkas cadangan " + cad.Length);
 
         // Skema lebih baru ditolak.
-        Jalankan(berkas, "PRAGMA user_version = 5;");
+        Jalankan(berkas, "PRAGMA user_version = " + (HdtDatabase.VersiSkema + 1) + ";");
         bool ditolak = false;
         try { HdtDatabase.Buka(berkas).Dispose(); }
         catch (InvalidOperationException) { ditolak = true; }

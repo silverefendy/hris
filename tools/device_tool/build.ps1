@@ -26,7 +26,7 @@ $src = Get-ChildItem (Join-Path $root 'src') -Filter *.cs | ForEach-Object { $_.
 
 $cscArgs = @('/nologo', '/platform:x86', '/target:winexe', "/out:$out",
     '/r:System.dll', '/r:System.Core.dll', '/r:System.Xml.dll',
-    '/r:System.Drawing.dll', '/r:System.Windows.Forms.dll', '/r:Microsoft.CSharp.dll', "/r:$root\lib\System.Data.SQLite.dll") + $src
+    '/r:System.Drawing.dll', '/r:System.Windows.Forms.dll', '/r:Microsoft.CSharp.dll', "/r:$root\lib\System.Data.SQLite.dll", '/r:System.Web.Extensions.dll') + $src
 & $csc $cscArgs
 if ($LASTEXITCODE -ne 0) { Write-Host "Compile GAGAL." -ForegroundColor Red; exit 1 }
 
