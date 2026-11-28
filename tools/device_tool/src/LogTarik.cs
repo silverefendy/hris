@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -249,11 +249,12 @@ namespace HrisDeviceTool
                 semua = hasil;
                 namaMesin = m.Nama;
                 SimpanOtomatis(m.Nama, hasil);
+                string infoDb = SimpanDb(m.Nama, hasil);
                 string cek = (jumlahMesin >= 0 && jumlahMesin != hasil.Count + tidakValid)
                     ? " | PERHATIAN: jumlah menurut mesin " + jumlahMesin + ", terbaca " + (hasil.Count + tidakValid)
                     : (jumlahMesin >= 0 ? " | jumlah cocok dengan mesin (" + jumlahMesin + ")" : "");
                 AuditLog.Tulis("Tarik log", "selesai, mesin " + m.Nama + ", terbaca " + hasil.Count + ", tidak valid " + tidakValid + ", jumlah di mesin " + jumlahMesin);
-                Status("Selesai " + DateTime.Now.ToString("HH:mm:ss") + ". Terbaca " + hasil.Count + " log valid, " + tidakValid + " tidak valid" + cek + ". Tidak ada yang diubah di mesin.");
+                Status("Selesai " + DateTime.Now.ToString("HH:mm:ss") + ". Terbaca " + hasil.Count + " log valid, " + tidakValid + " tidak valid" + cek + infoDb + ". Tidak ada yang diubah di mesin.");
                 Tampil();
             }
             catch (Exception e)
@@ -364,6 +365,36 @@ namespace HrisDeviceTool
             catch (Exception e)
             {
                 AuditLog.Tulis("Salinan otomatis", "GAGAL: " + e.Message);
+            }
+        }
+
+        // Salinan ke database lokal. CSV tetap dibuat; kegagalan di sini tidak menggagalkan tarikan.
+        string SimpanDb(string mesin, List<LogRow> rows)
+        {
+            try
+            {
+                List<global::HrisDeviceTool.Data.BarisLog> daftar = new List<global::HrisDeviceTool.Data.BarisLog>();
+                foreach (LogRow x in rows)
+                {
+                    global::HrisDeviceTool.Data.BarisLog b = new global::HrisDeviceTool.Data.BarisLog();
+                    b.Id = x.Id;
+                    b.Waktu = x.Waktu;
+                    b.Verifikasi = x.Verify;
+                    b.Status = x.InOut;
+                    b.WorkCode = x.WorkCode;
+                    daftar.Add(b);
+                }
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault()))
+                {
+                    global::HrisDeviceTool.Data.HasilSimpan h = global::HrisDeviceTool.Data.LogDb.Simpan(c, mesin, daftar, "tarik", jumlahMesin, "");
+                    AuditLog.Tulis("Simpan log ke database", "mesin " + mesin + ", terbaca " + h.Terbaca + ", baru " + h.Baru + ", sudah ada " + h.Dilewati);
+                    return " | database: baru " + h.Baru + ", sudah ada " + h.Dilewati;
+                }
+            }
+            catch (Exception e)
+            {
+                AuditLog.Tulis("Simpan log ke database", "GAGAL: " + e.Message);
+                return " | database GAGAL: " + e.Message;
             }
         }
 

@@ -13,7 +13,7 @@ namespace HrisDeviceTool
     public class DatabaseForm : Form
     {
         const int BatasBaris = 5000;
-        static readonly string[] Objek = { "v_karyawan_lokal", "induk_aplikasi_lama", "user_mesin", "mesin" };
+        static readonly string[] Objek = { "v_karyawan_lokal", "induk_aplikasi_lama", "user_mesin", "mesin", "tarikan_log", "log_absensi" };
 
         ComboBox cmb;
         TextBox txtCari;

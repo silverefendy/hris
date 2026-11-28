@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.9.0 (menu baru, karyawan)";
+        const string Versi = "0.9.1 (log ke database)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -489,6 +489,7 @@ namespace HrisDeviceTool
             p.Size = new Size(1180, 560);
             p.Controls.Add(Btn("Tarik log mesin", 15, 12, 160, delegate { if (!Peran.Boleh("OnTarikLog")) return; AuditLog.Kat = "tarik-log"; OnTarikLog(); }));
             p.Controls.Add(Btn("Kelola salinan", 185, 12, 160, delegate { if (!Peran.Boleh("OnKelolaSalinan")) return; AuditLog.Kat = "tarik-log"; OnKelolaSalinan(); }));
+            p.Controls.Add(Btn("Impor CSV ke database", 355, 12, 190, delegate { if (!Peran.Boleh("OnImporLog")) return; AuditLog.Kat = "tarik-log"; OnImporLog(); }));
             p.Controls.Add(Lbl("Alur kirim log ke HRIS:   1. Tarik log mesin   >   2. Kelola salinan   >   3. Kirim ke HRIS (dicentang)", 15, 54));
             p.Controls.Add(Lbl("Tarik log menyimpan salinan CSV di komputer ini. Kirim dilakukan dari Kelola salinan.\r\nKirim ulang aman: baris yang sudah ada di HRIS dihitung duplicate, bukan data ganda.", 15, 80));
             lblRingkasLog = Lbl("", 15, 128);
@@ -811,6 +812,39 @@ namespace HrisDeviceTool
             catch (System.Exception ex)
             {
                 Msg("Lihat database GAGAL: " + ex.Message);
+            }
+        }
+
+        void OnImporLog()
+        {
+            try
+            {
+                string folder = Path.Combine(st.DataDir, "tarikan");
+                if (!Directory.Exists(folder)) { Msg("Folder tarikan belum ada: " + folder); return; }
+                if (MessageBox.Show("Impor salinan CSV di folder tarikan ke database lokal?\r\n\r\n" + folder + "\r\n\r\nAman diulang: baris yang sudah ada dilewati dan berkas yang sudah pernah diimpor tidak dibaca lagi. Mesin tidak disentuh.", "Impor CSV ke database", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+                Cursor = Cursors.WaitCursor;
+                global::HrisDeviceTool.Data.HasilImporLog h;
+                using (global::System.Data.SQLite.SQLiteConnection c = global::HrisDeviceTool.Data.HdtDatabase.Buka(global::HrisDeviceTool.Data.HdtDatabase.BerkasDefault()))
+                {
+                    h = global::HrisDeviceTool.Data.ImporLog.Folder(c, folder, delegate (string s) { Log(s); Application.DoEvents(); });
+                }
+                Cursor = Cursors.Default;
+                AuditLog.Tulis("Impor log CSV", "berkas " + h.BerkasDiimpor + ", dilewati " + h.BerkasDilewati + ", terbaca " + h.Terbaca + ", baru " + h.Baru + ", rusak " + h.Rusak);
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Impor selesai.");
+                sb.AppendLine("Berkas diimpor: " + h.BerkasDiimpor);
+                sb.AppendLine("Berkas dilewati: " + h.BerkasDilewati);
+                sb.AppendLine("Baris terbaca: " + h.Terbaca);
+                sb.AppendLine("Baris baru di database: " + h.Baru);
+                sb.AppendLine("Baris rusak dilewati: " + h.Rusak);
+                int n = 0;
+                foreach (string cat in h.Catatan) { if (n++ >= 15) { sb.AppendLine("..."); break; } sb.AppendLine(cat); }
+                Msg(sb.ToString());
+            }
+            catch (Exception ex)
+            {
+                Cursor = Cursors.Default;
+                Msg("Impor log GAGAL: " + ex.Message);
             }
         }
 

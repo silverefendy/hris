@@ -26,7 +26,7 @@ namespace HrisDeviceTool
         {
             Dictionary<string, int> d = new Dictionary<string, int>();
             string[] u1 = { "OnInfo", "OnPindai", "OnRingkas", "OnEkspor", "OnCekUser", "OnDaftarUser", "OnBanding", "OnTarikLog", "OnKelolaSalinan", "OnDiagnostik", "OnPanduan", "OnCekSemua" };
-            string[] u2 = { "OnTambahUserUji", "OnPicu", "OnSelesai", "OnBacaTemplate", "OnKirimHris" };
+            string[] u2 = { "OnTambahUserUji", "OnPicu", "OnSelesai", "OnBacaTemplate", "OnKirimHris", "OnImporLog" };
             string[] u3 = { "HapusPermanenSalinan", "OnCadangDb", "OnImporLama", "OnLihatDb", "OnSimpanUserMesin", "OnSimpanTemplate", "OnCekDb", "OnEksporKaryawan" };
             string[] u5 = { "OnTambah", "OnUbah", "OnHapus", "OnUrutAz", "OnGeser", "OnPengaturanHris" };
             foreach (string s in u1) d[s] = 1;
