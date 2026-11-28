@@ -107,7 +107,7 @@ namespace HrisDeviceTool
 
     public class MainForm : Form
     {
-        const string Versi = "0.9.1 (log ke database)";
+        const string Versi = "0.9.2 (lihat log)";
         static readonly string[] NamaJari = new string[] {
             "Kelingking kiri", "Jari manis kiri", "Jari tengah kiri", "Telunjuk kiri", "Jempol kiri",
             "Jempol kanan", "Telunjuk kanan", "Jari tengah kanan", "Jari manis kanan", "Kelingking kanan" };
@@ -128,6 +128,7 @@ namespace HrisDeviceTool
         TabPage tpKaryawan, tpLog, tpSemua;
         TabControl tabsUtama;
         KaryawanPanel karyawan;
+        LogPanel logPanel;
         Panel pnlCatatan;
         Label lblCatatanAkhir;
         Button btnCatatan;
@@ -495,12 +496,18 @@ namespace HrisDeviceTool
             lblRingkasLog = Lbl("", 15, 128);
             lblRingkasLog.Font = new Font(Font, FontStyle.Bold);
             p.Controls.Add(lblRingkasLog);
+            logPanel = new LogPanel();
+            logPanel.Location = new Point(8, 156);
+            logPanel.Size = new Size(1160, 392);
+            logPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            p.Controls.Add(logPanel);
             return p;
         }
 
         void RefreshRingkasLog()
         {
             if (lblRingkasLog == null) return;
+            if (logPanel != null && tabsUtama != null && tabsUtama.SelectedTab == tpLog) logPanel.Muat();
             try
             {
                 List<SalinanItem> l = Salinan.DaftarAktif(st);
@@ -837,6 +844,7 @@ namespace HrisDeviceTool
                 sb.AppendLine("Baris terbaca: " + h.Terbaca);
                 sb.AppendLine("Baris baru di database: " + h.Baru);
                 sb.AppendLine("Baris rusak dilewati: " + h.Rusak);
+                RefreshRingkasLog();
                 int n = 0;
                 foreach (string cat in h.Catatan) { if (n++ >= 15) { sb.AppendLine("..."); break; } sb.AppendLine(cat); }
                 Msg(sb.ToString());
